@@ -1,0 +1,76 @@
+<?php
+return array (
+// // 
+'User Calendars'=>'',
+'Group Calendars'=>'',
+'Google Calendars'=>'',
+'Filter'=>'',
+'My Calendar Permissions'=>'',
+'User Calendar Permissions'=>'',
+'Google Event'=>'',
+'View Permission'=>'',
+'These users can view your calendar.'=>'',
+'Edit Permission'=>'',
+'These users can edit your calendar.'=>'',
+'Sync My Actions To Google Calendar'=>'',
+'Show Actions associated with Contacts'=>'',
+'Show Actions associated with Accounts'=>'',
+'Show Actions associated with Opportunities'=>'',
+'Show Actions associated with Quotes'=>'',
+'Show Actions associated with Products'=>'',
+'Show Actions associated with Media'=>'',
+'Show Completed Actions'=>'',
+'Show Emails'=>'',
+'Show Attachments'=>'',
+// // 
+'Attachment'=>'',
+// // 
+// // button text
+'month'=>'',
+'week'=>'',
+'day'=>'',
+// // 
+// // month names
+'February'=>'',
+// // 
+// // short month names
+'Jan'=>'',
+'Feb'=>'',
+'Mar'=>'',
+'Apr'=>'',
+'Jun'=>'',
+'Jul'=>'',
+'Aug'=>'',
+'Sep'=>'',
+'Oct'=>'',
+'Nov'=>'',
+'Dec'=>'',
+// // 
+// // day names
+'Saturday'=>'',
+// // 
+// // short day names,
+'Sun'=>'',
+'Mon'=>'',
+'Tue'=>'',
+'Wed'=>'',
+'Thu'=>'',
+'Fri'=>'',
+'Sat'=>'',
+'Create Shared Calendar'=>'',
+'Don\'t link to Google Calendar'=>'',
+'Link to Google Calendar'=>'',
+'Back To User List'=>'',
+'Your actions are being synced to the Google Calendar "{calendarName}".'=>'',
+'Don\'t Sync My Actions To Google Calendar'=>'',
+'Google Integration is not configured on this server.'=>'',
+'Once'=>'',
+'Yearly'=>'',
+'Google Calendar'=>'',
+'Google Feed'=>'',
+'Google Calendar Name'=>'',
+'View Association'=>'',
+'These users can view {fullname}\'s calendar.'=>'',
+'These users can edit {fullname}\'s calendar.'=>'',
+'Shared Calendar:'=>'',
+);
