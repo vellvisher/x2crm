@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,38 +38,124 @@ $isGuest = Yii::app()->user->isGuest;
 $auth = Yii::app()->authManager;
 $isAdmin = !$isGuest && (Yii::app()->params->isAdmin);
 $isUser = !($isGuest || $isAdmin);
-if($isAdmin && file_exists($updateManifest = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'..',UpdaterBehavior::UPDATE_DIR,'manifest.json')))) {
-    $manifest = @json_decode(file_get_contents($updateManifest),1);
-    if(isset($manifest['scenario']) && !(Yii::app()->controller->id == 'admin' && Yii::app()->controller->action->id == 'updater')) {
-        Yii::app()->user->setFlash('admin.update',Yii::t('admin', 'There is an unfinished {scenario} in progress.',array('{scenario}'=>$manifest['scenario']=='update' ? Yii::t('admin','update'):Yii::t('admin','upgrade')))
-                .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Resume'),array("/admin/updater",'scenario'=>$manifest['scenario']))
-                .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Cancel'),array("/admin/updater",'scenario'=>'delete','redirect'=>1)));
-    }
-} else if($isAdmin && Yii::app()->session['alertUpdate']){
-    Yii::app()->user->setFlash('admin.update',Yii::t('admin', 'A new version is available.')
-            .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Update X2CRM'),array('/admin/updater'))
-            .'&nbsp;&bull;&nbsp;'.CHtml::link(Yii::t('admin','Updater Settings'),array('/admin/updaterSettings')));
+if(Yii::app()->session['alertUpdate']){
+    ?><script>
+        alert('<?php echo addslashes(Yii::t('admin', 'A new version is available.  To update X2Engine or to turn off these notifications, please go to the Admin tab.')); ?>');
+    </script>
+    <?php
     Yii::app()->session['alertUpdate'] = false;
 }
-if(is_int(Yii::app()->locked)) {
-    $lockMsg = '<strong>'.Yii::t('admin','The application is currently locked.').'</strong>';
-    if(file_exists(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'components','LockAppAction.php')))) {
-        $lockMsg .= ' '.CHtml::link(Yii::t('admin','Unlock X2CRM'),array('/admin/lockApp','toggle'=>0));
-    } else {
-        $lockMsg .= Yii::t('admin', 'You can manually unlock the application by deleting the file {file}', array('{file}' => '<em>"x2crm.lock"</em> in protected/config'));
-    }
-    Yii::app()->user->setFlash('admin.isLocked',$lockMsg);
-}
 
+$baseUrl = Yii::app()->getBaseUrl();
+$scriptUrl = Yii::app()->request->scriptUrl;
+$themeUrl = Yii::app()->theme->getBaseUrl();
+$admin = Yii::app()->params->admin;
+$profile = Yii::app()->params->profile;
 
 $cs = Yii::app()->clientScript;
-$baseUrl = $cs->baseUrl;
-$scriptUrl = $cs->scriptUrl;
-$themeUrl = $cs->themeUrl;
-$admin = $cs->admin;
-$profile = $cs->profile;
-$fullscreen = $cs->fullscreen;
-$cs->registerMain();
+$jsVersion = '?'.Yii::app()->params->buildDate;
+
+// jQuery and jQuery UI libraries
+$cs ->registerCoreScript('jquery')
+	->registerCoreScript('jquery.ui');
+
+// Declare currency format(s) from Yii for the formatCurrency plugin
+$locale = Yii::app()->locale;
+$cldFormat = array();
+foreach(explode(';',$locale->getCurrencyFormat()) as $format) {
+	$newFormat = preg_replace('/¤/','%s',$format);
+	$newFormat = preg_replace('/[#,\.0]+/','%n',$newFormat); // The number, in positive/negative
+	$cldFormat[] = $newFormat;
+}
+if(count($cldFormat) == 1) { // Default convention if no negative format is defined
+	$cldFormat[] = $locale->getNumberSymbol('minusSign').$cldFormat[0];
+}
+$decSym = $locale->getNumberSymbol('decimal');
+$grpSym = $locale->getNumberSymbol('group');
+// Declare:
+$cldScript = '(function($) {'."\n";
+foreach(Yii::app()->params->supportedCurrencySymbols as $curCode=>$curSym) {
+	$cldScript .= '$.formatCurrency.regions["'.$curCode.'"] = '.CJSON::encode(array(
+		'symbol' => $curSym,
+		'positiveFormat' => $cldFormat[0],
+		'negativeFormat' => $cldFormat[1],
+		'decimalSymbol' => $decSym,
+		'digitGroupSymbol' => $grpSym,
+		'groupDigits' => true
+	)).";\n";
+}
+$cldScript .= "\n})(jQuery);";
+
+// custom scripts
+$cs ->registerScriptFile($baseUrl.'/js/json2.js')
+	->registerScriptFile($baseUrl.'/js/layout.js')
+	->registerScriptFile($baseUrl.'/js/publisher.js')
+	->registerScriptFile($baseUrl.'/js/media.js')
+	->registerScriptFile($baseUrl.'/js/x2forms.js')
+    ->registerScriptFile($baseUrl.'/js/tags.js')
+	->registerScriptFile($baseUrl.'/js/LGPL/jquery.formatCurrency-1.4.0.js'.$jsVersion)
+	->registerScript('formatCurrency-locales',$cldScript,CCLientScript::POS_HEAD)
+	->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js')
+	->registerScriptFile($baseUrl.'/js/relationships.js')
+	->registerScriptFile($baseUrl.'/js/widgets.js')
+	->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js'.$jsVersion)
+    ->registerScriptFile($baseUrl.'/js/actionFrames.js'.$jsVersion)
+	->registerScriptFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.js');
+
+if (IS_IPAD) {
+    $cs->registerScriptFile($baseUrl.'/js/jquery.mobile.custom.js');
+}
+    //$cs->registerScriptFile($baseUrl.'/js/jquery.mobile-1.3.2.js');
+
+if(Yii::app()->session['translate'])
+    $cs->registerScriptFile($baseUrl.'/js/translator.js');
+
+$cs->registerScriptFile($baseUrl.'/js/backgroundFade.js');
+$cs->registerScript('datepickerLanguage', "
+    $.datepicker.setDefaults( $.datepicker.regional[ '' ] );
+");
+// $cs ->registerScriptFile($baseUrl.'/js/backgroundImage.js');
+// MoneyMask extension:
+$mmPath = Yii::getPathOfAlias('application.extensions.moneymask.assets');
+$aMmPath = Yii::app()->getAssetManager()->publish($mmPath);
+$cs->registerScriptFile("$aMmPath/jquery.maskMoney.js");
+$cs->registerCoreScript('jquery');
+
+// blueprint CSS framework
+$cs ->registerCssFile($baseUrl.'/css/normalize.css','all')
+	->registerCssFile($themeUrl.'/css/screen.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/jquery-ui.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/dragtable.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/print.css'.$jsVersion,'print')
+	->registerCssFile($themeUrl.'/css/main.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/ui-elements.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/layout.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/details.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/x2forms.css'.$jsVersion,'screen, projection')
+	->registerCssFile($themeUrl.'/css/form.css'.$jsVersion,'screen, projection')
+	->registerCssFile($baseUrl.'/js/qtip/jquery.qtip.min.css'.$jsVersion,'screen, projection');
+// $cs->registerCssFile($cs->getCoreScriptUrl().'/jui/css/base/jquery-ui.css'.$jsVersion);
+
+$cs->registerCssFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.css');
+
+if (IS_ANDROID)
+	$cs->registerCssFile($themeUrl.'/css/androidLayout.css'.$jsVersion,'screen, projection');
+else if (IS_IPAD)
+	$cs->registerCssFile($themeUrl.'/css/ipadLayout.css'.$jsVersion,'screen, projection');
+
+$fullscreen = Yii::app()->user->isGuest || $profile->fullscreen;
+
+$cs->registerScript('fullscreenToggle', '
+window.enableFullWidth = '.(!Yii::app()->user->isGuest ? ($profile->enableFullWidth ? 'true' : 'false') : 'true').';
+window.fullscreen = '.($fullscreen ? 'true' : 'false').';
+', CClientScript::POS_HEAD);
+if(!$isGuest){
+$cs->registerScriptFile($baseUrl.'/js/jstorage.min.js'.$jsVersion)
+        ->registerScriptFile($baseUrl.'/js/notifications.js'.$jsVersion);
+}
+
+if(!$isGuest && ($profile->language == 'he' || $profile->language == 'fa'))
+    $cs->registerCss('rtl-language', 'body{text-align:right;}');
 
 $backgroundImg = '';
 $defaultOpacity = 1;
@@ -92,7 +178,7 @@ foreach($checkFiles as $key => $value){
 }
 $theme2Css = '';
 if($logoMissing)
-    $theme2Css = 'html * {background:url('.CHtml::normalizeUrl(array('/site/warning')).') !important;} #bg{display:none !important;}';
+    $theme2Css = 'html * {background:url('.CHtml::normalizeUrl(array('site/warning')).') !important;} #bg{display:none !important;}';
 
 // check for background image, use it if one is set
 // if(!$preferences['backgroundImg'])
@@ -130,7 +216,7 @@ if ($preferences != null && $preferences['pageHeaderBgColor']) {
 
 
 if ($preferences != null && $preferences['activityFeedWidgetBgColor']){
-	$themeCss .= '#feed-box {
+	$themeCss .= '#chat-box {
 		background-color: #'.$preferences['activityFeedWidgetBgColor'].';
 	 }';
 }
@@ -143,43 +229,6 @@ if ($preferences != null && $preferences['gridViewRowColorOdd']){
 	$themeCss .= 'div.x2-gridview tr.odd {
 		background: #'.$preferences['gridViewRowColorOdd'].' !important;
 	 }';
-}
-
-/* Retrieve flash messages and calculate the appropriate styles for flash messages if applicable */
-$allFlashes = Yii::app()->user->getFlashes();
-$adminFlashes = array();
-$index = 0;
-foreach($allFlashes as $key => $message){
-    if(strpos($key, 'admin') === 0){
-        $adminFlashes[$index] = $message;
-        $index++;
-    }
-}
-
-if($n_flash = count($adminFlashes)) {
-    $flashTotalHeight = 17; // See layout.css for details
-    $themeCss .= '
-div#header {
-    position:fixed;
-    top: '.($flashTotalHeight*$n_flash).'px;
-    left: 0;
-}
-div#page {
-    margin-top:'.(32 + $flashTotalHeight*$n_flash).'px !important;
-}
-div#x2-gridview-top-bar-outer {
-    position:fixed;
-    top: '.(32 +$flashTotalHeight*$n_flash).'px;
-    left: 0;
-}
-';
-    foreach($adminFlashes as $index => $message) {
-        $themeCss .= "
-div.flash-message-$index {
-        top: ".(string)($index*$flashTotalHeight)."px;
-}
-";
-    }
 }
 
 // Outputs white or black depending on input color
@@ -317,13 +366,12 @@ if(is_file(Yii::app()->params->logo)){
 }
 array_unshift($menuItems, array(
     'label' => CHtml::image(Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo, Yii::app()->name, $logoOptions),
-    'url' => array('/profile', 'id' => Yii::app()->user->id),
+    'url' => array('/site/whatsNew'),
     'active' => false,
     'itemOptions' => array('id' => 'search-bar-title', 'class' => 'special','title'=>Yii::t('app','Go to Activity Feed'))
 ));
 
 
-/* Construction of the user menu */
 $notifCount = X2Model::model('Notification')->countByAttributes(array('user' => Yii::app()->user->getName()), 'createDate < '.time());
 
 $searchbarHtml = CHtml::beginForm(array('/search/search'), 'get')
@@ -348,16 +396,12 @@ if(!Yii::app()->user->isGuest){
 }
 $userMenu = array(
     array('label' => Yii::t('app', 'Admin'), 'url' => array('/admin/index'), 'active' => ($module == 'admin') ? true : null, 'visible' => $isAdmin),
-    array('label' => Yii::t('app', 'Profile'), 'url' => array('/profile/view', 'id' => Yii::app()->user->getId())),
-    array('label' => Yii::t('app', 'Users'), 'url' => array('/users/users/admin'), 'visible' => $isAdmin),
+    array('label' => Yii::t('app', 'Activity'), 'url' => array('/site/whatsNew')),
+    array('label' => Yii::t('app', 'Users'), 'url' => array('/users/admin'), 'visible' => $isAdmin),
     array('label' => Yii::t('app', 'Users'), 'url' => array('/profile/profiles'), 'visible' => !$isAdmin),
     array('label' => $searchbarHtml, 'itemOptions' => array('id' => 'search-bar', 'class' => 'special')),
-    array('label' => CHtml::link(
-        '<span>'.$notifCount.'</span>', '#', array('id' => 'main-menu-notif', 'style' => 'z-index:999;')),
-        'itemOptions' => array('class' => 'special')),
-    array('label' => CHtml::link(
-        '<span>&nbsp;</span>', '#', array('class' => 'x2-button', 'id' => 'fullscreen-button')),
-        'itemOptions' => array('class' => 'search-bar special')),
+    array('label' => CHtml::link('<span>'.$notifCount.'</span>', '#', array('id' => 'main-menu-notif', 'style' => 'z-index:999;')), 'itemOptions' => array('class' => 'special')),
+    array('label' => CHtml::link('<span>&nbsp;</span>', '#', array('class' => 'x2-button', 'id' => 'fullscreen-button')), 'itemOptions' => array('class' => 'search-bar special')),
     array('label' => CHtml::link('<div class="widget-icon"></div>', '#', array(
             'id' => 'widget-button',
             'class' => 'x2-button',
@@ -372,7 +416,7 @@ $userMenu = array(
             array('label' => Yii::t('app', 'Notifications'), 'url' => array('/site/viewNotifications')),
             array('label' => Yii::t('app', 'Preferences'), 'url' => array('/profile/settings')),
 			array('label' => Yii::t('profile', 'Manage Apps'), 'url' => array('/profile/manageCredentials')),
-            array('label' => Yii::t('help', 'Icon Reference'), 'url' => array('/site/page', 'view' => 'iconreference')),
+            array('label' => Yii::t('help', 'Icon Reference'), 'url' => array('/site/page/', 'view' => 'iconreference')),
             array('label' => Yii::t('help', 'Help'), 'url' => 'http://www.x2engine.com/reference_guide','linkOptions'=>array('target'=>'_blank')),
             array('label' => Yii::t('app', 'Report A Bug'), 'url' => array('/site/bugReport')),
             array('label' => Yii::t('app', '---'), 'itemOptions' => array('class' => 'divider')),
@@ -436,11 +480,10 @@ if(method_exists($this,'renderGaCode'))
 
 	if ($preferences != null && $preferences['backgroundImg']) {
 
-		if(file_exists('uploads/'.$preferences['backgroundImg'])) {
+		if(file_exists('uploads/'.$preferences['backgroundImg']))
 			echo 'background-image:url('.$baseUrl.'/uploads/'.$preferences['backgroundImg'].');';
-		} else {
+		else
 			echo 'background-image:url('.$baseUrl.'/uploads/media/'.Yii::app()->user->getName().'/'.$preferences['backgroundImg'].');';
-        }
 
 		switch($bgTiling = $preferences['backgroundTiling']) {
 			case 'repeat-x':
@@ -462,12 +505,6 @@ if(method_exists($this,'renderGaCode'))
 <div id="page-container">
 <div id="page">
 <?php //echo $backgroundImg; ?>
-    <?php
-    if(count($adminFlashes) > 0){
-        foreach($adminFlashes as $index => $message){
-                echo CHtml::tag('div',array('class'=>"admin-flash-message flash-message-$index"),$message);
-        }
-    } ?>
 	<div id="header" <?php echo !$preferences['menuBgColor']? 'class="defaultBg"' : ''; ?>>
 		<div id="header-inner">
 			<div id="main-menu-bar">
@@ -492,14 +529,8 @@ if(method_exists($this,'renderGaCode'))
 				<div id="notif-box">
 					<div id="no-notifications"<?php if($notifCount > 0) echo ' style="display:none;"'; ?>>
 					<?php echo Yii::t('app', 'You don\'t have any notifications.'); ?>
-					</div><div id="notifications"></div>
-                    <div id="notif-view-all"<?php if($notifCount < 11) echo ' style="display:none;"'; ?>>
-					    <?php echo CHtml::link(
-                            Yii::t('app', 'View all'), array('/site/viewNotifications')); ?>
-					</div>
-                    <div class='right' id="notif-clear-all"
-                     <?php if ($notifCount === '0') echo ' style="display:none;"'; ?>>
-					    <?php echo CHtml::link(Yii::t('app', 'Clear all'), '#'); ?>
+					</div><div id="notifications"></div><div id="notif-view-all"<?php if($notifCount < 11) echo ' style="display:none;"'; ?>>
+					<?php echo CHtml::link(Yii::t('app', 'View all'), array('/site/viewNotifications')); ?>
 					</div>
 				</div>
 				<div id="notif-box-shadow-correct"> <!-- IE fix, used to force repaint -->
@@ -567,10 +598,8 @@ if(method_exists($this,'renderGaCode'))
 			echo "";
 			Yii::app()->clientScript->registerScript('playLoginSound', '
 		$("#loginSound").attr("src","'.$loginSound.'");
-
-        var sound = $("#loginSound")[0];
-        if (Modernizr.audio) sound.play();
-
+		var sound = $("#loginSound")[0];
+		sound.play();
 ');
 		}
 		?>
@@ -579,6 +608,6 @@ if(method_exists($this,'renderGaCode'))
 	<textarea id="completion-notes" style="height:110px;"></textarea>
 </div>
 </body>
-<audio id="notificationSound"> </audio>
-<audio id='loginSound'> </audio>
+<audio id="notificationSound"></audio>
+<audio id='loginSound'></audio>
 </html>

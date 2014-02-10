@@ -1,7 +1,8 @@
 <?php
+
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -123,17 +124,6 @@ class User extends CActiveRecord {
         }
     }
 
-    public static function getUsersDataProvider () {
-        $usersDataProvider = new CActiveDataProvider('User', array(
-                    'criteria' => array(
-                        'condition' => 'status=1',
-                        'order' => 'lastName ASC'
-                    )
-                ));
-        return $usersDataProvider;
-    }
-
-
     public static function getNames(){
 
         $userNames = array();
@@ -207,76 +197,26 @@ class User extends CActiveRecord {
             $itemType = strtok($item, '-');
             $itemId = strtok('-');
 
-            switch($itemType){
-                case 'c': // contact
-                    $record = X2Model::model('Contacts')->findByPk($itemId);
-                    break;
-                case 't': // action
-                    $record = X2Model::model('Actions')->findByPk($itemId);
-                    break;
-                case 'a': // account
-                    $record = X2Model::model('Accounts')->findByPk($itemId);
-                    break;
-                case 'p': // campaign
-                    $record = X2Model::model('Campaign')->findByPk($itemId);
-                    break;
-                case 'o': // opportunity
-                    $record = X2Model::model('Opportunity')->findByPk($itemId);
-                    break;
-                case 'w': // workflow
-                    $record = X2Model::model('Workflow')->findByPk($itemId);
-                    break;
-                case 's': // service case
-                    $record = X2Model::model('Services')->findByPk($itemId);
-                    break;
-                case 'd': // document
-                    $record = X2Model::model('Docs')->findByPk($itemId);
-                    break;
-                case 'm': // media object
-                    $record = X2Model::model('Media')->findByPk($itemId);
-                    break;
-                case 'r': // product
-                    $record = X2Model::model('Product')->findByPk($itemId);
-                    break;
-                case 'q': // product
-                    $record = X2Model::model('Quote')->findByPk($itemId);
-                    break;
-                case 'g': // group
-                    $record = X2Model::model('Groups')->findByPk($itemId);
-                    break;
-                default:
-                    printR('Warning: getRecentItems: invalid item type');
-                    continue;
+            if($itemType == 'c'){
+                $record = X2Model::model('Contacts')->findByPk($itemId);
+                if(!is_null($record)) //only include contact if the contact ID exists
+                    array_push($recentItems, array('type' => $itemType, 'model' => $record));
+            } else if($itemType == 't'){
+                $record = X2Model::model('Actions')->findByPk($itemId);
+                if(!is_null($record)) //only include action if the action ID exists
+                    array_push($recentItems, array('type' => $itemType, 'model' => $record));
             }
-            if(!is_null($record)) //only include item if the record ID exists
-                array_push($recentItems, array('type' => $itemType, 'model' => $record));
         }
         return $recentItems;
     }
 
-    private static $validRecentItemTypes = array(
-        'c', // contact
-        't', // action
-        'p', // campaign
-        'o', // opportunity
-        'w', // workflow
-        's', // service case
-        'd', // doc
-        'm', // media object
-        'r', // product
-        'q', // quote
-        'g', // group
-        'a' // account
-    );
-
     public static function addRecentItem($type, $itemId, $userId){
-        if(in_array($type, self::$validRecentItemTypes)){ //only proceed if a valid type is given
+        if($type == 'c' || $type == 't'){ //only proceed if a valid type is given
             $newItem = $type.'-'.$itemId;
 
             $userRecord = X2Model::model('User')->findByPk($userId);
             //create an empty array if recentItems is empty
-            $recentItems =
-                    ($userRecord->recentItems == '') ? array() : explode(',', $userRecord->recentItems);
+            $recentItems = ($userRecord->recentItems == '') ? array() : explode(',', $userRecord->recentItems);
             $existingEntry = array_search($newItem, $recentItems); //check for a pre-existing entry
             if($existingEntry !== false)        //if there is one,
                 unset($recentItems[$existingEntry]);    //remove it
@@ -289,6 +229,7 @@ class User extends CActiveRecord {
             $userRecord->save();
         }
     }
+
 
     /**
      * Generate a link to a user or group.
@@ -304,8 +245,8 @@ class User extends CActiveRecord {
             if(is_numeric($users)){
                 $group = Groups::model()->findByPk($users);
                 if(isset($group))
-                //$link = $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
-                    $link = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl('/groups/groups/view', array('id' => $group->id))) : $group->name;
+                    //$link = $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
+                    $link = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl ('/groups/groups/view', array ('id' => $group->id))) : $group->name;
                 else
                     $link = '';
                 return $link;
@@ -323,32 +264,32 @@ class User extends CActiveRecord {
                 continue;
             }else if(is_numeric($user)){  // this is a group
                 if(isset($userCache[$user])){
-                    $group = $userCache[$user];
+                    $group=$userCache[$user];
                     //$links[] =  $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
-                    $links[] = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl('/groups/groups/view', array('id' => $group->id))) : $group->name;
+                    $links[] = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl ('/groups/groups/view', array ('id' => $group->id))) : $group->name;
                 }else{
                     $group = Groups::model()->findByPk($user);
                     // $group = Groups::model()->findByPk($users);
                     if(isset($group)){
                         //$groupLink = $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
-                        $groupLink = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl('/groups/groups/view', array('id' => $group->id))) : $group->name;
+                    	$groupLink = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl ('/groups/groups/view', array ('id' => $group->id))) : $group->name;
                         $userCache[$user] = $group;
                         $links[] = $groupLink;
                     }
                 }
             }else{
                 if(isset($userCache[$user])){
-                    $model = $userCache[$user];
+                    $model=$userCache[$user];
                     $linkText = $useFullName ? $model->name : $user;
                     //$userLink = $makeLinks ? CHtml::link($linkText, array('/profile/view', 'id' => $model->id)) : $linkText;
-                    $userLink = $makeLinks ? CHtml::link($linkText, Yii::app()->controller->createAbsoluteUrl('/profile/view', array('id' => $model->id))) : $linkText;
+                   	$userLink = $makeLinks ? CHtml::link($linkText, Yii::app()->controller->createAbsoluteUrl ('/profile/view', array ('id' => $model->id))) : $linkText;
                     $links[] = $userLink;
                 }else{
                     $model = X2Model::model('User')->findByAttributes(array('username' => $user));
                     if(isset($model)){
                         $linkText = $useFullName ? $model->name : $user;
                         //$userLink = $makeLinks ? CHtml::link($linkText, array('/profile/view', 'id' => $model->id)) : $linkText;
-                        $userLink = $makeLinks ? CHtml::link($linkText, Yii::app()->controller->createAbsoluteUrl('/profile/view', array('id' => $model->id))) : $linkText;
+                   		$userLink = $makeLinks ? CHtml::link($linkText, Yii::app()->controller->createAbsoluteUrl ('/profile/view', array ('id' => $model->id))) : $linkText;
                         $userCache[$user] = $model;
                         $links[] = $userLink;
                     }
@@ -429,9 +370,6 @@ class User extends CActiveRecord {
 
         return new SmartDataProvider(get_class($this), array(
                     'criteria' => $criteria,
-                    'pagination'=>array(
-                        'pageSize'=>ProfileChild::getResultsPerPage(),
-                    ),
                 ));
     }
 

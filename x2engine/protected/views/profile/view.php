@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,7 +38,7 @@ $canEdit = $model->id==Yii::app()->user->getId() || Yii::app()->params->isAdmin;
 
 $this->actionMenu = array(
 	array('label'=>Yii::t('profile','View Profile')),
-	array('label'=>Yii::t('profile','Edit Profile'), 'url'=>array('update','id'=>$model->id),'visible'=>$canEdit),
+	array('label'=>Yii::t('profile','Update Profile'), 'url'=>array('update','id'=>$model->id),'visible'=>$canEdit),
 	array('label'=>Yii::t('profile','Change Settings'),'url'=>array('settings','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId())),
 	array('label'=>Yii::t('profile','Change Password'),'url'=>array('changePassword','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId())),
 	array('label'=>Yii::t('profile','Reset Widgets'),'url'=>array('resetWidgets','id'=>$model->id),'visible'=>($model->id==Yii::app()->user->getId())),
@@ -55,7 +55,7 @@ $("#feed-form textarea").bind("focus blur",function(){ toggleText(this); })
 	});
 ',CClientScript::POS_READY);
 ?>
-<div class="page-title icon profile">
+<div class="page-title">
 	<h2><span class="no-bold"><?php echo Yii::t('profile','Profile:'); ?> </span><?php echo $model->fullName; ?></h2>
 </div>
 <?php $this->renderPartial('_detailView',array('model'=>$model)); ?>

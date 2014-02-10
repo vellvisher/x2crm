@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -52,7 +52,7 @@ $this->actionMenu = $this->formatMenu(array(
 <?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users, 'modelName'=>'services')); ?>
 
 <?php
-$createContactUrl = $this->createUrl('/contacts/contacts/create');
+$createContactUrl = $this->createUrl('/contacts/create');
 $contactTooltip = json_encode(Yii::t('contacts', 'Create a new Contact'));
 
 Yii::app()->clientScript->registerScript('create-model', "

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,30 +36,15 @@
 
 $this->actionMenu = array(
 	array('label'=>Yii::t('studio','Manage Flows')),
-	array(
-        'label'=>Yii::t('studio','Create Flow'),
-        'url'=>array('flowDesigner'),
-        'visible'=>(Yii::app()->params->edition==='pro')),
-    array (
-        'label' => Yii::t('studio', 'All Trigger Logs'),
-        'url' => array ('triggerLogs'),
-        'visible' => (Yii::app()->params->edition === 'pro')
-    )
+	array('label'=>Yii::t('studio','Create Flow'), 'url'=>array('flowDesigner'),'visible'=>(Yii::app()->params->edition==='pro')),
 );
-
-?>
-<div class="flush-grid-view">
-<?php
 
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'changelog-grid',
-	'baseScriptUrl'=>
-        Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-        'template'=>
-            '<div class="page-title icon x2flow">'.
-            '<h2>'.Yii::t('studio','X2Flow Automation Rules').'</h2>'
+	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+        'template'=>'<div class="page-title icon x2flow"><h2>'.Yii::t('studio','X2Flow Automation Rules').'</h2>'
 		// .CHtml::link(Yii::t('app','Clear Filters'),array('viewChangelog','clearFilters'=>1))
-		    .'{summary}</div>{items}{pager}',
+		.'{summary}</div>{items}{pager}',
 	'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
     'dataProvider'=>CActiveRecord::model('X2Flow')->search(),
     // 'filter'=>$model,
@@ -67,8 +52,8 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	'columns'=>array(
 		array(
 			'name'=>'name',
-			'headerHtmlOptions'=>array('style'=>'width:40%'),
-			'value'=>'CHtml::link($data->name,array("/studio/flowDesigner","id"=>$data->id))',
+			'headerHtmlOptions'=>array('style'=>'width:20%'),
+			'value'=>'CHtml::link($data->name,array("/studio/flowDesigner/".$data->id))',
 			'type'=>'raw',
 		),
 		array(
@@ -79,8 +64,8 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		),
 		array(
 			'name'=>'triggerType',
-			'headerHtmlOptions'=>array('style'=>'width:15%'),
-			'value'=>'X2FlowTrigger::getTriggerTitle ($data->triggerType)',
+			'headerHtmlOptions'=>array('style'=>'width:20%'),
+			'value'=>'$data->triggerType',
 			'type'=>'raw',
 		),
 		array(
@@ -91,7 +76,6 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		array(
 			'name'=>'createDate',
 			'header'=>Yii::t('admin','Create Date'),
-            'headerHtmlOptions'=>array('style'=>'width:12%'),
 			'value'=>'Formatter::formatDateTime($data->createDate)',
 			'type'=>'raw',
 			// 'htmlOptions'=>array('width'=>'20%'),
@@ -99,16 +83,13 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		array(
 			'name'=>'lastUpdated',
 			'header'=>Yii::t('admin','Last Updated'),
-            'headerHtmlOptions'=>array('style'=>'width:12%'),
 			'value'=>'Formatter::formatDateTime($data->lastUpdated)',
 			'type'=>'raw',
 			// 'htmlOptions'=>array('width'=>'20%'),
 		),
 	),
 ));
-?>
-</div>
-<br>
+?><br>
 <?php
 if(Yii::app()->params->edition==='pro')
 	echo CHtml::link(Yii::t('studio','Create New Flow'),array('/studio/flowDesigner'),array('class'=>'x2-button'));

@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -153,7 +153,7 @@ class Credentials extends CActiveRecord {
 
 	public function behaviors(){
 		return array(
-			'JSONEmbeddedModelFieldsBehavior' => array(
+			array(
 				'class' => 'application.components.JSONEmbeddedModelFieldsBehavior',
 				'transformAttributes' => array('auth'),
 				'templateAttr' => 'modelClass',
@@ -204,10 +204,10 @@ class Credentials extends CActiveRecord {
 			}
 		}
 		// Fallback: return the first model found associated with user ID that meets the criteria for use ($serviceType)
-		$criteria = new CDbCriteria(array('condition' => '`userId`=:uid', 'params' => array(':uid' => $userId)));
+		$criteria = new CDbCriteria(array('condition' => 'WHERE `userId`=:uid', 'params' => array(':uid' => $userId)));
 		if(array_key_exists($serviceType, $this->defaultSubstitutes)){
 			if(count($this->defaultSubstitutes[$serviceType])){
-				$criteria->addInCondition('modelClass', $this->defaultSubstitutes[$serviceType]);
+				$criteria->addInCondition('model', $this->defaultSubstitutes[$serviceType]);
 			}
 		}
 		return self::model()->find($criteria);
@@ -373,53 +373,37 @@ class Credentials extends CActiveRecord {
 	}
 
 	/**
+	 * Generates a select input for a form that includes a list of credentials
+	 * available for the current user.
 	 * @param CModel $model Model whose attribute is being used to specify a set of credentials
 	 * @param string $name Attribute storing the ID of the credentials record
-	 * @param string $type Keyword specifying the "service type" (i.e. "email" encompasess 
-     *  credentials 
-     *  with modelClass "EmailAccount" and "GMailAccount"
+	 * @param string $type Keyword specifying the "service type" (i.e. "email" encompasess credentials with modelClass "EmailAccount" and "GMailAccount"
 	 * @param integer $uid The user ID or system role ID for which the input is being generated
 	 * @param array $htmlOptions HTML options to pass to {@link CHtml::activeDropDownList()}
-	 * @param boolean $getNameEmailsArr if true, returned array will include array indexed by 
-     *  credId which 
-     *  contains associated email and name
-	 * @return array containing values which can be used to instantiate an activeDropDownList.
-     *  This inludes an array of credential names as well an array of the options' selected 
-     *  attributes.
+	 * @return string
 	 */
-	public static function getCredentialOptions (
-        $model,$name,$type='email',$uid=null,$htmlOptions=array()){
-
+	public static function selectorField($model,$name,$type='email',$uid=null,$htmlOptions=array()) {
 		// First get credentials available to the user:
-		$defaultUserId = in_array($uid,self::$sysUseId) ? 
-            $uid : 
-            ($uid !==null ? $uid : Yii::app()->user->id); // The "user" (actual user or system role)
+		$defaultUserId = in_array($uid,self::$sysUseId) ? $uid : ($uid !==null ? $uid : Yii::app()->user->id); // The "user" (actual user or system role)
 		$uid = Yii::app()->user->id; // The actual user
-        // Users can always use their own credentials, it's assumed
-		$criteria = new CDbCriteria(array('params'=>array(':uid'=>$uid))); 
+		$criteria = new CDbCriteria(array('params'=>array(':uid'=>$uid))); // Users can always use their own credentials, it's assumed
 		$staticModel = self::model();
 		$staticModel->userId = self::SYS_ID;
 		$criteria->addCondition('userId=:uid');
 		// Include system-owned credentials
-		if(Yii::app()->user->checkAccess(
-            'CredentialsSelectSystemwide',array('model'=>$staticModel))) {
-
+		if(Yii::app()->user->checkAccess('CredentialsSelectSystemwide',array('model'=>$staticModel))) 
 			$criteria->addCondition('userId='.self::SYS_ID,'OR');
-		} else { // Select the user's own default
+		else // Select the user's own default
 			$defaultUserId = $uid;
-        }
 		$staticModel->private = 0;
 		// Include non-private credentials if the user has access to them
-		if(Yii::app()->user->checkAccess(
-            'CredentialsSelectNonPrivate',array('model'=>$staticModel))) {
+		if(Yii::app()->user->checkAccess('CredentialsSelectNonPrivate',array('model'=>$staticModel)))
 			$criteria->addCondition('private=0','OR');
-        }
-		/* Cover only credentials for the given type of third-party service for which the selector 
-        field is being used: */
+		// Cover only credentials for the given type of third-party service for which the selector field is being used:
 		$criteria->addInCondition('modelClass',$staticModel->defaultSubstitutes[$type]);
 		$credRecords = $staticModel->findAll($criteria);
 		$credentials = array();
-		if($model === null || $model->$name == null){
+		if($model->$name == null){
 			// Figure out which one is default since it hasn't been set yet
 			$defaultCreds = $staticModel->getDefaultCredentials();
 			if($type == 'email')
@@ -434,16 +418,12 @@ class Credentials extends CActiveRecord {
 		// Compose options for the selector
 		foreach($credRecords as $cred) {
 			$credentials[$cred->id] = $cred->name;
-			if($type == 'email') {
-				$credentials[$cred->id] = Formatter::truncateText($credentials[$cred->id].
-                    ' : "'.$cred->auth->senderName.'" <'.$cred->auth->email.'>',50);
-            }
+			if($type == 'email')
+				$credentials[$cred->id] = Formatter::truncateText($credentials[$cred->id].' : "'.$cred->auth->senderName.'" <'.$cred->auth->email.'>',50);
 		}
-		if($type == 'email') {// Legacy email delivery method(s)
+		if($type == 'email') // Legacy email delivery method(s)
 			$credentials[self::LEGACY_ID] = Yii::t('app','System default (legacy)');
-        }
 		$options = array();
-        $selectedOption = $selectedCredentials;
 		foreach($credentials as $credId => $label) {
 			if($credId == $selectedCredentials) {
 				$options[$credId] = array('selected'=>'selected');
@@ -456,30 +436,6 @@ class Credentials extends CActiveRecord {
 		
 		$htmlOptions['options']=$options;
 
-        $retDict = array (
-            'credentials' => $credentials,
-            'htmlOptions' => $htmlOptions,
-            'selectedOption' => $selectedOption
-        );
-        return $retDict;
-
-    }
-
-	/**
-	 * Generates a select input for a form that includes a list of credentials
-	 * available for the current user.
-	 * @param CModel $model Model whose attribute is being used to specify a set of credentials
-	 * @param string $name Attribute storing the ID of the credentials record
-	 * @param string $type Keyword specifying the "service type" (i.e. "email" encompasess 
-     *  credentials with modelClass "EmailAccount" and "GMailAccount"
-	 * @param integer $uid The user ID or system role ID for which the input is being generated
-	 * @param array $htmlOptions HTML options to pass to {@link CHtml::activeDropDownList()}
-	 * @return string
-	 */
-	public static function selectorField($model,$name,$type='email',$uid=null,$htmlOptions=array()) {
-        $retDict = self::getCredentialOptions ($model,$name,$type,$uid,$htmlOptions);
-        $credentials = $retDict['credentials'];
-        $htmlOptions = $retDict['htmlOptions'];
 		return CHtml::activeDropDownList($model,$name,$credentials,$htmlOptions);
 	}
 
@@ -502,8 +458,7 @@ class Credentials extends CActiveRecord {
 
 	/**
 	 * Set the default account for a given user to use for a given service.
-	 * @param type $userId ID of the user whose default is getting set. Null for generic/system 
-     *  account.
+	 * @param type $userId ID of the user whose default is getting set. Null for generic/system account.
 	 * @param type $serviceType Service type, i.e. 'email'
 	 */
 	public function makeDefault($userId,$serviceType,$hooks = true){
@@ -529,8 +484,7 @@ class Credentials extends CActiveRecord {
 	public function rules() {
 		return array(
 			array('name,private,auth','safe'),
-			array('userId','safe','on'=>'create'),
-			array('name','required')
+			array('userId','safe','on'=>'create')
 		);
 	}
 

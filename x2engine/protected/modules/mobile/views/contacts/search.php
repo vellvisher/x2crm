@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 $menuItems = array(
-            array('label' => Yii::t('app', 'Main Menu'), 'url' => array('/mobile/site/home')),
+            array('label' => Yii::t('app', 'Main Menu'), 'url' => array('site/home/')),
         );
 
 $this->widget('MenuList', array(
@@ -70,7 +70,7 @@ $model->lastName = $attributeLabels['lastName'];
 <?php
 echo CHtml::ajaxSubmitButton(
 	Yii::t('app','Search'),
-	array('/mobile/contacts/viewAll'),
+	array('/contacts/viewAll'),
 	array('success'=>"function(response) {
 			if(response!='') {
 				alert('".Yii::t('app','Contact Saved')."');

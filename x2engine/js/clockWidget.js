@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -68,7 +68,7 @@ $(function() {
 			
 			var browsers = ["-moz-transform","-webkit-transform","-o-transform","-ms-transform"];
 			
-			for(var i in browsers) {
+			for(i in browsers) {
 				$("#tzClock .sec").css(browsers[i],sCssAngle);
 				$("#tzClock .min").css(browsers[i],mCssAngle);
 				$("#tzClock .hour").css(browsers[i],hCssAngle);

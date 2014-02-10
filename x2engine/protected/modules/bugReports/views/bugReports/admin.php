@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -74,7 +74,7 @@ function trimText($text) {
 <?php $this->widget('application.components.X2GridView', array(
 	'id'=>'bugReports-grid',
 	'title'=>Yii::t('app','Bug Reports'),
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
 	'template'=> '<div class="page-title">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 
 	'dataProvider'=>$model->search(),

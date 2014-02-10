@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -90,11 +90,6 @@ class SampleDataCommand extends CConsoleCommand {
 	 * @return type 
 	 */
 	public function actionExport($args) {
-
-        if (!copy ("./data/install_timestamp", "./data/dummy_data_date")) {
-            die ("Error: actionExport: failed to copy install_timestamp to dummy_data_date");
-        }
-
 // [edition] => [array of table names]
 		$tblEditions = require(realpath(Yii::app()->basePath . '/data/nonFreeTables.php'));
 		$nonFreeEditions = require(realpath(Yii::app()->basePath . '/data/editions.php'));
@@ -220,8 +215,7 @@ class SampleDataCommand extends CConsoleCommand {
 			'x2_list_criteria' => array('x2_lists'),
 			'x2_list_items' => array('x2_lists'),
 			'x2_role_to_workflow' => array('x2_workflow_stages', 'x2_roles', 'x2_workflows'),
-			'x2_workflow_stages' => array('x2_workflows'),
-            'x2_action_text' => array('x2_actions')
+			'x2_workflow_stages' => array('x2_workflows')
 		);
 		/**
 		 * This array stores tables to be executed "next"

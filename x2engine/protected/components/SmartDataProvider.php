@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -43,23 +43,14 @@
  * @package X2CRM.components
  */
 class SmartDataProvider extends CActiveDataProvider {
-	public function __construct($modelClass,$config=array(), $uniqueId=null) {
+	public function __construct($modelClass,$config=array()) {
 		parent::__construct($modelClass, $config);
-
-        //AuxLib::debugLogR ($_GET);
 
 		//Sort and page saving code modified from:
 		//http://www.stupidannoyingproblems.com/2012/04/yii-grid-view-remembering-filters-pagination-and-sort-settings/
 
-        if (isset ($uniqueId)) {
-            $statePrefix = $uniqueId . (isset ($_GET['id']) ? '/'.$_GET['id'] : '');
-        } else {
-		    //a string unique to each controller/action (and optionally id) combination
-		    $statePrefix = Yii::app()->controller->uniqueid .'/'. Yii::app()->controller->action->id . (isset($_GET['id']) ? '/'.$_GET['id'] : '');
-        }
-
-        //AuxLib::debugLog ($this->getId());
-        //AuxLib::debugLog ($statePrefix);
+		//a string unique to each controller/action (and optionally id) combination
+		$statePrefix = Yii::app()->controller->uniqueid .'/'. Yii::app()->controller->action->id . (isset($_GET['id']) ? '/'.$_GET['id'] : '');
 
 		// store also sorting order
 		$key = $this->getId()!='' ? $this->getId().'_sort' : 'sort';

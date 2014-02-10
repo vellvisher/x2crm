@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -66,31 +66,21 @@ $('.search-form form').submit(function(){
 	'model'=>$model,
 )); ?>
 </div><!-- search-form -->
-<?php
+<?php 
 $this->widget('application.components.X2GridView', array(
 	'id'=>'opportunities-grid',
 	'title'=>Yii::t('opportunities','Opportunities'),
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
-	'template'=>
-        '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
-        '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
-        '<div id="x2-gridview-page-title" '.
-         'class="page-title icon opportunities x2-gridview-fixed-title">'.
-        '{title}{buttons}{filterHint}'.
-        
-        '{summary}{topPager}{items}{pager}',
-    'fixedHeader'=>true,
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'template'=> '<div class="page-title icon opportunities">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	'filter'=>$model,
-	'pager'=>array('class'=>'CLinkPager','maxButtonCount'=>10),
 	// 'columns'=>$columns,
 	'modelName'=>'Opportunity',
 	'viewName'=>'opportunities',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-        'gvCheckbox' => 30,
 		'name' => 164,
 		'quoteAmount' => 95,
 		'probability' => 77,
@@ -104,12 +94,6 @@ $this->widget('application.components.X2GridView', array(
 			'name'=>'name',
 			'header'=>Yii::t('opportunities','Name'),
 			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
-			'type'=>'raw',
-		),
-        'id'=>array(
-			'name'=>'id',
-			'header'=>Yii::t('opportunities','ID'),
-			'value'=>'CHtml::link($data->id,array("view","id"=>$data->id))',
 			'type'=>'raw',
 		),
 	),

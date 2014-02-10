@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -50,7 +50,7 @@ if(!empty($status)) {
 }
 ?>
 <div class="wide form">
-	<?php echo CHtml::beginForm(array('/site/inlineEmail'),'post'); ?>
+	<?php echo CHtml::beginForm(array('site/inlineEmail'),'post'); ?>
 	<?php echo CHtml::hiddenField('redirect',$redirect); ?>
 	<?php //echo CHtml::hiddenField('redirectId',$redirectId); ?>
 	<div class="row">
@@ -82,7 +82,7 @@ if(!empty($status)) {
 
 	echo CHtml::ajaxSubmitButton(
 		Yii::t('app','Send'),
-		array('/site/inlineEmail','ajax'=>1),
+		array('site/inlineEmail','ajax'=>1),
 		array(
 			'update'=>'#email-form'
 		

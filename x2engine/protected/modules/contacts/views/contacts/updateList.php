@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -40,7 +40,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
 	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
 	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
-    array('label'=>Yii::t('contacts','View List'),'url'=>array('list','id'=>$model->id)),
+	array('label'=>Yii::t('contacts','View List'),'url'=>array('list/'.$model->id)),
 	array('label'=>Yii::t('contacts','Edit List')),
 	array('label'=>Yii::t('contacts','Delete List'),'url'=>'#', 'linkOptions'=>array('submit'=>array('deleteList','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 ),$authParams);

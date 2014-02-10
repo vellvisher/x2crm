@@ -1,7 +1,8 @@
 <?php
+
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -42,8 +43,8 @@ Yii::import('application.models.X2Model');
  */
 class Actions extends X2Model {
 
-    public $verifyCode; // CAPTCHA for guests using the publisher
-    public $actionDescriptionTemp = ""; // Easy way to get around action text records
+    public $verifyCode;
+    public $actionDescriptionTemp = "";
 
     /**
      * Returns the static model of the specified AR class.
@@ -83,7 +84,6 @@ class Actions extends X2Model {
     public function rules(){
         return array(
             array('allDay', 'boolean'),
-            array('associationId,associationType','requiredAssoc'),
             array('createDate, completeDate, lastUpdated', 'numerical', 'integerOnly' => true),
             array('id,assignedTo,actionDescription,visibility,associationId,associationType,associationName,dueDate,
 				priority,type,createDate,complete,reminder,completedBy,completeDate,lastUpdated,updatedBy,color', 'safe'),
@@ -133,45 +133,18 @@ class Actions extends X2Model {
             $this->dueDate = Formatter::parseDateTime($this->dueDate);
             $this->completeDate = Formatter::parseDateTime($this->completeDate);
         }
-        if(empty($this->timeSpent) && !empty($this->completeDate) && !empty($this->dueDate) && in_array($this->type ,array('time','call'))) {
-            $this->timeSpent = $this->completeDate - $this->dueDate;
-        }
-        return parent::beforeSave();
-    }
-
-    public function beforeDelete() {
-        
-        return parent::beforeDelete();
-    }
-
-    public function afterSave(){
-        // No action text exists for this yet
-        if(!($this->actionText instanceof ActionText)){
-            $actionText = new ActionText; // Create new oen
+        if(!isset($this->actionText)){
+            $actionText = new ActionText;
             $actionText->actionId = $this->id;
-            $actionText->text = $this->actionDescriptionTemp; // A magic setter sets actionDescriptionTemp value
+            $actionText->text = $this->actionDescriptionTemp;
             $actionText->save();
-        }else{ // We have an action text
-            if($this->actionText->text != $this->actionDescriptionTemp){ // Only update if different
+        }else{
+            if(!empty($this->actionDescriptionTemp) && $this->actionText->text != $this->actionDescriptionTemp){
                 $this->actionText->text = $this->actionDescriptionTemp;
                 $this->actionText->save();
             }
         }
-        return parent::afterSave();
-    }
-
-    public function requiredAssoc($attribute, $params = array()){
-        if(!empty($this->type) && $this->type != 'event'){
-            if(empty($this->$attribute) || strtolower($this->$attribute) == 'none')
-                $this->addError($attribute, Yii::t('actions', 'Association is required for actions of this type.'));
-        }
-        return !$this->hasErrors();
-    }
-
-    public function afterFind(){
-        if($this->actionText instanceof ActionText){
-            $this->actionDescriptionTemp = $this->actionText->text;
-        }
+        return parent::beforeSave();
     }
 
     /**
@@ -209,9 +182,6 @@ class Actions extends X2Model {
             $notif->modelId = $this->id;
             $notif->save();
         }
-        if(Yii::app()->params->noSession && !$this->asa('changelog')){
-            X2Flow::trigger('RecordCreateTrigger', array('model' => $this));
-        }
         parent::afterCreate();
     }
 
@@ -226,13 +196,20 @@ class Actions extends X2Model {
     }
 
     public function setActionDescription($value){
-        // Magic setter stores value in actionDescriptionTemp until saved
-        $this->actionDescriptionTemp = $value;
+        if(isset($this->actionText)){
+            $this->actionDescriptionTemp = $value;
+            $this->actionText->text = $value;
+            $this->actionText->save();
+        }else{
+            $this->actionDescriptionTemp = $value;
+        }
     }
 
     public function getActionDescription(){
-        // Magic getter only ever refers to actionDescriptionTemp
-        return $this->actionDescriptionTemp;
+        if(isset($this->actionText))
+            return $this->actionText->text;
+        else
+            return $this->actionDescriptionTemp;
     }
 
     /**
@@ -285,7 +262,7 @@ class Actions extends X2Model {
             $event->associationId = $this->id;
 
             // notify the admin
-            if($event->save() && !Yii::app()->user->checkAccess('ActionsAdminAccess')){
+            if($event->save() && Yii::app()->user->getName() !== 'admin'){
                 $notif = new Notification;
                 $notif->type = 'action_complete';
                 $notif->modelType = 'Actions';
@@ -332,14 +309,15 @@ class Actions extends X2Model {
             }else{
                 return Formatter::truncateText($this->actionDescription, 40);
             }
+
         }
     }
 
-    public function getLink($length = 30, $frame = true){
+    public function getLink($length = 30, $frame=true){
 
         $text = $this->name;
         if($length && mb_strlen($text, 'UTF-8') > $length)
-            $text = CHtml::encode(trim(mb_substr($text, 0, $length, 'UTF-8')).'...');
+            $text = CHtml::encode(mb_substr($text, 0, $length, 'UTF-8').'...');
         if($frame){
             return CHtml::link($text, '#', array('class' => 'action-frame-link', 'data-action-id' => $this->id));
         }else{
@@ -354,52 +332,20 @@ class Actions extends X2Model {
         return false;
     }
 
-    public function getRelevantTimestamp() {
-        switch($this->type) {
-            case 'attachment':
-                $timestamp = $this->completeDate;
-                break;
-            case 'email': 
-            case 'emailFrom': 
-            case 'email_quote': 
-            case 'email_invoice': 
-                $timestamp = $this->completeDate; 
-                break;
-            case 'emailOpened': 
-            case 'emailOpened_quote': 
-            case 'email_opened_invoice': 
-                $timestamp = $this->completeDate; 
-                break;
-            case 'event': 
-                $timestamp = $this->completeDate; 
-                break;
-            case 'note': 
-                $timestamp = $this->completeDate; 
-                break;
-            case 'quotes': 
-                $timestamp = $this->createDate; 
-                break;
-            case 'time': 
-                $timestamp = $this->createDate; 
-                break;
-            case 'webactivity': 
-                $timestamp = $this->completeDate; 
-                break;
-            case 'workflow': 
-                $timestamp = $this->completeDate; 
-                break;
-            default:
-                $timestamp = $this->createDate;
-        }
-        return $timestamp;
-    }
-
     public static function parseStatus($dueDate){
 
         if(empty($dueDate)) // there is no due date
             return false;
         if(!is_numeric($dueDate))
             $dueDate = strtotime($dueDate); // make sure $date is a proper timestamp
+
+
+
+
+
+//$due = getDate($dueDate);
+        //$dueDate = mktime(23,59,59,$due['mon'],$due['mday'],$due['year']); // if there is no time, give them until 11:59 PM to finish the action
+        //$dueDate += 86399;
 
         $timeLeft = $dueDate - time(); // calculate how long till due date
         if($timeLeft < 0)
@@ -609,7 +555,7 @@ class Actions extends X2Model {
         return $this->searchBase($criteria);
     }
 
-    public function searchBase($criteria, $pageSize=null, $uniqueId=null){
+    public function searchBase($criteria){
 
         $this->compareAttributes($criteria);
         $criteria->with = 'actionText';
@@ -630,33 +576,6 @@ class Actions extends X2Model {
                 ));
         //printR($criteria,true);
         return $dataProvider;
-    }
-
-    public function compareAttributes(&$criteria){
-        foreach(self::$_fields[$this->tableName()] as &$field){
-            if($field->fieldName != 'actionDescription'){
-                $fieldName = $field->fieldName;
-                switch($field->type){
-                    case 'boolean':
-                        $criteria->compare('t.'.$fieldName, $this->compareBoolean($this->$fieldName), true);
-                        break;
-                    case 'link':
-                        $criteria->compare('t.'.$fieldName, $this->compareLookup($field->linkType, $this->$fieldName), true);
-                        $criteria->compare('t.'.$fieldName, $this->$fieldName, true, 'OR');
-                        break;
-                    case 'assignment':
-                        $criteria->compare('t.'.$fieldName, $this->compareAssignment($this->$fieldName), true);
-                        break;
-                    case 'dropdown':
-                        $criteria->compare('t.'.$fieldName, $this->compareDropdown($field->linkType, $this->$fieldName), true);
-                        break;
-                    case 'phone':
-                    // $criteria->join .= ' RIGHT JOIN x2_phone_numbers ON (x2_phone_numbers.itemId=t.id AND x2_tags.type="Contacts" AND ('.$tagConditions.'))';
-                    default:
-                        $criteria->compare('t.'.$fieldName, $this->$fieldName, true);
-                }
-            }
-        }
     }
 
     public function syncGoogleCalendar($operation){

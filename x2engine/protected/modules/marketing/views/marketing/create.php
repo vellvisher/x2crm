@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,23 +38,11 @@ $this->pageTitle = Yii::t('marketing','Create Campaign');
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('marketing','All Campaigns'), 'url'=>array('index')),
 	array('label'=>Yii::t('marketing','Create Campaign')),
-	array('label'=>Yii::t('contacts','Contact Lists'), 'url'=>array('/contacts/contacts/lists')),
-	array(
-        'label'=>Yii::t('marketing','Newsletters'), 
-        'url'=>array('/marketing/weblist/index'),
-        'visible'=>(Yii::app()->params->edition==='pro')
-    ),
+	array('label'=>Yii::t('contacts','Contact Lists'), 'url'=>array('/contacts/lists')),
+	array('label'=>Yii::t('marketing','Newsletters'), 'url'=>array('weblist/index')),
 	array('label'=>Yii::t('marketing','Web Lead Form'), 'url'=>array('webleadForm')),
-	array(
-        'label'=>Yii::t('marketing','Web Tracker'), 
-        'url'=>array('webTracker'),
-        'visible'=>(Yii::app()->params->edition==='pro')
-    ),
-	array(
-        'label'=>Yii::t('app','X2Flow'),
-        'url'=>array('/studio/flowIndex'),
-        'visible'=>(Yii::app()->params->edition==='pro')
-    ),
+	array('label'=>Yii::t('marketing','Web Tracker'), 'url'=>array('webTracker')),
+	array('label'=>Yii::t('app','X2Flow'),'url'=>array('/studio/flowIndex'),'visible'=>(Yii::app()->params->edition==='pro')),
 ));
 
 $form = $this->beginWidget('CActiveForm', array(

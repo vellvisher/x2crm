@@ -3,10 +3,10 @@
 return array(
     'name'=>"Actions",
     'install'=>array(
-		implode(DIRECTORY_SEPARATOR,array(__DIR__,'data','install.sql')),
+		dirname(__FILE__).'/data/install.sql',
     ),
     'uninstall'=>array(
-        implode(DIRECTORY_SEPARATOR,array(__DIR__,'data','uninstall.sql'))
+        dirname(__FILE__).'/data/uninstall.sql'
     ),
     'editable'=>false,
     'searchable'=>true,

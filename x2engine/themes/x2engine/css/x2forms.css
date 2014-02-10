@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -277,9 +277,7 @@ div.x2-layout .formInputBox {
 	/* margin-bottom:3px; */
 	font-weight:bold;
 }
-div.x2-layout .formInputBox.textBox {
-    font-weight:normal;
-}
+div.x2-layout .formInputBox.textBox {font-weight:normal;}
 div.x2-layout .formInputBox .checkboxWrapper {
 	display:inline-block;
 	vertical-align:middle;
@@ -317,9 +315,7 @@ div.x2-layout .formItem .placeholder {color:#aaa;}
 
 div.x2-layout .formInputBox input {margin:0;padding:2px;}
 div.x2-layout .formInputBox input[type="text"] {width:100%;}
-div.x2-layout .formInputBox textarea {
-    padding:2px;
-}
+div.x2-layout .formInputBox textarea {height:100%;resize:none;padding:2px;}
 div.x2-layout .formInputBox select {width:100%;}
 div.x2-layout .formInputBox input.input-percentage { background: #FFFFFF url(../images/formEditor/percentage.gif) no-repeat 95%;}
 
@@ -451,7 +447,7 @@ div.x2-layout.editMode .formInputBox {
 }
 
 
-#formEditorControls, #fieldListTitle, .fieldListTitle {
+#formEditorControls, #fieldListTitle {
 	font-size:12px;
 	display:block;
 	padding:5px 5px;
@@ -559,21 +555,4 @@ span.create-account, span#create-contact {
 	max-height: 200px;
 	overflow-y: auto;
 	overflow-x: hidden;
-}
-
-/* Headers for sections within admin pages when the header is not a form input label: */
-span.mock-x2-form-label {
-    display: block;font-size: 11px;font-weight: bold;
-}
-
-
-/* Cron-related form items: */
-div.cron-job label.cron-checkitem {
-    display: inline-block;
-}
-div.cron-job label.cron-checkitem.big {
-    font-size: 1.3em;
-}
-div.cron-job input.cron-enabled {
-    display: inline-block;
 }

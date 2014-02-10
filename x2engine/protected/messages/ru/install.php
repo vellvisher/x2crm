@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -166,9 +166,4 @@ return array (
 'To trigger scheduled or delayed tasks automatically in X2CRM requires adding a task to the local cron table.'=>'Для запуска запланированных или задержки задачи автоматически в X2CRM требует добавлении задачи в локальную таблицу хрон.',
 'Create a cron task for X2CRM'=>'Создание задач Cron для X2CRM',
 'Run delayed or recurring tasks within X2CRM'=>'Выполнить задержкой или повторяющихся задач в рамках X2CRM',
-'The base directory configuration directive is set, and it does not include the current working directory.'=>'Базовая конфигурация каталога директива установлена, и она не включает в текущем рабочем каталоге.',
-'Some hashing algorithms required for software updates are missing on this server:'=>'Некоторые алгоритмы хэширования необходимых для обновления программного обеспечения не хватает на этом сервере:',
-'The PHP configuration option "allow_url_fopen" is disabled in addition to the CURL extension missing. This means there is no possible way to make HTTP requests, and thus software updates will have to be performed manually.'=>'Параметр конфигурации PHP &quot;allow_url_fopen&quot; отключена в дополнение к расширению CURL отсутствует. Это означает, что нет никакой возможности, чтобы сделать HTTP запросов и, таким образом, обновления программного обеспечения должны быть выполнены вручную.',
-'This web server is effectively cut off from the internet; (1) no outbound network route exists, or (2) local DNS resolution is failing, or (3) this server is behind a firewall that is preventing outbound requests. Software updates will have to be performed manually, and Google integration will not work.'=>'Этот веб-сервер фактически отрезаны от интернета; (1) не исходящий сетевой маршрут не существует, или (2) локальное разрешение DNS терпит неудачу, или (3) этот сервер находится за брандмауэром, которая не позволяет исходящие запросы. Обновления программного обеспечения должны быть выполнены вручную, и интеграция Google не будет работать.',
-'Could not reach the updates server from this web server. This may be a temporary problem. If it persists, software updates will have to be performed manaully.'=>'Не удалось получить доступ к серверу обновлений с этого веб-сервера. Это может быть временная проблема. Если она сохранится, обновления программного обеспечения должны быть выполнены manaully.',
 );

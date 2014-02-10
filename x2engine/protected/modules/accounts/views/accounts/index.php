@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -70,27 +70,18 @@ $('.search-form form').submit(function(){
 $this->widget('application.components.X2GridView', array(
 	'id'=>'accounts-grid',
 	'title'=>Yii::t('accounts','Accounts'),
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
-	'template'=>
-        '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
-        '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
-        '<div id="x2-gridview-page-title" '.
-         'class="page-title icon accounts x2-gridview-fixed-title">'.
-        '{title}{buttons}{filterHint}'.
-        
-        '{summary}{topPager}{items}{pager}',
-    'fixedHeader'=>true,
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'template'=> '<div class="page-title icon accounts">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
+
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	'filter'=>$model,
-	'pager'=>array('class'=>'CLinkPager','maxButtonCount'=>10),
 	// 'columns'=>$columns,
 	'modelName'=>'Accounts',
 	'viewName'=>'accounts',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-		'gvCheckbox' => 30,
 		'name' => 184,
 		'type' => 153,
 		'annualRevenue' => 108,

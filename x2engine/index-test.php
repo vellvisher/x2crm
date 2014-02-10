@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,11 +34,12 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$constants = dirname(__FILE__).DIRECTORY_SEPARATOR.'constants.php';
-$yii = implode(DIRECTORY_SEPARATOR,array(dirname(__FILE__),'framework','yii.php'));
-require_once($constants);
-require_once($yii);
+$yii=dirname(__FILE__).'/framework/yii.php';
+defined('YII_DEBUG') or define('YII_DEBUG',true);
+defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL',3);
+defined('PRO_VERSION') or define('PRO_VERSION',true);
 
+require_once($yii);
 Yii::$enableIncludePath = false;
 Yii::registerAutoloader(array('Yii','x2_autoload'));
 $config=dirname(__FILE__).'/protected/config/test.php';

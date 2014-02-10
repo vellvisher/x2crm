@@ -72,11 +72,8 @@ class CDbFixtureManager extends CApplicationComponent
 
 	private $_db;
 	private $_fixtures;
-    /* x2modstart */ 
-    // private changed to protected
-	protected $_rows;				// fixture name, row alias => row
-	protected $_records;			// fixture name, row alias => record (or class name)
-    /* x2modend */ 
+	private $_rows;				// fixture name, row alias => row
+	private $_records;			// fixture name, row alias => record (or class name)
 
 
 	/**

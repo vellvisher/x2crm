@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,6 +36,10 @@
 
 
 class ServiceRoutingBehavior extends CBehavior {
+
+	public function cleanUpSessions() {
+		X2Model::model('Session')->deleteAll('lastUpdated < :cutoff', array(':cutoff'=>time() - Yii::app()->params->admin->timeout));
+	}
 
 	/**
 	 * Picks the next asignee based on the routing type
@@ -77,7 +81,7 @@ class ServiceRoutingBehavior extends CBehavior {
 	public function evenDistro() {
 		$admin = &Yii::app()->params->admin;
 		$online = $admin->serviceOnlineOnly;
-		Session::cleanUpSessions();
+		$this->cleanUpSessions();
 		$usernames = array();
 		$sessions = Session::getOnlineUsers();
 		$users = X2Model::model('User')->findAll();
@@ -121,7 +125,7 @@ class ServiceRoutingBehavior extends CBehavior {
 	public function roundRobin() {
 		$admin = &Yii::app()->params->admin;
 		$online = $admin->serviceOnlineOnly;
-		Session::cleanUpSessions();
+		$this->cleanUpSessions();
 		$usernames = array();
 		$sessions = Session::getOnlineUsers();
 		$users = X2Model::model('User')->findAll();

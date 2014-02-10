@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -70,7 +70,7 @@ abstract class x2base extends X2Controller {
 	public $breadcrumbs = array();
 	public $portlets = array(); // This is the array of widgets on the sidebar.
 	public $leftPortlets = array(); // additional menu blocks on the left mneu
-	public $modelClass;
+	public $modelClass = 'Admin';
 	public $actionMenu = array();
 
 	/**
@@ -80,9 +80,6 @@ abstract class x2base extends X2Controller {
 		return array(
 			//'accessControl', // perform access control for CRUD operations
 			'setPortlets', // performs widget ordering and show/hide on each page
-            array(
-                'application.components.X2AjaxHandler',
-            ),
 		);
 	}
 
@@ -97,22 +94,12 @@ abstract class x2base extends X2Controller {
          return $this->PermissionsBehavior->beforeAction($action);
      }
 
-     public function appLockout() {
-         header("HTTP/1.1 503 Unavailable");
-         header("Content-type: text/plain; charset=utf-8");
-         echo Yii::t('app','X2CRM is undergoing maintenance; it has been locked by an administrator. Please try again later.');
-         Yii::app()->end();
-     }
-
 	public function denied() {
 		throw new CHttpException(403, Yii::t('app','You are not authorized to perform this action.'));
 	}
 
 	public function actions() {
 		return array(
-			'x2GridViewMassAction' => array(
-				'class' => 'X2GridViewMassActionAction',
-			),
 			'inlineEmail' => array(
 				'class' => 'InlineEmailAction',
 			),
@@ -290,7 +277,7 @@ abstract class x2base extends X2Controller {
      * @param mixed $b
      * @return mixed
      */
-    private static function compareChunks($a, $b) {
+    protected static function compareChunks($a, $b) {
         return $a[1] - $b[1];
     }
 
@@ -319,6 +306,8 @@ abstract class x2base extends X2Controller {
           ),
           $text
           ); */
+
+
 
         /* URL matching regex from the interwebs:
          * http://www.regexguru.com/2008/11/detecting-urls-in-a-block-of-text/
@@ -649,38 +638,13 @@ abstract class x2base extends X2Controller {
         $this->render('admin', array('model' => $model));
     }
 
-    public function createX2Grid($options=array()){
-        if(empty($options)){
-            $options=array(
-                'id'=>'',
-                'title'=>'',
-                'buttons'=>array(),
-                'template'=>'<div class="page-title">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
-                'dataProvder'=>null,
-                'filter'=>null,
-                'modelName'=>$this->modelClass,
-                'viewName'=>'',
-                'defaultGvSettings'=>array(
-                    'gvCheckbox' => 30,
-                    'name' => 125,
-                    'createDate' => 78,
-                    'gvControls' => 73,
-                ),
-                'specialColumns'=>array(),
-                'enableControls'=>true,
-                'fullscreen'=>true,
-            );
-        }
-        $this->widget('application.components.X2GridView', $options);
-    }
-
     /**
      * Search for a term.  Defined in X2Base so that all Controllers can use, but
      * it makes a call to the SearchController.
      */
     public function actionSearch() {
         $term = $_GET['term'];
-        $this->redirect(Yii::app()->controller->createAbsoluteUrl('/search/search',array('term'=>$term)));
+        $this->redirect(Yii::app()->request->scriptUrl . '/search/search?term=' . $term);
     }
 
 	/**
@@ -960,13 +924,21 @@ abstract class x2base extends X2Controller {
         return preg_replace('/"/u', '&quot;', $str);
     }
 
+    public static function cleanUpSessions() {
+        $sessions=X2Model::model('Session')->findAllByAttributes(array(),'lastUpdated < :cutoff', array(':cutoff' => time() - Yii::app()->params->admin->timeout));
+        foreach($sessions as $session){
+            SessionLog::logSession($session->user,$session->id,'passiveTimeout');
+            $session->delete();
+        }
+    }
+
     public function getPhpMailer($sendAs = -1) {
 		$mail = new InlineEmail;
 		$mail->credId = $sendAs;
         return $mail->mailer;
     }
 
-    public function throwException($message) {
+    function throwException($message) {
         throw new Exception($message);
     }
 
@@ -1110,7 +1082,94 @@ abstract class x2base extends X2Controller {
         }
     }
 
-    public function ucwords_specific ($string, $delimiters = '', $encoding = NULL)
+    function Array_Search_Preg($find, $in_array, $keys_found = Array()) {
+        if (is_array($in_array)) {
+            foreach ($in_array as $key => $val) {
+                if (is_array($val))
+                    $this->Array_Search_Preg($find, $val, $keys_found);
+                else {
+                    if (preg_match('/' . $find . '/', $val))
+                        $keys_found[] = $key;
+                }
+            }
+            return $keys_found;
+        }
+        return false;
+    }
+
+    public function getDateRange() {
+
+        $dateRange = array();
+        $dateRange['strict'] = false;
+        if (isset($_GET['strict']) && $_GET['strict'])
+            $dateRange['strict'] = true;
+
+        $dateRange['range'] = 'custom';
+        if (isset($_GET['range']))
+            $dateRange['range'] = $_GET['range'];
+
+        switch ($dateRange['range']) {
+
+            case 'thisWeek':
+                $dateRange['start'] = strtotime('mon this week'); // first of this month
+                $dateRange['end'] = time(); // now
+                break;
+            case 'thisMonth':
+                $dateRange['start'] = mktime(0, 0, 0, date('n'), 1); // first of this month
+                $dateRange['end'] = time(); // now
+                break;
+            case 'lastWeek':
+                $dateRange['start'] = strtotime('mon last week'); // first of last month
+                $dateRange['end'] = strtotime('mon this week') - 1;  // first of this month
+                break;
+            case 'lastMonth':
+                $dateRange['start'] = mktime(0, 0, 0, date('n') - 1, 1); // first of last month
+                $dateRange['end'] = mktime(0, 0, 0, date('n'), 1) - 1;  // first of this month
+                break;
+            case 'thisYear':
+                $dateRange['start'] = mktime(0, 0, 0, 1, 1);  // first of the year
+                $dateRange['end'] = time(); // now
+                break;
+            case 'lastYear':
+                $dateRange['start'] = mktime(0, 0, 0, 1, 1, date('Y') - 1);  // first of last year
+                $dateRange['end'] = mktime(0, 0, 0, 1, 1, date('Y')) - 1;   // first of this year
+                break;
+            case 'all':
+                $dateRange['start'] = 0;        // every record
+                $dateRange['end'] = time();
+                if (isset($_GET['end'])) {
+                    $dateRange['end'] = Formatter::parseDate($_GET['end']);
+                    if ($dateRange['end'] == false)
+                        $dateRange['end'] = time();
+                    else
+                        $dateRange['end'] = strtotime('23:59:59', $dateRange['end']);
+                }
+                break;
+
+            case 'custom':
+            default:
+                $dateRange['end'] = time();
+                if (isset($_GET['end'])) {
+                    $dateRange['end'] = Formatter::parseDate($_GET['end']);
+                    if ($dateRange['end'] == false)
+                        $dateRange['end'] = time();
+                    else
+                        $dateRange['end'] = strtotime('23:59:59', $dateRange['end']);
+                }
+
+                $dateRange['start'] = strtotime('1 month ago', $dateRange['end']);
+                if (isset($_GET['start'])) {
+                    $dateRange['start'] = Formatter::parseDate($_GET['start']);
+                    if ($dateRange['start'] == false)
+                        $dateRange['start'] = strtotime('-30 days 0:00', $dateRange['end']);
+                    else
+                        $dateRange['start'] = strtotime('0:00', $dateRange['start']);
+                }
+        }
+        return $dateRange;
+    }
+
+    function ucwords_specific ($string, $delimiters = '', $encoding = NULL)
     {
 
         if ($encoding === NULL) { $encoding = mb_internal_encoding();}
@@ -1152,67 +1211,5 @@ abstract class x2base extends X2Controller {
         $return_string = preg_replace($delimiters_cleanup_replace1, $delimiters_cleanup_pattern1, $return_string);
 
         return $return_string;
-    }
-
-    /**
-     * Calls renderInput for model and input type with given names and returns the result.
-     */
-    public function actionGetX2ModelInput ($modelName, $inputName) {
-        if (!isset ($modelName) || !isset ($inputName)) {
-            echo '';
-            return;
-        }
-        $model = X2Model::model ($modelName);
-        if (!$model) {
-            echo '';
-            return;
-        }
-        if ($inputName == 'associationName') {
-            echo CHtml::activeDropDownList($model, 'associationType', array_merge(array('none' => Yii::t('app', 'None'), 'calendar' => Yii::t('calendar', 'Calendar')), Admin::getModelList()), array(
-                'ajax' => array(
-                    'type' => 'POST', //request type
-                    'url' => CController::createUrl('/actions/actions/parseType'), //url to call.
-                    //Style: CController::createUrl('currentController/methodToCall')
-                    'update' => '#', //selector to update
-                    'data' => 'js:$(this).serialize()',
-                    'success' => 'function(data){
-                                        if(data){
-                                            $("#auto_select").autocomplete("option","source",data);
-                                            $("#auto_select").val("");
-                                            $("#auto_complete").show();
-                                        }else{
-                                            $("#auto_complete").hide();
-                                        }
-                                    }'
-                )
-            ));
-            echo "<div id='auto_complete' style='display: none'>";
-            $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
-                        'name' => 'auto_select',
-                        'value' => $model->associationName,
-                        'source' => ($model->associationType !== 'Calendar' ? $this->createUrl(X2Model::model($modelName)->autoCompleteSource) : ''),
-                        'options' => array(
-                            'minLength' => '2',
-                            'select' => 'js:function( event, ui ) {
-                            $("#'.CHtml::activeId($model, 'associationId').'").val(ui.item.id);
-                            $(this).val(ui.item.value);
-                            return false;
-                        }',
-                        ),
-            ));
-            echo "</div>";
-        } else {
-            $input = $model->renderInput ($inputName);
-            echo $input;
-        }
-
-        // force loading of scripts normally rendered in view
-	    echo '<br /><br /><script id="x2-model-render-input-scripts">'."\n";
-        foreach(Yii::app()->clientScript->scripts[CClientScript::POS_READY] as $id => $script) {
-            if(strpos($id,'logo')===false)
-                echo "$script\n";
-        }
-	    echo "</script>";
-
     }
 }

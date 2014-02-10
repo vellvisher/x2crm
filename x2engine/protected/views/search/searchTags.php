@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,20 +35,16 @@
  *****************************************************************************************/
 Yii::app()->clientScript->registerScript('set-tag-cookie',"
 $('#content').on('mouseup','#tag-search a',function(e) {
-	document.cookie = 'vcr-list=".urlencode ($term)."; expires=0; path=/';
+	document.cookie = 'vcr-list=".$term."; expires=0; path=/';
 });    
 ");
-?>
-<div class='flush-grid-view'>
-<?php
-
 $this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider' => $tags,
     'id'=>'tag-search',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'template'=>'<div class="page-title"><h2>'.Yii::t('app','Search Results').'</h2>'
 		.CHtml::link(Yii::t('marketing','Email These Contacts'),
-			array('/marketing/marketing/createFromTag','tag'=>$term),
+			CHtml::normalizeUrl(array('/marketing/createFromTag')).'?tag='.urlencode($term),
 			array('class'=>'x2-button left','style'=>'margin-bottom:2px;'))
 		.'<div class="title-bar">{summary}</div></div>{items}{pager}',
 	'summaryText'=>Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
@@ -65,5 +61,3 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		),
 	),
 ));
-?>
-</div>

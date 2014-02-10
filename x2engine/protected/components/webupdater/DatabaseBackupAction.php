@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -43,31 +43,14 @@ Yii::import('application.components.webupdater.*');
  * @package X2CRM.components.webupdater
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-class DatabaseBackupAction extends WebUpdaterAction {
+class DatabaseBackupAction extends CAction {
 
-    public function run($download = false){
-        set_error_handler('ResponseBehavior::respondWithError');
-        set_exception_handler('ResponseBehavior::respondWithException');
-        if(!$download){
-            if($this->controller->makeDatabaseBackup())
-                self::respond(Yii::t('admin', 'Backup saved to').' protected/data/'.UpdaterBehavior::BAKFILE);
-        } else {
-            $backup = realpath($this->dbBackupPath);
-            if((bool) $backup){
-                header("Cache-Control: public");
-                header("Content-Description: File Transfer");
-                header("Content-Disposition: attachment; filename=".UpdaterBehavior::BAKFILE);
-                header("Content-type: application/octet");
-                header("Content-Transfer-Encoding: binary");
-                readfile($backup);
-            }else{
-                if(!empty($_SERVER['HTTP_REFERER']))
-                    header("Location: {$_SERVER['HTTP_REFERER']}");
-                else
-                    $this->controller->redirect('index');
-            }
-        }
-    }
+	public function run(){
+		set_error_handler('ResponseBehavior::respondWithError');
+		set_exception_handler('ResponseBehavior::respondWithException');
+		if($this->controller->makeDatabaseBackup())
+			$this->controller->webRespond(Yii::t('admin', 'Backup saved to').' protected/data/'.UpdaterBehavior::BAKFILE);
+	}
 
 }
 

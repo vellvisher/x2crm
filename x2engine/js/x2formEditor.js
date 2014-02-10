@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -548,7 +548,7 @@ function loadFormJson(formJson) {
 	var form = $.parseJSON(formJson);
 	// console.log(form);
 
-	for(var i=0; i<form.sections.length; i++) {
+	for(i=0; i<form.sections.length; i++) {
 
 		var formSection = form.sections[i];
 

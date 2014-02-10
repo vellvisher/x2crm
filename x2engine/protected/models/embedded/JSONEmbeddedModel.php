@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -48,77 +48,72 @@
  */
 abstract class JSONEmbeddedModel extends CModel {
 
-    /**
-     * Stores derived value returned by {@link attributeNames()}
-     * @var type
-     */
-    protected $_attributeNames;
+	protected $_attributeLabels = array();
 
-    /**
-     * Name of the attribute in the containing model that contains this model
-     * @var type
-     */
-    public $exoAttr;
+	/**
+	 * Stores derived value returned by {@link attributeNames()}
+	 * @var type
+	 */
+	private $_attributeNames;
 
-    /**
-     * Form field name prefix
-     * @var type
-     */
-    public $exoFormName;
+	/**
+	 * Name of the attribute in the containing model that contains this model
+	 * @var type 
+	 */
+	public $exoAttr;
 
-    /**
-     * The name of the model to which this embedded model belongs
-     * @var type
-     */
-    public $exoModel;
+	/**
+	 * Form field name prefix
+	 * @var type
+	 */
+	public $exoFormName;
 
-    public function attributeNames() {
-        if(!isset($this->_attributeNames)) {
-            $this->_attributeNames = array_keys($this->attributeLabels());
-        }
-        return $this->_attributeNames;
-    }
+	/**
+	 * The name of the model to which this embedded model belongs
+	 * @var type
+	 */
+	public $exoModel;
 
-    /**
-     * Child classes implementing this should generate the detail view. The
-     * resulting markup should be echoed out, not returned.
-     */
-    public abstract function detailView();
+	/**
+	 * Child classes implementing this should generate the detail view. The
+	 * resulting markup should be echoed out, not returned.
+	 */
+	public abstract function detailView();
 
-    /**
-     * A UI-friendly name that the model should be called.
-     */
-    public abstract function modelLabel();
+	/**
+	 * A UI-friendly name that the model should be called.
+	 */
+	public abstract function modelLabel();
 
-    /**
-     * Child classes implementing this should generate all necessary input form
-     * elements for modifying fields of the embedded model. The resulting
-     * markup should be echoed out, not returned.
-     */
-    public abstract function renderInputs();
+	/**
+	 * Child classes implementing this should generate all necessary input form
+	 * elements for modifying fields of the embedded model. The resulting
+	 * markup should be echoed out, not returned. 
+	 */
+	public abstract function renderInputs();
 
-    /**
-     * Generate form input name for an attribute so that the urlencoded post data
-     * comes in a form that can be properly interpreted by setAttributes in the
-     * container model
-     * {@link JSONEmbeddedModelFieldsBehavior}
-     * @param string $attribute
-     */
-    public function resolveName($attribute) {
-        if(!isset($this->exoFormName))
-            $this->exoFormName = CHtml::resolveName($this->exoModel,$this->exoAttr);
-        return $this->exoFormName.strtr(CHtml::resolveName($this,$attribute),array(get_class($this)=>''));
-    }
+	/**
+	 * Generate form input name for an attribute so that the urlencoded post data
+	 * comes in a form that can be properly interpreted by setAttributes in the
+	 * container model
+	 * {@link JSONEmbeddedModelFieldsBehavior}
+	 * @param string $attribute
+	 */
+	public function resolveName($attribute) {
+		if(!isset($this->exoFormName))
+			$this->exoFormName = CHtml::resolveName($this->exoModel,$this->exoAttr);
+		return $this->exoFormName.strtr(CHtml::resolveName($this,$attribute),array(get_class($this)=>''));
+	}
 
-    /**
-     * Generate a list of options to send to methods within {@link CHtml} that
-     * take HTML element options/properties, so that it includes the proper name
-     * of the input.
-     * @param type $options
-     */
-    public function htmlOptions($name,$options=array()) {
-        return array_merge($options,array('name'=>$this->resolveName($name)));
-    }
+	/**
+	 * Generate a list of options to send to methods within {@link CHtml} that
+	 * take HTML element options/properties, so that it includes the proper name
+	 * of the input.
+	 * @param type $options
+	 */
+	public function htmlOptions($name,$options=array()) {
+		return array_merge($options,array('name'=>$this->resolveName($name)));
+	}
 
 }
 

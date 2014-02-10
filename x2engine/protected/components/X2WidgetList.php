@@ -1,7 +1,8 @@
 <?php
+
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -45,100 +46,14 @@ class X2WidgetList extends X2Widget {
     public $modelType;
     public $block; // left, right, or center
     public $layout; // associative array with 3 lists of widgets: left, right, and center
-    public $associationType;
-    public $associationId;
-
-    // widget specific javascript packages
-    public static function packages () {
-        $packages = array (
-            'widgetListCombinedCss' => array(
-                'baseUrl' => Yii::app()->request->baseUrl,
-                'css' => array (
-                    'js/widgetListCombined.css'
-                )
-            ),
-            'widgetListCombinedCss2' => array(
-                'baseUrl' => Yii::app()->getTheme ()->getBaseUrl (),
-                'css' => array (
-                    'css/widgetListCombined.css'
-                )
-            ),
-            'GalleryWidgetJS' => array(
-                'baseUrl' => Yii::app()->request->baseUrl,
-                'js' => array(
-                    'js/galleryManagerDialogSetup.js',
-                    'js/gallerymanager/bootstrap/js/bootstrap.js',
-                ),
-            ),
-            'ChartWidgetExtJS' => array(
-                'baseUrl' => Yii::app()->request->baseUrl,
-                'js' => array(
-                    'js/jqplot/jquery.jqplot.js',
-                    'js/jqplot/plugins/jqplot.pieRenderer.js',
-                    'js/jqplot/plugins/jqplot.categoryAxisRenderer.js',
-                    'js/jqplot/plugins/jqplot.pointLabels.js',
-                    'js/jqplot/plugins/jqplot.dateAxisRenderer.js',
-                    'js/jqplot/plugins/jqplot.highlighter.js',
-                    'js/jqplot/plugins/jqplot.enhancedLegendRenderer.js',
-                ),
-            ),
-            'ChartWidgetExtCss' => array(
-                'baseUrl' => Yii::app()->request->baseUrl,
-                'css' => array(
-                    'js/jqplot/jquery.jqplot.css',
-                    'js/checklistDropdown/jquery.multiselect.css'
-                ),
-            ),
-            'ChartWidgetJS' => array(
-                'baseUrl' => Yii::app()->request->baseUrl,
-                'js' => array(
-                    'js/auxlib.js',
-                    'js/X2Chart.js',
-                    'js/X2ActionHistoryChart.js',
-                ),
-            ),
-            'ProfileChartWidgetJS' => array(
-                'baseUrl' => Yii::app()->request->baseUrl,
-                'js' => array(
-                    'js/auxlib.js',
-                    'js/X2Chart.js',
-                    'js/X2UsersChart.js',
-                    'js/X2EventsChart.js',
-                ),
-            ),
-            'ChartWidgetCss' => array(
-                'baseUrl' => Yii::app()->getTheme ()->getBaseUrl (),
-                'css' => array(
-                    'css/x2chart.css'
-                )
-            ),
-            'InlineRelationshipsJS' => array(
-                'baseUrl' => Yii::app()->getTheme ()->getBaseUrl ().'/css/gridview/',
-                'js' => array (
-                    'jquery.yiigridview.js',
-                )
-            ),
-            'InlineTagsJS' => array(
-                'baseUrl' => Yii::app()->request->baseUrl,
-                'js' => array(
-                    'js/auxlib.js',
-                    'js/X2Tags/TagContainer.js',
-                    'js/X2Tags/TagCreationContainer.js',
-                    'js/X2Tags/InlineTagsContainer.js',
-                ),
-            ),
-        );
-        if (AuxLib::isIE8 ()) {
-            $packages['ChartWidgetExtJS']['js'][] = 'js/jqplot/excanvas.js';
-        }
-        return $packages;
-    }
+	public $associationType;
+	public $associationId;
 
 
     public function init(){
         // widget layout
         if(!Yii::app()->user->isGuest){
-            $this->layout = Yii::app()->params->profile->getLayout ();
+	        $this->layout = Yii::app()->params->profile->getLayout ();
         }else{
             $profile = new Profile();
             $this->layout = $profile->initLayout ();
@@ -152,34 +67,30 @@ class X2WidgetList extends X2Widget {
         if($this->block == 'center'){
             echo '<div id="content-widgets">';
             foreach($this->layout['center'] as $name => $widget){ // list of widgets
-                $viewParams = array(
-                    'widget' => $widget,
-                    'name' => $name,
-                    'model' => $this->model,
-                    'modelType' => $this->modelType,
-                    'packagesOnly' => false
-                );
+				$viewParams = array(
+					'widget' => $widget,
+					'name' => $name,
+					'model' => $this->model,
+					'modelType' => $this->modelType
+				);
 
-                if(!$this->isExcluded ($name)){
-                    $this->render(
-                        'centerWidget',
-                        $viewParams
-                    );
-                }
-            }
-            foreach($this->layout['hidden'] as $name => $widget){ // list of widgets
-                $viewParams = array(
-                    'widget' => $widget,
-                    'name' => $name,
-                    'model' => $this->model,
-                    'modelType' => $this->modelType,
-                    'packagesOnly' => true
-                );
-                if(!$this->isExcluded ($name)){
-                    $this->render(
-                        'centerWidget',
-                        $viewParams
-                    );
+				$exclude = $this->modelType == 'BugReports' && $name != 'InlineRelationships';
+				$exclude = $exclude ||
+					$this->modelType == 'Quote' && $name == 'WorkflowStageDetails';
+				$exclude = $exclude ||
+					$this->modelType == 'Marketing' &&
+					($name == 'WorkflowStageDetails' || $name === 'InlineRelationships');
+				$exclude = $exclude ||
+					$this->modelType == 'services' && $name == 'InlineRelationships';
+				$exclude = $exclude ||
+					$this->modelType === 'products' &&
+					($name === 'InlineRelationships' || $name === 'WorkflowStageDetails');
+
+                if(!$exclude){
+					$this->render(
+						'centerWidget',
+						$viewParams
+					);
                 }
             }
 
@@ -187,20 +98,5 @@ class X2WidgetList extends X2Widget {
         }
     }
 
-    private function isExcluded ($name) {
-        if ($this->modelType == 'BugReports' && 
-            ($name != 'InlineRelationships' && $name!='WorkflowStageDetails') ||
-            $this->modelType == 'Quote' && $name == 'WorkflowStageDetails' ||
-            $this->modelType == 'Marketing' &&
-            ($name == 'WorkflowStageDetails' || $name === 'InlineRelationships') ||
-            $this->modelType == 'services' && $name == 'InlineRelationships' ||
-            $this->modelType === 'products' &&
-            ($name === 'InlineRelationships' || $name === 'WorkflowStageDetails')) {
-
-            return true;
-        } else {
-            return false;
-        }
-    }
-
 }
+

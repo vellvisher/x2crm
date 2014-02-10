@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -64,7 +64,7 @@ class AccountsController extends x2base {
     }
 
     public function actions(){
-        return array_merge(parent::actions(), array(
+        return array(
             'inlineEmail' => array(
                 'class' => 'InlineEmailAction',
             ),
@@ -77,7 +77,7 @@ class AccountsController extends x2base {
             'accountsCampaign' => array(
                 'class'=>'AccountCampaignAction',
             ),
-        ));
+        );
     }
 
     public function actionGetItems(){
@@ -97,10 +97,6 @@ class AccountsController extends x2base {
     public function actionView($id){
         $model = $this->loadModel($id);
         if($this->checkPermissions($model, 'view')){
-
-            // add account to user's recent item list
-            User::addRecentItem('a', $id, Yii::app()->user->getId());
-
             parent::view($model, 'accounts');
         }else{
             $this->redirect('index');
@@ -117,7 +113,7 @@ class AccountsController extends x2base {
 <br />".Yii::t('accounts', 'Phone').": $model->phone
 <br />".Yii::t('accounts', 'Website').": $model->website
 <br />".Yii::t('accounts', 'Type').": $model->type
-<br />".Yii::t('app', 'Link').": ".CHtml::link($model->name, array('/accounts/accounts/view', 'id'=>$model->id));
+<br />".Yii::t('app', 'Link').": ".CHtml::link($model->name, 'http://'.Yii::app()->request->getServerName().$this->createUrl('/accounts/'.$model->id));
         $body = trim($body);
 
         $errors = array();
@@ -349,7 +345,7 @@ class AccountsController extends x2base {
             $tempArr = $model->attributes;
             $model->attributes = $_POST['Accounts'];
             $arr = $_POST['Accounts']['assignedTo'];
-            $model->assignedTo = Fields::parseUsers($arr);
+            $model->assignedTo = Accounts::parseUsers($arr);
             if($temp != "")
                 $temp.=", ".$model->assignedTo;
             else
@@ -388,7 +384,7 @@ class AccountsController extends x2base {
                 unset($pieces[$user]);
             }
 
-            $temp = Fields::parseUsersTwo($pieces);
+            $temp = Accounts::parseUsersTwo($pieces);
 
             $model->assignedTo = $temp;
             // $changes=$this->calculateChanges($temp,$model->attributes);
@@ -453,5 +449,5 @@ class AccountsController extends x2base {
         $model = new Accounts('search');
         $this->render('index', array('model' => $model));
     }
-     
+
 }

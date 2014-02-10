@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,7 +37,7 @@
 <div class="page-title"><h2><?php echo Yii::t('admin','Add Exception'); ?></h2></div>
 <div class="form">
 <div style="width:500px">
-    <?php echo Yii::t('admin',"Adding an exception will alter a Role's behavior while the contact is on a particular process stage.  You can change which fields are editable by whom to be dependent on where a contact is in the process this way.") ?>
+    <?php echo Yii::t('admin',"Adding an exception will alter a Role's behavior while the contact is on a particular workflow stage.  You can change which fields are editable by whom to be dependent on where a contact is in workflow this way.") ?>
 </div><br>
 <?php
 //Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
@@ -63,26 +63,26 @@ foreach($list as $role){
         'action'=>'roleException',
 )); ?>
 
-        <label><?php echo Yii::t('workflow','Processes'); ?></label>
+        <label><?php echo Yii::t('workflow','Workflow'); ?></label>
         <?php echo CHtml::dropDownList('workflow','',$workflows,array(
-        'empty'=>'Select a process',
+        'empty'=>'Select a workflow',
                 'ajax' => array(
                 'type'=>'POST', //request type
-                'url'=>CController::createUrl('/admin/getWorkflowStages'), //url to call.
+                'url'=>CController::createUrl('admin/getWorkflowStages'), //url to call.
                 //Style: CController::createUrl('currentController/methodToCall')
                 'update'=>'#workflowStages', //selector to update
                 //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()'
                 //leave out the data key to pass all form values through
                 ))); ?>
-        <label><?php echo Yii::t('workflow','Process Stage'); ?></label>
-        <?php echo CHtml::dropDownList('workflowStages','',array(),array('id'=>'workflowStages','empty'=>'Select a process first'));?>
+        <label><?php echo Yii::t('workflow','Workflow Stage'); ?></label>
+        <?php echo CHtml::dropDownList('workflowStages','',array(),array('id'=>'workflowStages','empty'=>'Select a workflow first'));?>
         <div class="row">
             <label>Role Name</label>
             <?php echo $form->dropDownList($model,'name',$names,array(
                 'empty'=>Yii::t('admin','Select a role'),
                 'ajax' => array(
                 'type'=>'POST', //request type
-                'url'=>CController::createUrl('/admin/getRole'), //url to call.
+                'url'=>CController::createUrl('admin/getRole'), //url to call.
                 //Style: CController::createUrl('currentController/methodToCall')
                 'update'=>'#roleFormTwo', //selector to update
                 'complete'=>"function(){

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -55,14 +55,14 @@ $menuItems = array(
 	array('label'=>Yii::t('actions','Create'),'url'=>array('create')),
 );
 
-if($this->route=='/actions/actions/index') {
+if($this->route=='actions/actions/index') {
 	$heading = Yii::t('actions','Today\'s Actions');
 	$dataProvider=$model->searchIndex();
 	$dataProvider2=$model->searchComplete();
 
 	unset($menuItems[0]['url']);
 
-} elseif($this->route=='/actions/actions/viewAll') {
+} elseif($this->route=='actions/actions/viewAll') {
 	$heading = Yii::t('actions','All My Actions');
 	$dataProvider=$model->searchAll();
 	$dataProvider2=$model->searchComplete();
@@ -104,7 +104,7 @@ function uncompleteSelected() {
 
 function toggleShowActions() {
 	var show = $('#dropdown-show-actions').val(); // value of dropdown (which actions to show)
-	$.post(".json_encode(Yii::app()->controller->createUrl('/actions/actions/saveShowActions')).", {ShowActions: show}, function() {
+	$.post('actions/saveShowActions', {ShowActions: show}, function() {
 		$.fn.yiiGridView.update('actions-grid', {data: $.param($('#actions-grid input[name=\"Actions[complete]\"]'))});
 	});
 }
@@ -116,7 +116,7 @@ function refreshQtip() {
 	$(".contact-name").each(function (i) {
 		var contactId = $(this).attr("href").match(/\\d+$/);
 
-		if(contactId !== null && contactId.length) {
+		if(typeof contactId != null && contactId.length) {
 			$(this).qtip({
 				content: {
 					text: "'.addslashes(Yii::t('app','Loading...')).'",
@@ -157,10 +157,10 @@ $this->widget('application.components.X2GridView', array(
 	'id'=>'actions-grid',
     'title'=>$heading,
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-    'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
+    'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
 	'template'=> '<div class="page-title icon actions">{title}{buttons}'
 		.CHtml::link(Yii::t('actions','Switch to List'),array('index','toggleView'=>1),array('class'=>'x2-button')).
-                '{filterHint}'. '{summary}</div>{items}{pager}',
+        '{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$dataProvider,
 	// 'enableSorting'=>false,
 	// 'model'=>$model,

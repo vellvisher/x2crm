@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,12 +33,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
-x2.profileSettings.debug = 0;
+var debug = 0;
 
 function consoleLog (obj) {
     if (console != undefined) {
-        if(console.log != undefined && x2.profileSettings.debug) {
+        if(console.log != undefined && debug) {
             console.log(obj);
         }
     }
@@ -46,7 +45,7 @@ function consoleLog (obj) {
 
 function consoleDebug (obj) {
     if (console != undefined) {
-        if(console.debug != undefined && x2.profileSettings.debug) {
+        if(console.debug != undefined && debug) {
             console.debug (obj);
         }
     }
@@ -82,9 +81,8 @@ function setSound(sound, id, filename, uploadedBy) {
         }else{
             $('#'+sound).attr('src',yii.baseUrl+'/uploads/'+filename);
         }
-
         var soundFile = $("#"+sound)[0];
-        if (Modernizr.audio) soundFile.play();
+        soundFile.play();
     }
 }
 
@@ -103,13 +101,13 @@ function deleteSound(sound, id){
 change the background image
 */
 function setBackground(filename) {
-    if(filename=='') {
-            $('body').css('background-image','none').removeClass("no-borders");
-    } else {
-        $('body').css('background-image','url("'+yii.baseUrl+'/uploads/'+filename+'")').
-            toggleClass("no-borders",($('#backgroundTiling').val() === 'stretch'));
-        $(window).trigger('resize');
-    }
+		if(filename=='') {
+				$('body').css('background-image','none').removeClass("no-borders");
+		} else {
+			$('body').css('background-image','url('+yii.baseUrl+'/uploads/'+filename+')').
+                toggleClass("no-borders",($('#backgroundTiling').val() === 'stretch'));
+			$(window).trigger('resize');
+		}
 }
 
 function deleteBackground(id,filename) {
@@ -122,7 +120,7 @@ function deleteBackground(id,filename) {
 				$('#background_'+id).hide();
 
 		        // if this is the current background,
-				if($.inArray (filename, $('#header').css('background-image')) > -1) {
+				if($('#header').css('background-image').indexOf(filename) > -1) {
 
 					// remove it from the page
 					if($('#backgroundColor').val() === '') {
@@ -193,9 +191,8 @@ function checkSoundName(id) {
             break;
         }
     }
-    if(re == 1){
-	    $(selector).parents ('.upload-box').find ('.submit-upload').
-            removeAttr('disabled','disabled');
+    if(re==1){
+	    $(selector).parents ('.upload-box').find ('.submit-upload').removeAttr('disabled','disabled');
     } else { // delete the file name, disable Submit, Alert message
 	    $(selector).val('');
 	    $(selector).parents ('.upload-box').find ('.submit-upload').attr('disabled','disabled');
@@ -232,6 +229,7 @@ function toggleUploadBox (boxId) {
         $(selector).slideUp ();
     }
 }
+
 
 function setupPrefsEventListeners () {
 
@@ -356,8 +354,7 @@ function setupPrefsEventListeners () {
     $('.unhide').mouseenter(function(){
         var tag=$(this).attr('tag-name');
         var elem=$(this);
-        var content='<span class="hide-link-span">'+
-            '<a href="#" class="hide-link" style="color:#06C;">[+]</a></span>';
+        var content='<span class="hide-link-span"><a href="#" class="hide-link" style="color:#06C;">[+]</a></span>';
         $(content).hide().delay(500).appendTo($(this)).fadeIn(500);
         $('.hide-link').click(function(e){
            e.preventDefault();
@@ -382,20 +379,10 @@ function setupPrefsEventListeners () {
             $(this).find ('.prefs-expand-arrow').show ();
             $(this).find ('.prefs-collapse-arrow').hide ();
             $body.slideUp ();
-            if ($(this).attr ('id') === 'tags-title-bar') {
-                auxlib.saveMiscLayoutSetting ('unhideTagsSectionExpanded', 0);
-            } else {
-                auxlib.saveMiscLayoutSetting ('themeSectionExpanded', 0);
-            }
         } else {
             $(this).find ('.prefs-expand-arrow').hide ();
             $(this).find ('.prefs-collapse-arrow').show ();
             $body.slideDown ();
-            if ($(this).attr ('id') === 'tags-title-bar') {
-                auxlib.saveMiscLayoutSetting ('unhideTagsSectionExpanded', 1);
-            } else {
-                auxlib.saveMiscLayoutSetting ('themeSectionExpanded', 1);
-            }
         }
     });
 
@@ -470,7 +457,6 @@ function setupThemeSaving () {
     Save theme via Ajax.
     */
     function saveTheme () {
-        if ($('prefs-save-theme-button').attr ('disabled')) return;
         var themeAttributes = {};
         $.each ($("#theme-attributes").find ('.theme-attr'), function () {
             consoleDebug ($(this));
@@ -487,12 +473,10 @@ function setupThemeSaving () {
             },
             success: function (data) {
                 consoleDebug (data);
-                auxlib.createReqFeedbackBox ({
-                    prevElem: $('#prefs-save-theme-hint'), 
-                    disableButton: $('#prefs-save-theme-button'), 
-                    message: data,
-                    delay: 3000
-                });
+                var feedbackBox = createReqFeedbackBox (data);
+                $('#prefs-save-theme-hint').after (feedbackBox);
+                startFeedbackBoxFadeOut (
+                    feedbackBox, 3000, $('#prefs-save-theme-button'));
             }
         });
     }
@@ -503,6 +487,37 @@ function setupThemeSaving () {
 
 }
 
+/*
+Returns a jQuery element corresponding to a feedback box containing the 
+specified message.
+messages.
+Parameters:
+    message - a string
+*/
+function createReqFeedbackBox (message) {
+    var feedbackBox = $('<div>', {'class': 'feedback-container'}).append (
+        $("<span>", { 
+            'class': "feedback-msg",
+            'text': message
+        })
+    );
+    return feedbackBox;
+}
+
+/*
+Removes a feedback box created by createReqFeedbackBox () after a specified delay.
+Specified button will be disabled until delay elapses.
+Parameters:
+    feedbackBox - a jQuery element created by createReqFeedbackBox ()
+    delay - in milliseconds
+*/
+function startFeedbackBoxFadeOut (feedbackBox, delay, button) {
+    $(button).attr ('disabled', 'disabled');
+    $(feedbackBox).children ().fadeOut (delay, function () {
+        $(feedbackBox).remove ();
+        $(button).removeAttr ('disabled');
+    });
+}
 
 /*
 Sets up behavior for theme creation sub-menu.
@@ -529,7 +544,6 @@ function setupThemeCreation () {
     */
     function createTheme (themeName) {
         consoleLog (themeName);
-        if ($('prefs-create-theme-button').attr ('disabled')) return;
 
         // build theme attribute dictionary to send to server
         var themeAttributes = {};
@@ -566,12 +580,10 @@ function setupThemeCreation () {
                     }));
 
                     // indicate successful creation
-                    auxlib.createReqFeedbackBox ({
-                        prevElem: $('#prefs-save-theme-hint'),
-                        message: respObj['msg'],
-                        delay: 3000,
-                        disableButton: $('#prefs-create-theme-button')
-                    });
+                    var feedbackBox = createReqFeedbackBox (respObj['msg']);
+                    $('#prefs-save-theme-hint').after (feedbackBox);
+                    startFeedbackBoxFadeOut (
+                        feedbackBox, 3000, $('#prefs-create-theme-button'));
                     x2.profileSettings.uploadedByAttrs[themeName] = 
                         yii.profile.username;
 

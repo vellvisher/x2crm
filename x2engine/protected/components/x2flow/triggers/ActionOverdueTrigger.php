@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -40,8 +40,6 @@
  * @package X2CRM.components.x2flow.actions
  */
 class ActionOverdueTrigger extends X2FlowTrigger {
-
-    public $requiresCron = true;
 	public $title = 'Action Overdue';
 	public $info = 'Triggers when an action becomes overdue. Cronjob must be configured to trigger reliably.';
 	
@@ -58,8 +56,8 @@ class ActionOverdueTrigger extends X2FlowTrigger {
 	public static function checkCondition($condition,&$params) {
 		if(isset($condition['name']) && $condition['name'] === 'duration') {
 			if(empty($condition['value']))
-				return array ($params['model']->dueDate < time(), '');
-			return array ($params['model']->dueDate < time() - (int)$condition['value'], '');
+				return $params['model']->dueDate < time();
+			return $params['model']->dueDate < time() - (int)$condition['value'];
 		}
 		return parent::checkCondition($condition,$params);
 	}

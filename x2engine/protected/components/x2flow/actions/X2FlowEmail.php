@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -44,26 +44,14 @@ class X2FlowEmail extends X2FlowAction {
 	public $info = 'Send a template or custom email to the specified address.';
 
 	public function paramRules() {
-        $credOptsDict = Credentials::getCredentialOptions (null, true);
-        $credOpts = $credOptsDict['credentials'];
-        $selectedOpt = $credOptsDict['selectedOption'];
-        foreach ($credOpts as $key=>$val) {
-            if ($key == $selectedOpt) {
-                $credOpts = array ($key => $val) + $credOpts; // move to beginning of array
-                break;
-            }
-        }
-
 		return array(
 			'title' => Yii::t('studio',$this->title),
 			'info' => Yii::t('studio',$this->info),
 			'options' => array(
-				array('name'=>'from','label'=>Yii::t('studio','Send As:'),'type'=>'dropdown',
-                    'options'=>$credOpts),
 				array('name'=>'to','label'=>Yii::t('studio','To:'),'type'=>'email'),
-				//array('name'=>'from','label'=>Yii::t('studio','From:'),'type'=>'email'),
+				array('name'=>'from','label'=>Yii::t('studio','From:'),'type'=>'email'),
 				array('name'=>'template','label'=>Yii::t('studio','Template'),'type'=>'dropdown','options'=>array(''=>Yii::t('studio','Custom'))+Docs::getEmailTemplates(),'optional'=>1),
-				array('name'=>'subject','label'=>Yii::t('studio','Subject'),'optional'=>1),
+				array('name'=>'subject','label'=>Yii::t('studio','Subject')),
 				array('name'=>'cc','label'=>Yii::t('studio','CC:'),'optional'=>1,'type'=>'email'),
 				array('name'=>'bcc','label'=>Yii::t('studio','BCC:'),'optional'=>1,'type'=>'email'),
 				array('name'=>'body','label'=>Yii::t('studio','Message'),'optional'=>1,'type'=>'richtext'),
@@ -75,26 +63,19 @@ class X2FlowEmail extends X2FlowAction {
 		// die(var_dump(array_keys($params)));
 		$eml = new InlineEmail;
 		$options = &$this->config['options'];
-        $historyFlag = false;
-        if(isset($params['model'])){
-            $historyFlag = true;
-            $eml->targetModel=$params['model'];
-        }
+
 		if(isset($options['cc']['value']))
 			$eml->cc = $this->parseOption('cc',$params);
-		if(isset($options['bcc']['value'])){
+		if(isset($options['bcc']['value']))
 			$eml->bcc = $this->parseOption('bcc',$params);
-        }
 		$eml->to = $this->parseOption('to',$params);
 
-		//$eml->from = array('address'=>$this->parseOption('from',$params),'name'=>'');
-        $eml->credId = $this->parseOption('from',$params);
-        //printR ($eml->from, true);
-		$eml->subject = Formatter::replaceVariables($this->parseOption('subject',$params),$params['model']);
+		$eml->from = array('address'=>$this->parseOption('from',$params),'name'=>'');
+		$eml->subject = $this->parseOption('subject',$params);
 
 		if(isset($options['body']['value']) && !empty($options['body']['value'])) {	// "body" option (deliberately-entered content) takes precedence over template
             $eml->scenario = 'custom';
-			$eml->message = InlineEmail::emptyBody(Formatter::replaceVariables($this->parseOption('body',$params),$params['model']));
+			$eml->message = InlineEmail::emptyBody($this->parseOption('body',$params));
 			$eml->prepareBody();
 			// $eml->insertSignature(array('<br /><br /><span style="font-family:Arial,Helvetica,sans-serif; font-size:0.8em">','</span>'));
 		} elseif(!empty($options['template']['value'])) {
@@ -102,11 +83,19 @@ class X2FlowEmail extends X2FlowAction {
 			$eml->template = $this->parseOption('template',$params);
 			$eml->prepareBody();
 		}
-		$result = $eml->send($historyFlag);
-		if (isset($result['code']) && $result['code'] == 200) {
-            return array (true, "");
-        } else {
-            return array (false, Yii::t('app', "Email could not be sent"));
-        }
+		$result = $eml->send(false);
+		// die(var_dump($result));
+		return isset($result['code']) && $result['code'] == 200;
 	}
 }
+
+
+
+
+
+
+
+
+
+
+

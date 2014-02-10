@@ -55,5 +55,4 @@ return array (
 'Web Form Case entered by {name}'=>'קייס טופס אינטרנט שהוזן על ידי {name}',
 'Hello'=>'שלום',
 'Web Form Case'=>'קייס טופס אינטרנט',
-'Thank you for contacting our Technical Support '=>'תודה על פנייתך התמיכה הטכנית שלנו',
 );

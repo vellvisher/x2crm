@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,17 +34,15 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->setPageTitle(Yii::t('workflow', 'Create Process'));
-
 // $this->breadcrumbs=array(
 	// 'Workflows'=>array('index'),
 	// 'Create',
 // );
 
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('workflow','All Processes'), 'url'=>array('index')),
+	array('label'=>Yii::t('workflow','All Workflows'), 'url'=>array('index')),
 	array('label'=>Yii::t('app','Create')),
 ));
 ?>
-<div class="page-title icon workflow"><h2><?php echo Yii::t('workflow','Create Process'); ?></h2></div>
+<div class="page-title icon workflow"><h2><?php echo Yii::t('workflow','Create Workflow'); ?></h2></div>
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

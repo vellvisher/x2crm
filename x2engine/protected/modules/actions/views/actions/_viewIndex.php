@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -90,12 +90,12 @@ if($type == 'workflow') {
     <?php
     if($data->complete!='Yes'){
 		if(empty($data->dueDate)){
-			echo X2DateUtil::actionDate($data->createDate,$data->priority);
+			echo X2Date::actionDate($data->createDate,$data->priority);
         }else{
-			echo X2DateUtil::actionDate($data->dueDate,$data->priority);
+			echo X2Date::actionDate($data->dueDate,$data->priority);
         }
     }else{
-		echo X2DateUtil::actionDate($data->completeDate,$data->priority,'Yes');
+		echo X2Date::actionDate($data->completeDate,$data->priority,'Yes');
     }
 ?>
 	<div class="header">
@@ -127,7 +127,7 @@ if($type == 'workflow') {
 				//echo Actions::parseStatus($data->dueDate);
 		} elseif ($data->type == 'workflow') {
 			// $actionData = explode(':',$data->actionDescription);
-			echo Yii::t('workflow','Process:').'<b> '.$workflowRecord->name .'/'.$stageRecords[$data->stageNumber-1]->name.'</b> ';
+			echo Yii::t('workflow','Workflow:').'<b> '.$workflowRecord->name .'/'.$stageRecords[$data->stageNumber-1]->name.'</b> ';
 		} elseif(in_array($data->type,array('email','emailFrom'))) {
 			echo Yii::t('actions','Email Message:').' '.Formatter::formatCompleteDate($data->completeDate);
 		} elseif($data->type == 'quotes') {
@@ -141,7 +141,7 @@ if($type == 'workflow') {
 		} elseif($data->type == 'call' && $data->complete=='Yes') {
 			echo Yii::t('actions','Call:').' '.Formatter::formatCompleteDate($data->completeDate); //Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"),$data->completeDate);
 		} elseif($data->type == 'event') {
-			echo '<b>'.CHtml::link(Yii::t('calendar','Event').':',array('/actions/actions/view','id'=>$data->id)).' ';
+			echo '<b>'.CHtml::link(Yii::t('calendar','Event').':',array('/actions/'.$data->id)).' ';
 			if($data->allDay) {
 				echo Formatter::formatLongDate($data->dueDate);
 				if($data->completeDate)

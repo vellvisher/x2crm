@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -57,13 +57,11 @@ class RecordInactiveTrigger extends X2FlowTrigger {
 	public static function checkCondition($condition,&$params) {
 		if(isset($condition['name']) && $condition['name'] === 'duration') {
 			if($params['model']->hasAttribute('lastActivity'))
-				return array ($params['model']->lastActivity < time() - (int)$condition->value,
-                    '');
+				return $params['model']->lastActivity < time() - (int)$condition->value;
 			elseif($params['model']->hasAttribute('lastUpdated'))
-				return array ($params['model']->lastUpdated < time() - (int)$condition->value,
-                    '');
+				return $params['model']->lastUpdated < time() - (int)$condition->value;
 			else
-				return array (false, '');
+				return false;
 		} else {
 			return parent::checkCondition($condition,$params);
 		}

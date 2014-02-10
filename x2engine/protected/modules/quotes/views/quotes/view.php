@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -62,7 +62,7 @@ var confirmBox = $('<div></div>')
     	resizable: false,
     	buttons: {
     		'Yes': function() {
-    			window.location = '". Yii::app()->createUrl('/quotes/quotes/update', array('id'=>$model->id)) ."';
+    			window.location = '". Yii::app()->createUrl('quotes/quotes/update/', array('id'=>$model->id)) ."';
     			$(this).dialog('close');
     		},
     		'No': function() {
@@ -98,7 +98,7 @@ $this->actionMenu = $this->formatMenu(array(
 
 $strict = Yii::app()->params['admin']['quoteStrictLock'];
 if($model->locked)
-	if($strict && !Yii::app()->user->checkAccess('QuotesAdminAccess'))
+	if($strict && Yii::app()->user->name != 'admin')
 		$this->actionMenu[] = array('label'=>Yii::t('quotes','Update'), 'url'=>'#', 'linkOptions'=>array('onClick'=>'dialogStrictLock();'));
 	else
 		$this->actionMenu[] = array('label'=>Yii::t('quotes','Update'), 'url'=>'#', 'linkOptions'=>array('onClick'=>'dialogLock();'));
@@ -107,12 +107,7 @@ else
 
 $this->actionMenu[] = array('label'=>Yii::t('quotes','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?'));
 $this->actionMenu[] = array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;'));
-$this->actionMenu[] = array(
-	'label'=>($model->type == 'invoice'? Yii::t('quotes', 'Print Invoice') : Yii::t('quotes','Print Quote')), 
-	'url'=>'#', 'linkOptions'=>array(
-		'onClick'=>"window.open('". Yii::app()->createUrl('/quotes/quotes/print', 
-		array('id'=>$model->id)) ."')")
-);
+$this->actionMenu[] = array('label'=>($model->type == 'invoice'? Yii::t('quotes', 'Print Invoice') : Yii::t('quotes','Print Quote')), 'url'=>'#', 'linkOptions'=>array('onClick'=>"window.open('". Yii::app()->createUrl('quotes/quotes/print', array('id'=>$model->id)) ."')"));
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
 ?>
@@ -122,7 +117,7 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 	<h2><span class="no-bold"><?php echo ($model->type == 'invoice'? Yii::t('quotes', 'Invoice:') : Yii::t('quotes','Quote:')); ?></span> <?php echo $model->name==''?'#'.$model->id:$model->name; ?></h2>
 
 <?php if($model->locked) { ?>
-	<?php if($strict && !Yii::app()->user->checkAccess('QuotesAdminAccess')) { ?>
+	<?php if($strict && Yii::app()->user->name != 'admin') { ?>
 		<a class="x2-button icon edit right" href="#" onClick="dialogStrictLock();"><span></span></a>
 	<?php } else { ?>
 		<a class="x2-button icon edit right" href="#" onClick="dialogLock();"><span></span></a>
@@ -221,7 +216,13 @@ $this->renderPartial('_detailView',
 );
 */
 $this->endWidget();
+?>
 
+<?php $this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'Quote')); ?>
+
+<?php $this->widget('Attachments',array('associationType'=>'quotes','associationId'=>$model->id,'startHidden'=>true)); ?>
+
+<?php
 if($contact){ // if associated contact exists, setup inline email form
 	$this->widget('InlineEmailForm', array(
 		'attributes' => array(
@@ -238,10 +239,8 @@ if($contact){ // if associated contact exists, setup inline email form
 	)
 	);
 }
-?>
-<?php $this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'Quote')); ?>
 
-<?php $this->widget('Attachments',array('associationType'=>'quotes','associationId'=>$model->id,'startHidden'=>true)); ?>
+?>
 
 </div>
 <div class="history half-width">
@@ -252,7 +251,7 @@ $this->widget('Publisher',
 		'associationType'=>'quotes',
 		'associationId'=>$model->id,
 		'assignedTo'=>Yii::app()->user->getName(),
-		'calendar' => false
+		'halfWidth'=>true
 	)
 );
 $this->widget('History',array('associationType'=>'quotes','associationId'=>$model->id));

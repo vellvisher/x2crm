@@ -8,8 +8,10 @@ Yii::import('application.commands.*');
  */
 class DummyCommand extends CConsoleCommand {
 	public function run() {
-        // Put code in here
-    }
+		// Put code in here
+		
+	}
+	
 }
 
 ?>

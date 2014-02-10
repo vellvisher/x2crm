@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -77,7 +77,7 @@ class GoogleMaps extends X2Widget {
 			geocoder.geocode( {"address": "'.CJavaScript::quote($this->location).'"}, function(results, status) {
 				if (status == google.maps.GeocoderStatus.OK) {
                     $.ajax({
-                        url:"'.Yii::app()->controller->createUrl('/contacts/contacts/updateLocation').'",
+                        url:"'.Yii::app()->controller->createUrl('/contacts/updateLocation').'",
                         type:"GET",
                         data:{contactId:'.$_GET['id'].',lat:results[0].geometry.location.lat(),lon:results[0].geometry.location.lng()},
                     });

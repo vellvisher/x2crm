@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,10 +32,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-if(typeof x2 == 'undefined')
-    x2 = {};
-if (typeof x2.actionFrames == 'undefined')
-    x2.actionFrames = {};
 
 function createControls(id, publisher){
     if(!publisher){
@@ -90,7 +86,7 @@ function createControls(id, publisher){
                             $('#'+lastClass).remove();
                         }else if(typeof $.fn.yiiListView.settings['history']!='undefined'){
                             $.fn.yiiListView.update('history');
-                            $(x2.actionFrames.viewEmailDialog).remove();
+                            $(x2ViewEmailDialog).remove();
                         }
                     }
                 }
@@ -116,20 +112,20 @@ function createControls(id, publisher){
 function loadActionFrame(id){
     var publisher=($('#publisher-form').html()!=null);
     var frame='<iframe id="action-frame" style="width:99%;height:99%" src="'+yii.baseUrl+'/index.php/actions/viewAction?id='+id+'&publisher='+publisher+'" onload="createControls('+id+', true);"></iframe>';
-    if(typeof x2.actionFrames.viewEmailDialog != 'undefined') {
-        if($(x2.actionFrames.viewEmailDialog).is(':hidden')){
-            $(x2.actionFrames.viewEmailDialog).remove();
+    if(typeof x2ViewEmailDialog != 'undefined') {
+        if($(x2ViewEmailDialog).is(':hidden')){
+            $(x2ViewEmailDialog).remove();
 
         }else{
             return;
         }
     }
 
-    x2.actionFrames.viewEmailDialog = $('<div></div>', {
+    x2ViewEmailDialog = $('<div></div>', {
         id: 'x2-view-email-dialog'
     });
 
-    x2.actionFrames.viewEmailDialog.dialog({
+    x2ViewEmailDialog.dialog({
         title: 'View Action',
         autoOpen: false,
         resizable: true,
@@ -146,13 +142,13 @@ function loadActionFrame(id){
         }
     });
 
-    x2.actionFrames.viewEmailDialog.data('inactive', true);
-    if(x2.actionFrames.viewEmailDialog.data('inactive')) {
-        x2.actionFrames.viewEmailDialog.append(frame);
-        x2.actionFrames.viewEmailDialog.dialog('open').height('400px');
-        x2.actionFrames.viewEmailDialog.data('inactive', false);
+    x2ViewEmailDialog.data('inactive', true);
+    if(x2ViewEmailDialog.data('inactive')) {
+        x2ViewEmailDialog.append(frame);
+        x2ViewEmailDialog.dialog('open').height('400px');
+        x2ViewEmailDialog.data('inactive', false);
     } else {
-        x2.actionFrames.viewEmailDialog.dialog('open');
+        x2ViewEmailDialog.dialog('open');
     }
 }
 function uncompleteAction(id, publisher){

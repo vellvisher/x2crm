@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,14 +34,14 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
+ 
 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 
 $users = User::getNames();
 if($editable) {
 	$form = $this->beginWidget('CActiveForm', array(
 		'id'=>'workflowDetailsForm',
-		'action'=>array('/workflow/workflow/updateStageDetails','id'=>$model->id),
+		'action'=>array('/workflow/updateStageDetails/'.$model->id),
 	));
 }
 ?>

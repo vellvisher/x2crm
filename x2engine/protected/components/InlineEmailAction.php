@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -70,8 +70,7 @@ class InlineEmailAction extends CAction {
 			$model = $this->model;
         if(isset($_POST['contactFlag'])){
             $model->contactFlag=$_POST['contactFlag'];
-        } 
-        $makeEvent = isset($_GET['skipEvent']) ? !((bool) $_GET['skipEvent']) : 1;
+        }
 		// Check to see if the user is requesting a new template
 		if(isset($_GET['template'])){
 			$scenario = 'template';;
@@ -108,11 +107,10 @@ class InlineEmailAction extends CAction {
 			$sendStatus = array_fill_keys(array('code','message'),'');
 			$failed = false;
 			$message = '';
-            $postReplace = isset($_GET['postReplace']) ? $_GET['postReplace'] : 0;
 			if(isset($_GET['loadTemplate']))
 				$model->template = $_GET['loadTemplate']; // A special override for when it's not possible to include the template in $_POST
 
-			if($model->prepareBody($postReplace)){
+			if($model->prepareBody()){
 				if($scenario != 'template'){
 					// Sending the email, not merely requesting a template change
 					// 
@@ -121,7 +119,7 @@ class InlineEmailAction extends CAction {
 					if($model->credId != Credentials::LEGACY_ID)
 						if(!Yii::app()->user->checkAccess('CredentialsSelect',array('model'=>$model->credentials)))
 							self::respond(Yii::t('app','Did not send email because you do not have permission to use the specified credentials.'),1);
-					$sendStatus = $model->send($makeEvent);
+					$sendStatus = $model->send();
 					// $sendStatus = array('code'=>'200','message'=>'sent (testing)');
 					$failed = $sendStatus['code'] != '200';
 					$message = $sendStatus['message'];

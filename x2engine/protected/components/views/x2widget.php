@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,15 +33,10 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
 if(!is_null($model) && property_exists($name,'model')){
     $params = array('model'=>$model, 'modelName'=>($modelType));
 }else{
     $params=array();
-}
-
-if ($name === 'InlineRelationships' && isset ($moduleName)) {
-    $params['moduleName'] = $moduleName;
 }
 
 if($name == 'WorkflowStageDetails') { // workflow has an extra param
@@ -52,16 +47,6 @@ if($name == 'WorkflowStageDetails') { // workflow has an extra param
     }
 }
 
-if ($name === 'RecordViewChart') {
-
-	$params['widgetParams'] = array ();
-	$params['widgetParams']['chartType'] = 'actionHistoryChart';
-	$params['widgetParams']['hideByDefault'] = false;
-
-	
-} 
-
 $this->widget($name, $params);
-
 
 ?>

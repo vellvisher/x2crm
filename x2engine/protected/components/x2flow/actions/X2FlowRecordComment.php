@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -45,15 +45,12 @@ class X2FlowRecordComment extends X2FlowAction {
     public $info = '';
 
     public function paramRules(){
-        $assignmentOptions = array('{assignedTo}' => '{'.Yii::t('studio', 'Owner of Record').'}') + X2Model::getAssignmentOptions(false, true);
         return array(
             'title' => Yii::t('studio', $this->title),
             'model' => 'required',
             'options' => array(
-                array('name' => 'assignedTo', 'label' => Yii::t('actions', 'Assigned To'), 'type' => 'dropdown', 'options' => $assignmentOptions),
                 array('name' => 'comment', 'label' => Yii::t('studio', 'Comment'), 'type' => 'text'),
-            )
-        );
+                ));
     }
 
     public function execute(&$params){
@@ -63,26 +60,13 @@ class X2FlowRecordComment extends X2FlowAction {
         $model->associationId = $params['model']->id;
         $model->associationType = $params['model']->module;
         $model->actionDescription = $this->parseOption('comment', $params);
-        $model->assignedTo = $this->parseOption('assignedTo', $params);
-        $model->completedBy = $this->parseOption('assignedTo', $params);
-
-        if(empty($model->assignedTo) && $params['model']->hasAttribute('assignedTo')){
-            $model->assignedTo = $params['model']->assignedTo;
-            $model->completedBy = $params['model']->assignedTo;
-        }
-
+        $model->assignedTo = $params['model']->assignedTo;
         if($params['model']->hasAttribute('visibility'))
             $model->visibility = $params['model']->visibility;
-        $model->createDate = time();
-        $model->completeDate = time();
+        $action->createDate = time();
+        $action->completeDate = time();
 
-        if($model->save()){
-            return array(
-                true,
-                Yii::t('studio', 'View created action: ').$model->getLink());
-        }else{
-            return array(false, array_shift($model->getErrors()));
-        }
+        return $model->save();
     }
 
 }

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -41,7 +41,8 @@ Yii::import('application.components.JSONFieldsBehavior');
  * This is the model class for table "x2_chart_settings".
  * @package X2CRM.models
  */
-class ChartSetting extends CActiveRecord {
+class ChartSetting extends CActiveRecord
+{
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Imports the static model class
@@ -63,8 +64,7 @@ class ChartSetting extends CActiveRecord {
                 'class' => 'application.components.JSONFieldsBehavior',
                 'transformAttributes' => array('settings' => array(
                     'startDate', 'endDate', 'binSize', 'firstMetric', 'visibilityFilter',
-					'usersFilter', 'eventsFilter', 'socialSubtypesFilter',
-					'dateRange'))
+					'usersFilter', 'eventsFilter', 'socialSubtypesFilter'))
             )
         );
     }

@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -70,12 +70,15 @@ class ActionsController extends x2base {
     }
 
     public function actions(){
-        return array_merge(parent::actions(), array(
+        return array(
+            'inlineEmail' => array(
+                'class' => 'InlineEmailAction',
+            ),
             'captcha' => array(
                 'class' => 'CCaptchaAction',
                 'backColor' => 0xeeeeee,
             ),
-        ));
+        );
     }
 
     /**
@@ -90,6 +93,11 @@ class ActionsController extends x2base {
 
         $users = User::getNames();
         $association = $this->getAssociation($action->associationType, $action->associationId);
+
+        // if($association != null)
+        // $associationName = $association->name;
+        //else
+        //$associationName = Yii::t('app','None');
 
         if($this->checkPermissions($action, 'view')){
 
@@ -125,7 +133,6 @@ class ActionsController extends x2base {
     public function actionViewAction($id, $publisher = false){
         $action = X2Model::model('Actions')->findByPk($id);
         if(isset($action)){
-            X2Flow::trigger('RecordViewTrigger', array('model' => $action));
             $this->renderPartial('_viewFrame', array(
                 'model' => $action,
                 'publisher' => $publisher,
@@ -211,11 +218,11 @@ class ActionsController extends x2base {
 
                 $subject = Yii::t('actions', 'Action Reminder:');
                 $body = Yii::t('actions', "Reminder, the following action is due today: \n Description: {description}\n Type: {type}.\n Associations: {name}.\nLink to the action: ", array('{description}' => $action->actionDescription, '{type}' => $type, '{name}' => $name))
-                        .Yii::app()->controller->createAbsoluteUrl('/actions/actions/view',array('id'=>$action->id));
+                        .'http://'.Yii::app()->request->getServerName().Yii::app()->request->scriptUrl.'/actions/'.$action->id;
                 $headers = 'From: '.Yii::app()->params['adminEmail'];
 
                 if($action->associationType != 'none')
-                    $body.="\n\n".Yii::t('actions', 'Link to the {type}', array('{type}' => ucfirst($action->associationType))).': '.Yii::app()->controller->createAbsoluteUrl(str_repeat('/'.$action->associationType,2).'/view',array('id'=>$action->associationId));
+                    $body.="\n\n".Yii::t('actions', 'Link to the {type}', array('{type}' => ucfirst($action->associationType))).': http://'.Yii::app()->request->getServerName().Yii::app()->request->baseUrl."/index.php/".$action->associationType."/".$action->associationId;
                 $body.="\n\n".Yii::t('actions', 'Powered by ').'<a href=http://x2engine.com>X2Engine</a>';
 
                 mail($email, $subject, $body, $headers);
@@ -303,6 +310,7 @@ class ActionsController extends x2base {
 
         if(isset($_POST['Actions'])){
             $model->setX2Fields($_POST['Actions']);
+            $model->actionDescription = $_POST['Actions']['actionDescription'];
             if($model->save()){
                 if(isset($_POST['Actions']['reminder']) && $_POST['Actions']['reminder']){
                     $notif = new Notification;
@@ -339,7 +347,7 @@ class ActionsController extends x2base {
         $this->render('create', array(
             'model' => $model,
             'users' => $users,
-            'modelList' => Fields::getDisplayedModelNamesList(),
+            'modelList' => Admin::getModelList(),
         ));
     }
 
@@ -370,6 +378,13 @@ class ActionsController extends x2base {
                 }else{
                     $model->completeDate = $model->dueDate;
                 }
+            }else{
+//                $event = new Events;
+//                $event->associationType = 'Actions';
+//                $event->type = 'record_create';
+//                $event->user = Yii::app()->user->getName();
+//                $event->visibility = $model->visibility;
+//                $model->completeDate = null;
             }
 
 
@@ -394,33 +409,26 @@ class ActionsController extends x2base {
             if($model->associationName == 'None' && $model->associationType != 'none')
                 $model->associationName = ucfirst($model->associationType);
 
-            if(in_array($_POST['SelectedTab'],array('log-a-call','new-comment','log-time-spent'))){
-                foreach(array('dueDate','completeDate') as $attr)
-                    if(empty($model->$attr))
-                        $model->$attr = time();
-                if($model->dueDate > $model->completeDate) {
-                    // User specified a negative time range! Let's say that the
-                    // starting time is equal to when it ended (which is earlier)
-                    $model->dueDate = $model->completeDate;
-                }
+            if($_POST['SelectedTab'] == 'log-a-call' || $_POST['SelectedTab'] == 'new-comment'){
+
+                $model->dueDate = time();
+                $model->completeDate = time();
                 $model->complete = 'Yes';
                 $model->visibility = '1';
                 $model->assignedTo = Yii::app()->user->getName();
                 $model->completedBy = Yii::app()->user->getName();
                 if($_POST['SelectedTab'] == 'log-a-call')
                     $model->type = 'call';
-                elseif($_POST['SelectedTab'] == 'log-time-spent')
-                    $model->type = 'time';
                 else
                     $model->type = 'note';
             }
-            if(in_array($model->type, array('call','time','note'))){
+            if($model->type == 'call'){
                 $event = new Events;
                 $event->associationType = 'Actions';
                 $event->type = 'record_create';
                 $event->user = Yii::app()->user->getName();
                 $event->visibility = $model->visibility;
-                $event->subtype = $model->type;
+                $event->subtype = 'call';
             }
             // save model
             $model->createDate = time();
@@ -428,17 +436,8 @@ class ActionsController extends x2base {
             if(!empty($model->type))
                 $model->disableBehavior('changelog');
 
+            $model->actionDescription = $_POST['Actions']['actionDescription'];
             if($model->save()){ // action saved to database *
-                if(!empty($_POST['timers'])) {
-                    $timerIds = explode(',',$_POST['timers']);
-                    $params = array();
-                    foreach($timerIds as $id) {
-                        $params[":timer$id"] = $id;
-                    }
-                    $wherein = '('.implode(',',array_keys($params)) .')';
-                    Yii::app()->db->createCommand()
-                            ->update(CaseTimer::model()->tableName(),array('actionId'=>$model->id),"`id` IN ".$wherein, $params);
-                }
                 if(isset($event)){
                     $event->associationId = $model->id;
                     $event->save();
@@ -540,7 +539,7 @@ class ActionsController extends x2base {
                         if($notification->user == $model->assignedTo && ($_POST['notificationUsers'] == 'assigned' || $_POST['notificationUsers'] == 'both')){
                             $notification->delete();
                         }elseif($notification->user == Yii::app()->user->getName() && ($_POST['notificationUsers'] == 'me' || $_POST['notificationUsers'] == 'both')){
-                            $notification->delete();
+                            $noticiation->delete();
                         }
                     }
                 }elseif(isset($_POST['Actions']['reminder']) && $_POST['Actions']['reminder']){
@@ -567,16 +566,7 @@ class ActionsController extends x2base {
                         $notif2->save();
                     }
                 }
-                if(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->params->admin->userActionBackdating){
-                    $events = X2Model::model('Events')->findAllByAttributes(array(
-                        'associationType' => 'Actions',
-                        'associationId' => $model->id,
-                    ));
-                    foreach($events as $event) {
-                        $event->timestamp = $model->getRelevantTimestamp();
-                        $event->update(array('timestamp'));
-                    }
-                }
+                $model->actionDescription = $_POST['Actions']['actionDescription'];
                 $model->syncGoogleCalendar('update');
                 if(isset($_GET['redirect']) && $model->associationType != 'none'){ // if the action has an association
                     if($model->associationType == 'product' || $model->associationType == 'products')
@@ -608,7 +598,7 @@ class ActionsController extends x2base {
         $this->render('update', array(
             'model' => $model,
             'users' => $users,
-            'modelList' => Fields::getDisplayedModelNamesList(),
+            'modelList' => Admin::getModelList(),
             'notifType' => $notifType,
             'notifTime' => $notifTime,
         ));
@@ -618,6 +608,7 @@ class ActionsController extends x2base {
         $model = $this->loadModel($id);
         if(isset($_POST['Actions'])){
             $model->setX2Fields($_POST['Actions']);
+            $model->actionDescription = $_POST['Actions']['actionDescription'];
 
             $model->dueDate = Formatter::parseDateTime($model->dueDate);
             if($model->completeDate){
@@ -652,6 +643,30 @@ class ActionsController extends x2base {
      */
     public function actionUncompleteSelected(){
         $this->updateSelected('uncomplete');
+    }
+
+    /**
+     * Updates several actions at once (complete, uncomplete)
+     * @param string $operation the type of update happening
+     */
+    protected function updateSelected($operation){
+        if(isset($_POST['actionIds']) && is_array($_POST['actionIds'])){
+            foreach(CActiveRecord::model('Actions')->findAllByPk($_POST['actionIds']) as $action){
+                if($action === null)
+                    continue;
+
+                $inGroup = false;
+                if(ctype_digit((string) $action->assignedTo)) // we have an action assigned to a group? Then check if we are in the group
+                    $inGroup = Groups::inGroup(Yii::app()->user->id, $action->assignedTo);
+
+                if(Yii::app()->user->getName() == $action->assignedTo || $action->assignedTo == 'Anyone' || $action->assignedTo == '' || $inGroup || Yii::app()->params->isAdmin){ // make sure current user can edit this action
+                    if($operation === 'complete')
+                        $action->complete();  // $this->completeNotification('admin',$action->id);
+                    elseif($operation === 'uncomplete')
+                        $action->uncomplete();
+                }
+            }
+        }
     }
 
     public function actionSaveShowActions(){
@@ -723,7 +738,9 @@ class ActionsController extends x2base {
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
             // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         }
-        if(!isset($_GET['ajax']) && !Yii::app()->request->isAjaxRequest)
+        if(isset($_GET['ajax']) || Yii::app()->request->isAjaxRequest)
+            echo 'Success';
+        else
             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
     }
 
@@ -763,7 +780,7 @@ class ActionsController extends x2base {
                     $this->redirect(array('/'.$model->associationType.'/'.$model->associationType.'/view', 'id' => $model->associationId)); // go back to the association
                 }else{ // no association
                     if($createNew)
-                        $this->redirect(array('/actions/actions/create'));  // go to blank 'create action' page
+                        $this->redirect(array('/actions/create'));  // go to blank 'create action' page
                     else
                         $this->redirect(array('index')); // view the action
                 }
@@ -775,7 +792,7 @@ class ActionsController extends x2base {
         }elseif(Yii::app()->request->isAjaxRequest){
             echo "Failure";
         }else{
-            $this->redirect(array('/actions/actions/invalid'));
+            $this->redirect(array('/actions/invalid'));
         }
     }
 
@@ -958,10 +975,7 @@ class ActionsController extends x2base {
             if($modelName = X2Model::getModelName($type)){
                 $linkModel = $modelName;
                 if(class_exists($linkModel)){
-                    if($linkModel == "X2Calendar")
-                        $linkSource = ''; // Return no data to disable autocomplete on actions/update
-                    else
-                        $linkSource = $this->createUrl(X2Model::model($linkModel)->autoCompleteSource);
+                    $linkSource = $this->createUrl(X2Model::model($linkModel)->autoCompleteSource);
                 }else{
                     $linkSource = "";
                 }
@@ -1012,11 +1026,6 @@ class ActionsController extends x2base {
         return $model;
     }
 
-
-    /***********************************************************************
-    * protected static methods
-    ***********************************************************************/
-
     /**
      * Performs the AJAX validation.
      * @param CModel the model to be validated
@@ -1025,30 +1034,6 @@ class ActionsController extends x2base {
         if(isset($_POST['ajax']) && $_POST['ajax'] === 'actions-form'){
             echo CActiveForm::validate($model);
             Yii::app()->end();
-        }
-    }
-
-    /**
-     * Updates several actions at once (complete, uncomplete)
-     * @param string $operation the type of update happening
-     */
-    protected function updateSelected($operation){
-        if(isset($_POST['actionIds']) && is_array($_POST['actionIds'])){
-            foreach(CActiveRecord::model('Actions')->findAllByPk($_POST['actionIds']) as $action){
-                if($action === null)
-                    continue;
-
-                $inGroup = false;
-                if(ctype_digit((string) $action->assignedTo)) // we have an action assigned to a group? Then check if we are in the group
-                    $inGroup = Groups::inGroup(Yii::app()->user->id, $action->assignedTo);
-
-                if(Yii::app()->user->getName() == $action->assignedTo || $action->assignedTo == 'Anyone' || $action->assignedTo == '' || $inGroup || Yii::app()->params->isAdmin){ // make sure current user can edit this action
-                    if($operation === 'complete')
-                        $action->complete();  // $this->completeNotification('admin',$action->id);
-                    elseif($operation === 'uncomplete')
-                        $action->uncomplete();
-                }
-            }
         }
     }
 

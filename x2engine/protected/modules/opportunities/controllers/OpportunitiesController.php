@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -62,8 +62,11 @@ class OpportunitiesController extends x2base {
 		);
 	}
 	public function actions() {
-        return array_merge(parent::actions(), array(
-		));
+		return array(
+			'inlineEmail'=>array(
+				'class'=>'InlineEmailAction',
+			),
+		);
 	}
 
 	public function actionGetItems(){
@@ -85,10 +88,6 @@ class OpportunitiesController extends x2base {
 		$model = $this->loadModel($id);
 		$model->associatedContacts = Contacts::getContactLinks($model->associatedContacts);
         if($this->checkPermissions($model,'view')){
-
-            // add opportunity to user's recent item list
-            User::addRecentItem('o', $id, Yii::app()->user->getId()); 
-
             parent::view($model, $type);
         }else{
             $this->redirect('index');
@@ -217,7 +216,7 @@ class OpportunitiesController extends x2base {
 					$model->$field=$_POST['Opportunity'][$field];
 					$fieldData=Fields::model()->findByAttributes(array('modelName'=>'Opportunity','fieldName'=>$field));
 						if($fieldData->type=='assignment' && $fieldData->linkType=='multiple'){
-							$model->$field=Fields::parseUsers($model->$field);
+							$model->$field=Accounts::parseUsers($model->$field);
 						}elseif($fieldData->type=='date'){
 							$model->$field=strtotime($model->$field);
 						}
@@ -299,6 +298,7 @@ class OpportunitiesController extends x2base {
 	 */
 	public function actionUpdate($id) {
 		$model=$this->loadModel($id);
+		$model->assignedTo = explode(' ',$model->assignedTo);
         if(!empty($model->associatedContacts))
             $model->associatedContacts = explode(' ',$model->associatedContacts);
 
@@ -311,8 +311,7 @@ class OpportunitiesController extends x2base {
 			$model->save();
 			$this->redirect(array('view','id'=>$model->id));
 		}
-        // Set assignedTo back into an array only before re-rendering the input box with assignees selected
-        $model->assignedTo = array_map(function($n){return trim($n,',');},explode(' ',$model->assignedTo));
+
 		$this->render('update',array(
 			'model'=>$model,
 		));

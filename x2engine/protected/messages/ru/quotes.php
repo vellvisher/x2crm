@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -142,7 +142,4 @@ return array (
 'invoice'=>'счет-фактура',
 'Opportunity Stage'=>'Возможность Стадия',
 'Quote Template'=>'Цитата шаблона',
-'Are you sure you want to delete this quote?'=>'Вы уверены, что хотите удалить эту цитату?',
-'This quote is locked. Are you sure you want to update this quote?'=>'Эта цитата заблокирован. Вы уверены, что хотите обновить эту цитату?',
-'This quote is locked.'=>'Эта цитата заблокирован.',
 );

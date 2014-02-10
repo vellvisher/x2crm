@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,15 +35,7 @@
  *****************************************************************************************/
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $auth = Yii::app()->authManager;
-//printR ((int) isset (Yii::app()->controller));
-$moduleName = '';
-if (!is_object (Yii::app()->controller->module) && isset ($moduleName)) {
-    //printR ($this->module, true);
-    $moduleName = $moduleName;
-} else {
-    $moduleName = Yii::app()->controller->module->name;
-}
-$actionAccess = ucfirst($moduleName).'Update';
+$actionAccess = ucfirst(Yii::app()->controller->module->name).'Update';
 $authItem = $auth->getAuthItem($actionAccess);
 // init qtip for contact names
 Yii::app()->clientScript->registerScript('contact-qtip', '
@@ -51,14 +43,14 @@ function refreshQtip() {
 	$("#relationships-grid .contact-name").each(function (i) {
 		var contactId = $(this).attr("href").match(/\\d+$/);
 
-		if(contactId !== null && contactId.length) {
+		if(typeof contactId != null && contactId.length) {
 			$(this).qtip({
 				content: {
 					text: "'.addslashes(Yii::t('app','loading...')).'",
 					ajax: {
 						url: yii.baseUrl+"/index.php/contacts/qtip",
 						data: { id: contactId[0] },
-						method: "get"
+						method: "get",
 					}
 				},
 				style: {
@@ -67,8 +59,7 @@ function refreshQtip() {
 		}
 	});
 
-	if($("#Relationships_Contacts_autocomplete").length == 1 &&
-        $("Relationships_Contacts_autocomplete").data ("uiAutocomplete")) {
+	if($("#Relationships_Contacts_autocomplete").length == 1) {
 		$("#Relationships_Contacts_autocomplete").data( "uiAutocomplete" )._renderItem = function( ul, item ) {
 			var label = "<a style=\"line-height: 1;\">" + item.label;
 			label += "<span style=\"font-size: 0.7em; font-weight: bold;\">";
@@ -156,7 +147,7 @@ $columns = array(
 		'type' => 'raw'
 	),
 );
-if(Yii::app()->user->checkAccess(ucfirst($moduleName).'Update', array('assignedTo' => $model->assignedTo)))
+if(Yii::app()->user->checkAccess(ucfirst(Yii::app()->controller->module->name).'Update', array('assignedTo' => $model->assignedTo)))
 	$columns[] = array(
 		'name' => 'deletion',
 		'header' => Yii::t("contacts", 'Delete'),

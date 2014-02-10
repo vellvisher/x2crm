@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -40,7 +40,6 @@
  * @package X2CRM.components.x2flow
  */
 abstract class X2FlowTrigger extends X2FlowItem {
-
 	/**
 	 * $var string the type of notification to create
 	 */
@@ -58,8 +57,6 @@ abstract class X2FlowTrigger extends X2FlowItem {
 			'=' => Yii::t('studio','equals'),
 			'>' => Yii::t('studio','greater than'),
 			'<' => Yii::t('studio','less than'),
-			'>=' => Yii::t('studio','greater than or equal to'),
-			'<=' => Yii::t('studio','less than or equal to'),
 			'<>' => Yii::t('studio','not equal to'),
 			'list' => Yii::t('studio','in list'),
 			'notList' => Yii::t('studio','not in list'),
@@ -196,40 +193,25 @@ abstract class X2FlowTrigger extends X2FlowItem {
 		}
 	}
 
-    /**
-     * Can be overriden in child class to give flow a default return value
-     */
-	public function getDefaultReturnVal ($flowId) { return null; }
-
-    /**
-     * Can be overriden in child class to extend behavior of validate method
-     */
-	public function afterValidate (&$params, $defaultErrMsg='', $flowId) { 
-        return array (false, Yii::t('studio', $defaultErrMsg)); 
-    }
-
 	/**
 	 * Checks if all all the params are ship-shape
 	 */
-	public function validate(&$params=array(), $flowId) {
+	public function validate(&$params=array()) {
 		$paramRules = $this->paramRules();
-		if(!isset($paramRules['options'],$this->config['options'])) {
-			return $this->afterValidate ($params, 'invalid rules/params', $flowId);
-        }
+		if(!isset($paramRules['options'],$this->config['options']))
+			return false;
 		$config = &$this->config['options'];
 
 		if(isset($paramRules['modelClass'])) {
 			$modelClass = $paramRules['modelClass'];
 			if($modelClass === 'modelClass') {
-				if(isset($config['modelClass'],$config['modelClass']['value'])) {
+				if(isset($config['modelClass'],$config['modelClass']['value']))
 					$modelClass = $config['modelClass']['value'];
-				} else {
-					return $this->afterValidate ($params, 'invalid rules/params', $flowId);
-                }
+				else
+					return false;
 			}
-			if(!isset($params['model']) || $modelClass !== get_class($params['model'])) {
-                return $this->afterValidate ($params, 'invalid rules/params', $flowId);
-            }
+			if($modelClass !== get_class($params['model']))
+				return false;
 		}
 		return $this->validateOptions($paramRules,$params);
 	}
@@ -241,12 +223,10 @@ abstract class X2FlowTrigger extends X2FlowItem {
 	 */
 	public function check(&$params) {
 		foreach($this->config['options'] as &$option) {
-            // modelClass is a special case, ignore it
-			if(!isset($option['name']) || $option['name'] === 'modelClass')	
+			if(!isset($option['name']) || $option['name'] === 'modelClass')	// modelClass is a special case, ignore it
 				continue;
 
-            // if it's optional and blank, forget about it
-			if($option['optional'] && ($option['value'] === null || $option['value'] === ''))	
+			if($option['optional'] && ($option['value'] === null || $option['value'] === ''))	// if it's optional and blank, forget about it
 				continue;
 
 			$value = $option['value'];
@@ -254,7 +234,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
 				$value = X2Flow::parseValue($value,$option['type'],$params);
 
 			if(!$this->evalComparison($params[$option['name']],$option['optional'],$value))
-				return array (false, Yii::t('studio', 'conditions not passed'));
+				return false;
 		}
 
 		return $this->checkConditions($params);
@@ -271,17 +251,16 @@ abstract class X2FlowTrigger extends X2FlowItem {
 					// continue;
 				$required = isset($condition['required']) && $condition['required'];
 
-                // required param missing
-				if(isset($condition['name']) && $required && !isset($params[$condition['name']]))	
-				    return array (false, Yii::t('studio', 'conditions not passed'));
+				if(isset($condition['name']) && $required && !isset($params[$condition['name']]))	// required param missing
+					return false;
 
 				if(array_key_exists($condition['type'],self::$genericConditions)) {
 					if(!self::checkCondition($condition,$params))
-				        return array (false, Yii::t('studio', 'conditions not passed'));
+						return false;
 				}
 			}
 		}
-		return array (true, '');
+		return true;
 	}
 
 	/**
@@ -296,8 +275,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
 		// $type = isset($condition['type'])? $condition['type'] : null;
 		$value = isset($condition['value'])? $condition['value'] : null;
 
-        // default to a doing basic value comparison
-		if(isset($condition['name']) && $condition['type'] === '') {	
+		if(isset($condition['name']) && $condition['type'] === '') {	// default to a doing basic value comparison
 			if(!isset($params[$condition['name']]))
 				return false;
 
@@ -314,19 +292,13 @@ abstract class X2FlowTrigger extends X2FlowItem {
 
 				if($operator === 'changed') {
 					$oldAttributes = $model->getOldAttributes();
-					return (!isset($oldAttributes[$attr]) && $model->isNewRecord) || 
-                        (in_array ($attr, array_keys ($oldAttributes)) && 
-                         $model->getAttribute($attr) != $oldAttributes[$attr]);
+					return !isset($oldAttributes[$attr]) || $model->getAttribute($attr) != $oldAttributes[$attr];
 				}
 
-				return self::evalComparison(
-                    $model->getAttribute($attr),$operator,
-                        X2Flow::parseValue($value,$field->type,$params));
+				return self::evalComparison($model->getAttribute($attr),$operator,X2Flow::parseValue($value,$field->type,$params));
 
 			case 'current_user':
-				return self::evalComparison(
-                    Yii::app()->user->getName(),$operator,
-                    X2Flow::parseValue($value,'assignment',$params));
+				return self::evalComparison(Yii::app()->user->getName(),$operator,X2Flow::parseValue($value,'assignment',$params));
 
 			case 'month':
 				return self::evalComparison((int)date('n'),$operator,$value);	// jan = 1, dec = 12
@@ -425,16 +397,13 @@ abstract class X2FlowTrigger extends X2FlowItem {
 	 */
 	public static function evalComparison($subject,$operator,$value=null) {
 
-        // $value needs to be a comma separated list
-		if(in_array($operator,array('list','notList','between'),true) && !is_array($value)) {	
+		if(in_array($operator,array('list','notList','between'),true) && !is_array($value)) {	// $value needs to be a comma separated list
 			$value = explode(',',$value);
 
 			$len = count($value);
-			for($i=0;$i<$len; $i++) {
-                // loop through the values, trim and remove empty strings
-				if(($value[$i] = trim($value[$i])) === '')		
+			for($i=0;$i<$len; $i++)
+				if(($value[$i] = trim($value[$i])) === '')		// loop through the values, trim and remove empty strings
 					unset($value[$i]);
-            }
 		}
 
 		switch($operator) {
@@ -442,15 +411,9 @@ abstract class X2FlowTrigger extends X2FlowItem {
 				return $subject == $value;
 
 			case '>':
-				return $subject > $value;
-
-			case '<':
-				return $subject < $value;
-
-			case '>=':
 				return $subject >= $value;
 
-			case '<=':
+			case '<':
 				return $subject <= $value;
 
 			case 'between':
@@ -707,40 +670,18 @@ abstract class X2FlowTrigger extends X2FlowItem {
 	}
 
 	/**
-	 * Gets all X2Flow trigger types.
-     *
-     * Optionally constrains the list to those with a property matching a value.
-     * @param string $queryProperty The property of each trigger to test
-     * @param mixed $queryValue The value to match trigger against
+	 * @param Array $vars variables to be used in this param's calculations
+	 * @return
 	 */
-	public static function getTriggerTypes($queryProperty = False,$queryValue = False) {
+	public static function getTriggerTypes() {
 		$types = array();
-		foreach(self::getTriggerInstances() as $class) {
-            $include = true;
-            if($queryProperty)
-                $include = $class->$queryProperty == $queryValue;
-            if($include)
-    	      $types[get_class($class)] = Yii::t('studio',$class->title);
+		foreach(scandir(Yii::getPathOfAlias('application.components.x2flow.triggers')) as $file) {
+			if(in_array($file,array('.','..','X2FlowTrigger.php','X2FlowSwitch.php','BaseTagTrigger.php'),true))
+				continue;
+			$class = self::create(array('type'=>substr($file,0,-4)));	// remove file extension and create instance
+			if($class !== null)
+				$types[get_class($class)] = Yii::t('studio',$class->title);
 		}
 		return $types;
 	}
-
-	/**
-	 * Gets X2Flow trigger title.
-     * 
-     * @param string $triggerType The trigger class name
-     * @return string the empty string or the title of the trigger with the given class name
-	 */
-	public static function getTriggerTitle ($triggerType) {
-		foreach(self::getTriggerInstances() as $class) {
-            if (get_class ($class) === $triggerType) {
-                return Yii::t('studio', $class->title);
-            }
-		}
-		return '';
-	}
-
-    public static function getTriggerInstances(){
-        return self::getInstances('triggers',array(__CLASS__,'X2FlowSwitch','BaseTagTrigger'));
-    }
 }

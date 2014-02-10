@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -80,7 +80,4 @@ return array (
 
 
 'A module with that name already exists'=>'Модуль с таким именем уже существует',
-'Unable to create custom module directory.'=>'Не удается создать каталог пользовательского модуля.',
-'Unable to create config file for custom module.'=>'Не удается создать файл конфигурации для пользовательского модуля.',
-'Unable to create table for custom module.'=>'Невозможно создать таблицу для пользовательского модуля.',
 );

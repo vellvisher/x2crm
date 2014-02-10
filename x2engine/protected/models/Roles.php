@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -43,27 +43,6 @@
  * @property string $users
  */
 class Roles extends CActiveRecord {
-
-    private static $_authNames;
-
-    /**
-     * Retrieves a list of restricted (non-permissible) role names.
-     */
-    public static function getAuthNames() {
-        if(!isset(self::$_authNames)) {
-            $x2Roles = Yii::app()->db->createCommand()
-                    ->select('name')
-                    ->from('x2_roles')
-                    ->queryColumn();
-            $authRoles = Yii::app()->db->createCommand()
-                    ->select('name')
-                    ->from('x2_auth_item')
-                    ->queryColumn();
-            self::$_authNames = array_diff($authRoles, $x2Roles);
-        }
-        return self::$_authNames;
-    }
-
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Roles the static model class
@@ -88,11 +67,6 @@ class Roles extends CActiveRecord {
 		return array(
 			array('name', 'required'),
 			array('name', 'length', 'max'=>250),
-			array('name','match',
-                'not'=>true,
-                'pattern'=> '/^('.implode('|',array_map(function($n){return preg_quote($n);},self::getAuthNames())).')/i',
-                'message'=>Yii::t('admin','The name you entered is reserved or belongs to the system.')),
-                        array('timeout', 'numerical', 'integerOnly' => true),
 			array('users', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
@@ -160,14 +134,14 @@ class Roles extends CActiveRecord {
 		$userRoles = Yii::app()->db->createCommand() // lookup the user's roles
 			->select('roleId')
 			->from('x2_role_to_user')
-			->where('type="user" AND userId=:userId')
-			->queryColumn(array(':userId'=>$userId));
+			->where('type="user" AND userId='.$userId)
+			->queryColumn();
 
 		$groupRoles = Yii::app()->db->createCommand()	// lookup roles of all the user's groups
 			->select('x2_role_to_user.roleId')
 			->from('x2_group_to_user')
-			->join('x2_role_to_user','x2_role_to_user.userId=x2_group_to_user.groupId AND x2_group_to_user.userId=:userId AND type="group"')
-			->queryColumn(array(':userId' => $userId));
+			->join('x2_role_to_user','x2_role_to_user.userId=x2_group_to_user.groupId AND x2_group_to_user.userId='.$userId.' AND type="group"')
+			->queryColumn();
 
 		$userRoles[$userId] = array_unique($userRoles + $groupRoles);  // combine all the roles, remove duplicates
 
@@ -176,38 +150,4 @@ class Roles extends CActiveRecord {
 
 		return $userRoles[$userId];
 	}
-
-    /**
-     * Returns the timeout of the current user.
-     *
-     * Selects and returns the maximum timeout between the timeouts of the
-     * current user's roles and the default timeout.
-     * @return Integer Maximum timeout value
-     */
-    public static function getUserTimeout($userId, $cache = true){
-        $cacheVar = 'user_roles_timeout'.$userId;
-        if($cache === true && ($timeout = Yii::app()->cache->get($cacheVar)) !== false)
-            return $timeout;
-
-        $userRoles = Roles::getUserRoles($userId);
-        $availableTimeouts = array();
-        foreach($userRoles as $role){
-            $timeout = Yii::app()->db->createCommand()
-                    ->select('timeout')
-                    ->from('x2_roles')
-                    ->where('id='.$role)
-                    ->queryScalar();
-            if(isset($timeout))
-                $availableTimeouts[] = $timeout;
-            unset($timeout);
-        }
-        $availableTimeouts[] = Yii::app()->params->admin->timeout;
-        if(count($availableTimeouts) > 0){
-            $timeout = max($availableTimeouts);
-            if($cache === true)
-                Yii::app()->cache->set($cacheVar, $timeout, 259200);
-            return $timeout;
-        }
-    }
-
 }

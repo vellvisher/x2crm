@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -68,9 +68,6 @@ class Accounts extends X2Model {
 				'class'=>'application.components.ERememberFiltersBehavior',
 				'defaults'=>array(),
 				'defaultStickOnClear'=>false
-			),
-			'InlineEmailModelBehavior' => array(
-				'class'=>'application.components.InlineEmailModelBehavior',
 			)
 		));
 	}
@@ -80,11 +77,49 @@ class Accounts extends X2Model {
 	 * Fixes the revenue field before validating.
 	 *
 	 * @return boolean whether validation should be executed. Defaults to true.
-	 *//*
+	 */
 	public function beforeValidate() {
 		$this->annualRevenue = Formatter::parseCurrency($this->annualRevenue,false);
 		return parent::beforeValidate();
-	}*/
+	}
+
+	/**
+	 * Retrieves a list of models based on the current search/filter conditions.
+	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+	 */
+	public static function getNames(){
+
+		$acctNames = array();
+		foreach(Yii::app()->db->createCommand()->select('id,name')->from('x2_accounts')->order('name ASC')->queryAll(false) as $row)
+			$acctNames[$row[0]] = $row[1];
+
+		return $acctNames;
+
+		// $arr=Accounts::model()->findAll();
+		// $names=array('0'=>'None');
+		// foreach($arr as $account){
+			// $names[$account->id]=$account->name;
+		// }
+		// return $names;
+	}
+
+	public static function parseUsers($arr){
+		$str="";
+        if(is_array($arr)){
+            $str=implode(', ',$arr);
+        }
+		return $str;
+	}
+
+	public static function parseUsersTwo($arr){
+		$str="";
+		if(is_array($arr)){
+            $arr=array_keys($arr);
+            $str=implode(', ',$arr);
+        }
+
+		return $str;
+	}
 
 	public static function parseContacts($arr){
 		$str="";
@@ -215,9 +250,9 @@ class Accounts extends X2Model {
 		return true;
 	}
 
-	public function search($pageSize=null, $uniqueId=null) {
+	public function search() {
 		$criteria = new CDbCriteria;
-		return $this->searchBase($criteria, $pageSize, $uniqueId);
+		return $this->searchBase($criteria);
 	}
 
     public function searchList($id, $pageSize=null) {
@@ -225,6 +260,7 @@ class Accounts extends X2Model {
 
 		if(isset($list)) {
 			$search = $list->queryCriteria();
+
 
 			$this->compareAttributes($search);
 

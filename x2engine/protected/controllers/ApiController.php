@@ -1,7 +1,8 @@
 <?php
+
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -76,8 +77,7 @@ class ApiController extends x2base {
 	public function filters() {
 		return array(
 			'noSession',
-            'available',
-			'authenticate - voip,webListener,targetedContent,x2cron',
+			'authenticate - voip,webListener,x2cron',
 			'validModel + create,view,lookup,update,delete,relationships,tags',
 			'checkCRUDPermissions + create,view,lookup,update,delete',
 		);
@@ -87,12 +87,8 @@ class ApiController extends x2base {
 		$actions = array();
 		if(class_exists('WebListenerAction'))
 			$actions['webListener'] = array('class' => 'WebListenerAction');
-		if(class_exists('TargetedContentAction'))
-			$actions['targetedContent'] = array('class' => 'TargetedContentAction');
 		if(class_exists('X2CronAction'))
 			$actions['x2cron'] = array('class' => 'X2CronAction');
-		if(class_exists('EmailImportAction'))
-			$actions['dropbox'] = array('class'=>'EmailImportAction');
 		return $actions;
 	}
 
@@ -107,14 +103,13 @@ class ApiController extends x2base {
 	 */
 	public function actionCheckPermissions($action, $username = null, $api = 0) {
 		$access = true; // Default: permissive if no auth item exists
-		$this->log("Checking user permissions for API transaction.");
+		Yii::log("Checking permissions...",'api');
 		$auth = Yii::app()->authManager;
 		$item = $auth->getAuthItem($action);
 		$authenticated = $auth->getAuthItem('DefaultRole');
 		if (isset($item)) {
 			$access = false; // Auth item exists; set true only through verification
 			$userId = null;
-            $access = Yii::app()->params->isAdmin;
 			$access = $authenticated->checkAccess($action);
 
 			if (!$access) { // Skip this if we already have access
@@ -126,11 +121,11 @@ class ApiController extends x2base {
 			}
 
 			if ($userId != null && !$access) { // Skip this if we already have access
-				$this->log("Verifying that user with id=$userId can perform action $action...");
+				Yii::log("Verifying that user with id=$userId can perform action $action...",'api');
 				$access = $access || $userId == 1;
 				if (!$access) {
 					// Check role-based permissions:
-					$this->log('Checking for role-based privileges...');
+					Yii::log('Checking for role-based privileges...','api');
 					$roles = RoleToUser::model()->findAllByAttributes(array('userId' => $userId));
 					foreach ($roles as $role) {
 						$access = $access || $auth->checkAccess($action, $role->roleId);
@@ -138,7 +133,7 @@ class ApiController extends x2base {
 				}
 			}
 		} elseif($this->action->id != 'checkPermissions')
-			$this->log(sprintf("Auth item %s not found. Permitting action %s.",$action,$this->action->id));
+			Yii::log(sprintf("Auth item %s not found. Permitting action %s.",$action,$this->action->id),'api');
 
 		if ($api == 1) { // API model:
 			// The method is being called as an action, most likely from APIModel
@@ -168,13 +163,9 @@ class ApiController extends x2base {
 		$model = $this->getModel(true);
 		$model->setX2Fields($_POST);
 
-        if ($this->modelClass === 'Contacts' && isset ($_POST['x2_key'])) {
-            $model->trackingKey = $_POST['x2_key']; // key is read-only, won't be set by setX2Fields
-        }
-
 		$setUserFields = false;
 		// $scenario = 'Changelog behavior in effect.';
-		if(!empty($_POST['createDate'])){ // If create date is being manually set, i.e. an import, don't overwrite
+		if(!empty($model->createDate)){ // If create date is being manually set, i.e. an import, don't overwrite
 			$model->disableBehavior('changelog');
 			$setUserFields = true;
 			// $scenario = 'Changelog behavior disabled; create date not empty.';
@@ -219,12 +210,13 @@ class ApiController extends x2base {
 					$message .= " with name {$model->name}";
 					break;
 			}
+			$this->addResponseProperty('suModel',Yii::app()->suModel->attributes);
 			$this->_sendResponse(200,$message);
 		} else { // API model creation failure
 			$this->addResponseProperty('modelErrors',$model->errors);
 			switch ($this->modelClass) {
 				case 'Contacts':
-					$this->log(sprintf('Failed to save record of type %s due to errors: %s', $this->modelClass, CJSON::encode($model->errors)));
+					Yii::log(sprintf('Failed to save record of type %s due to errors: %s', $this->modelClass, CJSON::encode($model->errors)), 'api');
 					$msg = $this->validationMsg('create', $model);
 					// Special lead failure notification in the app and through email:
 
@@ -239,7 +231,7 @@ class ApiController extends x2base {
 					$subject = "Web Lead Failure";
 					if(!Yii::app()->params->automatedTesting){
 						// Send notification of failure
-						$responderId = Credentials::model()->getDefaultUserAccount(Credentials::$sysUseId['systemNotificationEmail'],'email');
+						$responderId = Credentials::model()->getUserDefaultAccount(Credentials::$sysUseId['systemNotificationEmail'],'email');
 						if($responderId != Credentials::LEGACY_ID) { // Using configured 3rd-party email account
 							$this->sendUserEmail(array('to'=>array(array($to,'X2CRM Administrator'))),$subject,$msg,null,$responderId);
 						}else{ // Using plain old PHP mail
@@ -268,7 +260,7 @@ class ApiController extends x2base {
 					$this->_sendResponse(500, $msg);
 					break;
 				default:
-					$this->log(sprintf('Failed to save record of type %s due to errors: %s', $this->modelClass, CJSON::encode($model->errors)));
+					Yii::log(sprintf('Failed to save record of type %s due to errors: %s', $this->modelClass, CJSON::encode($model->errors)), 'api');
 					// Errors occurred
 					$msg = "<h1>Error</h1>";
 					$msg .= sprintf("Couldn't create model <b>%s</b> due to errors:", $this->modelClass);
@@ -364,9 +356,7 @@ class ApiController extends x2base {
 		$attrs = $_POST;
 		unset($attrs['user']);
 		unset($attrs['userKey']);
-        $tempModel = new $this->modelClass;
-        $tempModel->setX2Fields($attrs);
-        $attrs = array_filter($tempModel->getAttributes());
+
 		$model = X2Model::model($this->modelClass)->findByAttributes($attrs);
 
 		// Did we find the requested model? If not, raise an error
@@ -670,21 +660,21 @@ class ApiController extends x2base {
 	 * Checks the GET parameters for a valid model class.
 	 */
 	public function checkValidModel(){
-		$this->log("Checking for valid model class.");
+		Yii::log("Checking for valid model class...", 'api');
 		$noModel = empty($_GET['model']);
 		if(!$noModel)
 			$noModel = preg_match('/^\s*$/', $_GET['model']);
 		if($noModel){
-			$this->log('Parameter "model" missing.');
+			Yii::log('Parameter "model" missing.', 'api');
 			$this->_sendResponse(400, "Model class name required."); // .'$_GET='.var_export($_GET,1).'; $_POST='.var_export($_POST,1).'; uri='.$_SERVER['REQUEST_URI']);
 		}
 		if(!class_exists($_GET['model'])){
-			$this->log("Class {$_GET['model']} not found.");
+			Yii::log("Class {$_GET['model']} not found.", 'api');
 			$this->_sendResponse(501, "Model class \"{$_GET['model']}\" not found or does not exist.");
 		}
 		$modelRef = new $_GET['model'];
 		if(get_parent_class($modelRef) != 'X2Model'){
-			$this->log("Class {$_GET['model']} is not a child of X2Model.");
+			Yii::log("Class {$_GET['model']} is not a child of X2Model.", 'api');
 			$this->_sendResponse(403, "Model class \"{$_GET['model']}\" is not a child of X2Model and cannot be used in API calls.");
 		}
 		// We're all clear to proceed
@@ -698,7 +688,7 @@ class ApiController extends x2base {
 	 */
 	public function filterAuthenticate($filterChain) {
 		$haveCred = false;
-		$this->log("Checking user record.");
+		Yii::log("Checking user record.", 'api');
 		if (Yii::app()->request->requestType == 'POST') {
 			$haveCred = isset($_POST['userKey']) && isset($_POST['user']);
 			$params = $_POST;
@@ -711,42 +701,19 @@ class ApiController extends x2base {
 			$this->user = User::model()->findByAttributes(array('username' => $params['user'], 'userKey' => $params['userKey']));
 			if ((bool) $this->user) {
 				Yii::app()->suModel = $this->user;
-				if(!empty($this->user->userKey)){
-                    Yii::app()->params->groups = Groups::getUserGroups($this->user->id);
-                    Yii::app()->params->roles = Roles::getUserRoles($this->user->id);
-                    // Determine if the API user is admin (so that Yii::app()->params->isAdmin gets set properly):
-                    $roles = RoleToUser::model()->findAllByAttributes(array('userId' => $this->user->id));
-                    $access = false;
-                    $auth = Yii::app()->authManager;
-					foreach ($roles as $role) {
-						$access = $access || $auth->checkAccess('AdminIndex', $role->roleId);
-					}
-                    if($access)
-                        Yii::app()->params->isAdmin = true;
+				if (!empty($this->user->userKey))
 					$filterChain->run();
-                } else
+				else
 					$this->_sendResponse(403, "User \"{$this->user->username}\" cannot use API; userKey not set.");
 			} else {
-				$this->log("Authentication failed; invalid user credentials; IP = {$_SERVER['REMOTE_ADDR']}; get or post params =  " . CJSON::encode($params).'');
+				Yii::log("Authentication failed; invalid user credentials; IP = {$_SERVER['REMOTE_ADDR']}; get or post params =  " . CJSON::encode($params).'', 'api');
 				$this->_sendResponse(401, "Invalid user credentials.");
 			}
 		} else {
-			$this->log('No user credentials provided; IP = '.$_SERVER['REMOTE_ADDR']);
+			Yii::log('No user credentials provided; IP = '.$_SERVER['REMOTE_ADDR'],'api');
 			$this->_sendResponse(401, "No user credentials provided.");
 		}
 	}
-
-    /**
-     * Sends the appropriate response if X2CRM is locked.
-     * 
-     * @param type $filterChain
-     */
-    public function filterAvailable($filterChain) {
-        if(is_int(Yii::app()->locked)) {
-            $this->_sendResponse(503,"X2CRM is currently undergoing maintenance. Please try again later.");
-        }
-        $filterChain->run();
-    }
 
 	/**
 	 * Basic permissions check filter.
@@ -768,7 +735,7 @@ class ApiController extends x2base {
 		if($level)
 			$filterChain->run();
 		else {
-			$this->log("User \"{$this->user->username}\" denied API action; does not have permission for $module$action",'application.automation.api');
+			Yii::log("User \"{$this->user->username}\" denied API action; does not have permission for $module$action",'api');
 			$this->_sendResponse(403, 'This user does not have permission to perform operation "'.$action."\" on model <b>{$this->modelClass}</b>");
 		}
 	}
@@ -851,10 +818,6 @@ class ApiController extends x2base {
 		return $msg;
 	}
 
-    public function log($message,$level='trace') {
-        Yii::log($message,$level,'application.api'); 
-    }
-
 	/**
 	 * Respond to a request with a specified status code and body.
 	 *
@@ -895,9 +858,6 @@ class ApiController extends x2base {
 				case 501:
 					$message = 'The requested method is not implemented.';
 					break;
-                case 503:
-                    $message = "X2CRM is currently unavailable.";
-                    break;
 			}
 
 			// servers don't always have a signature turned on
@@ -963,5 +923,4 @@ class ApiController extends x2base {
 			$this->_sendResponse(400, sprintf("No parameters matching primary key column(s) <b>%s</b> for model <b>%s</b>.",implode('-',$pkc),$this->modelClass));
 		}
 	}
-
 }

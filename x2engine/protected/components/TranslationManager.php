@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -65,11 +65,6 @@ if(!isset($messagePath))
 
 // die($messagePath);
 $targetFile = '';
-if(isset($_GET['file'])){
-    if(strpos($_GET['file'],'/')!==false){
-        throw new CHttpException(400,'This file is not within allowed translations paths. Do not repeat this request.');
-    }
-}
 if(isset($_GET['file']) && file_exists($messagePath.'/template/'.$_GET['file']))
 	$targetFile = $_GET['file'];
 
@@ -278,7 +273,7 @@ function addLine(object) {
 		</td>\
 		<td>';
 
-	for(var i=0; i<langPacks.length; i++) {
+	for(i=0; i<langPacks.length; i++) {
 		newEntry += '\
 			<div class="language '+langPacks[i]+'">'+langPacks[i]+'</div>\
 			<div class="translation '+langPacks[i]+'">\
@@ -379,7 +374,7 @@ function removeLine(object) {
 <!-- Main window - view, edit and translations -->
 <div class="content-container">
 <div class="content">
-<form method="POST" action="<?php echo Yii::app()->controller->createAbsoluteUrl('/admin/translationManager',array('file'=>$targetFile)); ?>" id="translationForm">
+<form method="POST" action="<?php echo Yii::app()->request->scriptUrl.'/admin/translationManager?file='.$targetFile; ?>" id="translationForm">
 <input type="hidden" name="file" value="<?php echo $_GET['file']; ?>">
 <table class="rounded" style="table-layout:fixed;">
 	<tr>
@@ -462,7 +457,7 @@ function removeLine(object) {
 	<div id="footer-logos">
 		<?php
 		$imghtml = CHtml::image(Yii::app()->theme->baseUrl.'/images/x2footer.png','');
-		echo CHtml::link($imghtml,array('/site/page','view'=>'about')); // Yii::app()->request->baseURL.'/index.php');
+		echo CHtml::link($imghtml,array('site/page','view'=>'about')); // Yii::app()->request->baseURL.'/index.php');
 		?>
 	</div>
 	Copyright &copy; <?php echo date('Y').' '.CHtml::link('X2Engine Inc.','http://www.x2engine.com');?>

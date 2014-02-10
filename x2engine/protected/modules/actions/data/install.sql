@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS x2_action_text;
-/*&*/
 DROP TABLE IF EXISTS x2_actions;
 /*&*/
 CREATE TABLE x2_actions	(
@@ -29,45 +27,41 @@ CREATE TABLE x2_actions	(
 	syncGoogleCalendarEventId TEXT,
     sticky                  TINYINT         DEFAULT 0,
     flowTriggered           TINYINT         DEFAULT 0,
-    timeSpent               INT             DEFAULT 0,
 	INDEX (assignedTo),
 	INDEX (type),
 	INDEX (associationType,associationId)
-) COLLATE = utf8_general_ci, ENGINE = INNODB;
+) COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS x2_action_text;
 /*&*/
 CREATE TABLE x2_action_text	(
-	id				INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	text            LONGTEXT,
-    actionId        INT             UNSIGNED,
-    INDEX(actionId),
-    CONSTRAINT action_id_key FOREIGN KEY (actionId) REFERENCES x2_actions (id) ON UPDATE CASCADE ON DELETE CASCADE
-) COLLATE = utf8_general_ci, ENGINE = INNODB;
+	actionId				INT				UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	text                    LONGTEXT
+) COLLATE = utf8_general_ci;
 /*&*/
 INSERT INTO `x2_modules`
 			(name,				title,				visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
-	VALUES	("actions",			"Actions",			1,			5,				1,			0,			0,			0,		0);
+	VALUES	("actions",			"Actions",			1,			0,				1,			0,			0,			0,		0);
 /*&*/
 INSERT INTO `x2_fields`
-(modelName,	fieldName,				attributeLabel,		modified,	custom,	type,		required,	readOnly,  linkType,   searchable,	isVirtual,	relevance, uniqueConstraint, safe)
+(modelName,	fieldName,				attributeLabel,		modified,	custom,	type,		required,	readOnly,  linkType,   searchable,	isVirtual,	relevance)
 VALUES
-("Actions",	"id",					"ID",					0,		0,		"varchar",		0,			1,		NULL,			0,		0,			"",         1,                  1),
-("Actions",	"assignedTo",			"Assigned To",			0,		0,		"assignment",	0,			0,		NULL,			0,		0,			"",         0,                  1),
-("Actions",	"subject",              "Subject",              0,		0,		"varchar",		1,			0,		NULL,			1,		0,			"High",     0,                  1),
-("Actions",	"actionDescription",    "Description",          0,		0,		"text",         0,			0,		NULL,			0,		0,			"",         0,                      1),
-("Actions",	"visibility",			"Visibility",			0,		0,		"visibility",		0,			0,		NULL,			0,		0,			"",         0,                  1),
-("Actions",	"associationId",		"Contact",				0,		0,		"varchar",		0,			0,		NULL,			0,		0,			"",         0,                  1),
-("Actions",	"associationType",		"Association Type",		0,		0,		"varchar",		0,			0,		NULL,			0,		0,			"",         0,                  1),
-("Actions",	"associationName",		"Association",			0,		0,		"varchar",		0,			0,		NULL,			0,		0,			"",         0,                  1),
-("Actions",	"dueDate",				"Due Date",				0,		0,		"dateTime",		0,			0,		NULL,			0,		0,			"",         0,                  1),
-("Actions",	"priority",				"Priority",				0,		0,		"varchar",		0,			0,		NULL,			0,		0,			"",         0,                  1),
-("Actions",	"type",					"Action Type",			0,		0,		"varchar",		0,			1,		NULL,			0,		0,			"",         0,                  1),
-("Actions",	"createDate",			"Create Date",			0,		0,		"dateTime",		0,			1,		NULL,			0,		0,			"",         0,                  1),
-("Actions",	"complete",				"Complete",				0,		0,		"varchar",		0,			1,		NULL,			0,		0,			"",         0,                  1),
-("Actions",	"reminder",				"Reminder",				0,		0,		"varchar",		0,			0,		NULL,			0,		0,			"",         0,                  1),
-("Actions",	"completedBy",			"Completed By",			0,		0,		"assignedTo",	0,			1,		NULL,			0,		0,			"",         0,                  1),
-("Actions",	"completeDate",			"Date Completed",		0,		0,		"dateTime",		0,			1,		NULL,			0,		0,			"",         0,                  1),
-("Actions",	"lastUpdated",			"Last Updated",			0,		0,		"dateTime",		0,			1,		NULL,			0,		0,			"",         0,                  1),
-("Actions",	"updatedBy",			"Updated By",			0,		0,		"varchar",		0,			1,		NULL,			0,		0,			"",         0,                  1),
-("Actions",	"allDay",				"All Day",				0,		0,		"boolean",		0,			0,		NULL,			0,		0,			"",         0,                  1),
-("Actions",	"color",				"Color",				0,		0,		"varchar",		0,			0,		NULL,			0,		0,			"",         0,                  1),
-("Actions", "timeSpent",            "Time Spent",           0,      0,      "int",          0,          1,      NULL,           0,      0,          "",         0,                  1);
+("Actions",	"id",					"ID",					0,		0,		"varchar",		0,			0,		NULL,			0,		0,			""),
+("Actions",	"assignedTo",			"Assigned To",			0,		0,		"assignment",	0,			0,		NULL,			0,		0,			""),
+("Actions",	"subject",              "Subject",              0,		0,		"varchar",		1,			0,		NULL,			1,		0,			"High"),
+("Actions",	"visibility",			"Visibility",			0,		0,		"varchar",		0,			0,		NULL,			0,		0,			""),
+("Actions",	"associationId",		"Contact",				0,		0,		"varchar",		0,			0,		NULL,			0,		0,			""),
+("Actions",	"associationType",		"Association Type",		0,		0,		"varchar",		0,			0,		NULL,			0,		0,			""),
+("Actions",	"associationName",		"Association",			0,		0,		"varchar",		0,			0,		NULL,			0,		0,			""),
+("Actions",	"dueDate",				"Due Date",				0,		0,		"dateTime",		0,			0,		NULL,			0,		0,			""),
+("Actions",	"priority",				"Priority",				0,		0,		"varchar",		0,			0,		NULL,			0,		0,			""),
+("Actions",	"type",					"Action Type",			0,		0,		"varchar",		0,			0,		NULL,			0,		0,			""),
+("Actions",	"createDate",			"Create Date",			0,		0,		"dateTime",		0,			0,		NULL,			0,		0,			""),
+("Actions",	"complete",				"Complete",				0,		0,		"varchar",		0,			0,		NULL,			0,		0,			""),
+("Actions",	"reminder",				"Reminder",				0,		0,		"varchar",		0,			0,		NULL,			0,		0,			""),
+("Actions",	"completedBy",			"Completed By",			0,		0,		"assignedTo",	0,			0,		NULL,			0,		0,			""),
+("Actions",	"completeDate",			"Date Completed",		0,		0,		"dateTime",		0,			0,		NULL,			0,		0,			""),
+("Actions",	"lastUpdated",			"Last Updated",			0,		0,		"dateTime",		0,			0,		NULL,			0,		0,			""),
+("Actions",	"updatedBy",			"Updated By",			0,		0,		"varchar",		0,			0,		NULL,			0,		0,			""),
+("Actions",	"allDay",				"All Day",				0,		0,		"boolean",		0,			0,		NULL,			0,		0,			""),
+("Actions",	"color",				"Color",				0,		0,		"varchar",		0,			0,		NULL,			0,		0,			"");

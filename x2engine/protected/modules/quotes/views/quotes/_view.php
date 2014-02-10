@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -46,7 +46,7 @@
 		echo CHtml::encode($data->assignedTo);
 	else {
 		$user=User::model()->findByAttributes(array('username'=>$data->assignedTo));
-		echo CHtml::link(CHtml::encode($user->firstName." ".$user->lastName),array('/users/users/view','id'=>$user->id));
+		echo CHtml::link(CHtml::encode($user->firstName." ".$user->lastName),array('users/view','id'=>$user->id));
 	}
 	?>
 	<br />

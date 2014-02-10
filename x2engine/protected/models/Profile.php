@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,32 +37,12 @@
 Yii::import('application.components.X2LinkableBehavior');
 Yii::import('application.modules.users.models.*');
 Yii::import('application.components.JSONFieldsBehavior');
-Yii::import('application.components.WidgetLayoutJSONFieldsBehavior');
-Yii::import('application.components.X2SmartSearchModelBehavior');
 
 /**
  * This is the model class for table "x2_profile".
  * @package X2CRM.models
  */
 class Profile extends CActiveRecord {
-
-    private $_isActive;
-
-    public function setIsActive ($isActive) {
-        if ($isActive === '0' || $isActive === 'false') {
-            $this->_isActive = 0;
-        } else if ($isActive === '1' || $isActive === 'true') {
-            $this->_isActive = 1;
-        }
-    }
-
-    public function getIsActive () {
-        if (isset ($this->_isActive)) {
-            return $this->_isActive;
-        } else {
-            return null;
-        }
-    }
 
     /**
      * Returns the static model of the specified AR class.
@@ -94,46 +74,12 @@ class Profile extends CActiveRecord {
             ),
             'JSONFieldsBehavior' => array(
                 'class' => 'application.components.JSONFieldsBehavior',
-                'transformAttributes' => array(
-                    'theme' => array(
+                'transformAttributes' => array('theme' => array(
                         'backgroundColor', 'menuBgColor', 'menuTextColor', 'pageHeaderBgColor',
                         'pageHeaderTextColor', 'activityFeedWidgetBgColor',
                         'activityFeedWidgetTextColor', 'backgroundImg', 'backgroundTiling',
                         'pageOpacity', 'themeName', 'private', 'owner', 'loginSound',
-                        'notificationSound', 'gridViewRowColorOdd', 'gridViewRowColorEven'),
-                ),
-            ),
-            'JSONFieldsDefaultValuesBehavior' => array(
-                'class' => 'application.components.JSONFieldsDefaultValuesBehavior',
-                'transformAttributes' => array(
-                    'miscLayoutSettings' => array(
-                        'themeSectionExpanded'=>true, // preferences theme sub section
-                        'unhideTagsSectionExpanded'=>true, // preferences tag sub section
-                        'x2flowShowLabels'=>true, // flow node labels
-                        'profileInfoIsMinimized'=>false, // profile page profile info section
-                        'fullProfileInfo'=>false, // profile page profile info section
-                    ),
-                ),
-            ),
-            'WidgetLayoutJSONFieldsBehavior' => array(
-                'class' => 'application.components.WidgetLayoutJSONFieldsBehavior',
-                'transformAttributes' => array (
-                    'profileWidgetLayout' => array (
-                        'EventsChartProfileWidget',
-                        'UsersChartProfileWidget',
-                        'ProfilesGridViewProfileWidget',
-                        'ContactsGridViewProfileWidget',
-                        'AccountsGridViewProfileWidget',
-                        'OpportunitiesGridViewProfileWidget',
-                        'MarketingGridViewProfileWidget',
-                        'ServicesGridViewProfileWidget',
-                        'QuotesGridViewProfileWidget',
-                        'DocViewerProfileWidget',
-                    )
-                )
-            ),
-            'X2SmartSearchModelBehavior' => array (
-                'class' => 'application.components.X2SmartSearchModelBehavior',
+                        'notificationSound', 'gridViewRowColorOdd', 'gridViewRowColorEven')),
             )
         );
     }
@@ -146,14 +92,14 @@ class Profile extends CActiveRecord {
         // will receive user inputs.
         return array(
             array('fullName, username, status', 'required'),
-            array('status, lastUpdated, disableNotifPopup, allowPost, disableAutomaticRecordTagging, disablePhoneLinks, resultsPerPage', 'numerical', 'integerOnly' => true),
+            array('status, lastUpdated, allowPost, resultsPerPage', 'numerical', 'integerOnly' => true),
             array('enableFullWidth,showSocialMedia,showDetailView', 'boolean'), //,showWorkflow
             array('emailUseSignature', 'length', 'max' => 10),
             array('startPage', 'length', 'max' => 30),
             array('googleId', 'unique'),
             array('fullName', 'length', 'max' => 60),
             array('username, updatedBy', 'length', 'max' => 20),
-            array('officePhone, extension, cellPhone, language', 'length', 'max' => 40),
+            array('officePhone, cellPhone, language', 'length', 'max' => 40),
             array('timeZone', 'length', 'max' => 100),
             array('widgets, tagLine, emailAddress', 'length', 'max' => 255),
             array('widgetOrder', 'length', 'max' => 512),
@@ -161,7 +107,7 @@ class Profile extends CActiveRecord {
             array('notes, avatar, gridviewSettings, formSettings, widgetSettings', 'safe'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('id, fullName, username, officePhone, extension, cellPhone, emailAddress, lastUpdated, language', 'safe', 'on' => 'search')
+            array('id, fullName, username, officePhone, cellPhone, emailAddress, lastUpdated, language', 'safe', 'on' => 'search')
         );
     }
 
@@ -183,7 +129,6 @@ class Profile extends CActiveRecord {
             'fullName' => Yii::t('profile', 'Full Name'),
             'username' => Yii::t('profile', 'Username'),
             'officePhone' => Yii::t('profile', 'Office Phone'),
-            'extension' => Yii::t('profile','Extension'),
             'cellPhone' => Yii::t('profile', 'Cell Phone'),
             'emailAddress' => Yii::t('profile', 'Email Address'),
             'notes' => Yii::t('profile', 'Notes'),
@@ -193,10 +138,6 @@ class Profile extends CActiveRecord {
             'updatedBy' => Yii::t('profile', 'Updated By'),
             'avatar' => Yii::t('profile', 'Avatar'),
             'allowPost' => Yii::t('profile', 'Allow users to post on your profile?'),
-            'disablePhoneLinks' => Yii::t('profile', 'Disable phone field links?'),
-            'disableAutomaticRecordTagging' => 
-                Yii::t('profile', 'Disable automatic record tagging?'),
-            'disableNotifPopup' => Yii::t('profile', 'Disable notifications pop-up?'),
             'language' => Yii::t('profile', 'Language'),
             'timeZone' => Yii::t('profile', 'Time Zone'),
             'widgets' => Yii::t('profile', 'Widgets'),
@@ -228,50 +169,15 @@ class Profile extends CActiveRecord {
     }
 
     /**
-     * Masks method in X2SmartSearchModelBehavior. Enables sorting by lastLogin and isActive.
-     */
-    public function getSort () {
-        $attributes = array();
-        foreach($this->owner->attributes as $name => $val) {
-            $attributes[$name] = array(
-                'asc' => 't.'.$name.' ASC',
-                'desc' => 't.'.$name.' DESC',
-            );
-        }
-        $attributes['lastLogin'] = array (
-            'asc' => '(SELECT lastLogin from x2_users '.
-                'WHERE x2_users.username=t.username) ASC',
-            'desc' => '(SELECT lastLogin from x2_users '.
-                'WHERE x2_users.username=t.username) DESC',
-        );
-        $attributes['isActive'] = array (
-            'asc' => 
-                '(SELECT DISTINCT user '.
-                    'FROM x2_sessions '.
-                    'WHERE t.username=x2_sessions.user AND '.
-                        'x2_sessions.lastUpdated > '.(time () - 900).
-                ') DESC ',
-            'desc' => 
-                '(SELECT DISTINCT user '.
-                    'FROM x2_sessions '.
-                    'WHERE t.username=x2_sessions.user AND '.
-                        'x2_sessions.lastUpdated > '.(time () - 900).
-                ') ASC',
-        );
-        return $attributes;
-    }
-
-    /**
      * Retrieves a list of models based on the current search/filter conditions.
      * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
-    public function search($resultsPerPage=null, $uniqueId=null, $excludeAPI=false){
+    public function search(){
         // Warning: Please modify the following code to remove attributes that
         // should not be searched.
 
         $criteria = new CDbCriteria;
 
-        $criteria->distinct = true;
         $criteria->compare('id', $this->id);
         $criteria->compare('fullName', $this->fullName, true);
         $criteria->compare('username', $this->username, true);
@@ -279,61 +185,10 @@ class Profile extends CActiveRecord {
         $criteria->compare('cellPhone', $this->cellPhone, true);
         $criteria->compare('emailAddress', $this->emailAddress, true);
         $criteria->compare('status', $this->status);
-        $criteria->compare('tagLine',$this->tagLine,true);
 
-
-        /*
-        Filter on is active model property
-        */
-        if (isset ($_GET['Profile']) && is_array ($_GET['Profile']) &&
-            in_array ('isActive', array_keys ($_GET['Profile']))) {
-
-            $this->isActive = $_GET['Profile']['isActive'];
-            if (!isset ($this->isActive)) { // invalid isActive value
-            } else if ($this->isActive) { // select all users with new session records
-                $criteria->join = 
-                    'JOIN x2_sessions ON x2_sessions.user=username and '.
-                    'x2_sessions.lastUpdated > "'.(time () - 900).'"';
-            } else { // select all users with old session records or no session records
-                $criteria->join = 
-                    'JOIN x2_sessions ON (x2_sessions.user=username and '.
-                    'x2_sessions.lastUpdated <= "'.(time () - 900).'") OR '.
-                    'username not in (select x2_sessions.user from x2_sessions as x2_sessions)';
-            }
-        } 
-
-        if ($excludeAPI) {
-            if ($criteria->condition !== '') {
-                $criteria->condition .= ' AND username!=\'API\'';
-            } else { 
-                $criteria->condition = 'username!=\'API\'';
-            }
-        }
-
-        return $this->smartSearch ($criteria, $resultsPerPage, $uniqueId);
-    }
-
-    /**
-     * Sets a miscLayoutSetting JSON property to the specified value
-     *
-     * @param string $settingName The name of the JSON property
-     * @param string $settingValue The value that the JSON property will bet set to
-     */
-    public static function setMiscLayoutSetting ($settingName, $settingValue) {
-        $model = Profile::model ()->findByPk (Yii::app()->user->getId());
-        $settings = $model->miscLayoutSettings;
-        if (!in_array ($settingName, array_keys ($settings))) {
-            echo 'failure';
-            return;
-        }
-        $settings[$settingName] = $settingValue;
-        $model->miscLayoutSettings = $settings;
-        if (!$model->save ()) {
-            AuxLib::debugLog ('Error: setMiscLayoutSetting: failed to save model');
-            echo 'failure';
-        } else {
-            echo 'success';
-        }
+        return new CActiveDataProvider(get_class($this), array(
+                    'criteria' => $criteria,
+                ));
     }
 
     public static function setDetailView($value){
@@ -511,20 +366,17 @@ class Profile extends CActiveRecord {
                 unset($visibility[$i]);        // remove it from database fields
                 $updateRecord = true;
             }else{
-                $widgetList[$widgetNames[$i]] = array(
-                    'id' => 'widget_'.$widgetNames[$i], 'visibility' => $visibility[$i],
-                    'params' => array());
+                $widgetList[$widgetNames[$i]] = array('id' => 'widget_'.$widgetNames[$i], 'visibility' => $visibility[$i], 'params' => array());
             }
         }
 
         foreach($registeredWidgets as $class){   // check list of widgets in main cfg file
             if(!in_array($class, array_keys($widgetList))){        // if they aren't in the list,
-                $widgetList[$class] = array(
-                    'id' => 'widget_'.$class, 'visibility' => 1,
-                    'params' => array()); // add them at the bottom
+                $widgetList[$class] = array('id' => 'widget_'.$class, 'visibility' => 1, 'params' => array()); // add them at the bottom
 
                 $widgetNames[] = $class; // add new widgets to widgetOrder array
                 $visibility[] = 1;   // and visibility array
+
                 $updateRecord = true;
             }
         }
@@ -542,8 +394,7 @@ class Profile extends CActiveRecord {
         if(Yii::app()->user->isGuest) // no widgets if the user isn't logged in
             return array();
 
-        // if widget settings haven't been set, give them default values
-        if(Yii::app()->params->profile->widgetSettings == null){
+        if(Yii::app()->params->profile->widgetSettings == null){ // if widget settings haven't been set, give them default values
             $widgetSettings = array(
                 'ChatBox' => array(
                     'chatboxHeight' => 300,
@@ -585,7 +436,7 @@ class Profile extends CActiveRecord {
             else
                 return CHtml::link(Yii::t('app', '{name}\'s feed', array('{name}' => $this->fullName)), array($this->baseRoute.'/'.$this->id));
         } else{
-            return CHtml::link($this->fullName, Yii::app()->absoluteBaseUrl.'/index.php'.$this->baseRoute.'/'.$this->id);
+            return CHtml::link($this->fullName, Yii::app()->externalBaseUrl.'/index.php'.$this->baseRoute.'/'.$this->id);
         }
     }
 
@@ -669,9 +520,7 @@ class Profile extends CActiveRecord {
                 }
             }
         }catch(Exception $e){
-            if(isset($auth)){
-                $auth->flushCredentials();
-            }
+
         }
     }
 
@@ -805,19 +654,10 @@ class Profile extends CActiveRecord {
      */
     function initLayout(){
         $layout = array(
-            'left' => array(
-                'TopContacts' => array(
-                    'title' => 'Top Contacts',
-                    'minimize' => false,
-                ),
-                'RecentItems' => array(
-                    'title' => 'Recently Viewed',
-                    'minimize' => false,
-                ),
-            ),
+            'left' => array(),
             'center' => array(
-                'RecordViewChart' => array(
-                    'title' => 'Record View Chart',
+                'ActionHistoryChart' => array(
+                    'title' => 'Action History Chart',
                     'minimize' => false,
                 ),
                 'InlineTags' => array(
@@ -825,7 +665,7 @@ class Profile extends CActiveRecord {
                     'minimize' => false,
                 ),
                 'WorkflowStageDetails' => array(
-                    'title' => 'Process',
+                    'title' => 'Workflow',
                     'minimize' => false,
                 ),
                 'InlineRelationships' => array(
@@ -900,67 +740,38 @@ class Profile extends CActiveRecord {
         return $layout;
     }
 
-
     /*
       Private helper function to update users layout elements to match the set of layout
       elements specified in initLayout ().
      */
-    private function addRemoveLayoutElements($position, &$layout, $initLayout){
+
+    private function addRemoveCenterLayoutElements($layout, $initLayout){
 
         $changed = false;
 
-        $layoutWidgets = array_merge($layout[$position], $layout['hidden']);
-        if ($position === 'center') {
-            $initLayoutWidgets = array_merge($initLayout[$position], $initLayout['hidden']);
-        } else {
-            $initLayoutWidgets = $initLayout[$position];
-        }
+        $layoutCenterWidgets = array_merge($layout['center'], $layout['hidden']);
+        $initLayoutCenterWidgets = array_merge($initLayout['center'], $initLayout['hidden']);
 
-        // add new widgets
         $arrayDiff =
-                array_diff(array_keys($initLayoutWidgets), array_keys($layoutWidgets));
+                array_diff(array_keys($initLayoutCenterWidgets), array_keys($layoutCenterWidgets));
         foreach($arrayDiff as $elem){
-            //$layout[$position][$elem] = $initLayout[$position][$elem];
-            $layout[$position] = array($elem => $initLayout[$position][$elem]) + $layout[$position]; // unshift key-value pair
+            //$layout['center'][$elem] = $initLayout['center'][$elem];
+            $layout['center'] = array($elem => $initLayout['center'][$elem]) + $layout['center']; // unshift key-value pair
+            $changed = true;
+        }
+        $arrayDiff =
+                array_diff(array_keys($layoutCenterWidgets), array_keys($initLayoutCenterWidgets));
+        foreach($arrayDiff as $elem){
+            if($layout['center'][$elem])
+                unset($layout['center'][$elem]);
+            else if($layout['hidden'][$elem])
+                unset($layout['hidden'][$elem]);
             $changed = true;
         }
 
-        // remove obsolete widgets
-        $arrayDiff =
-                array_diff(array_keys($layoutWidgets), array_keys($initLayoutWidgets));
-        foreach($arrayDiff as $elem){
-            if(in_array ($elem, array_keys ($layout[$position]))) {
-                unset($layout[$position][$elem]);
-                $changed = true;
-            } else if($position === 'center' && in_array ($elem, array_keys ($layout['hidden']))) {
-                unset($layout['hidden'][$elem]);
-                $changed = true;
-            }
-        }
-
-        // ensure that widget properties are the same as those in the default layout
-        foreach($layout[$position] as $name=>$arr){
-            if (in_array ($name, array_keys ($initLayout[$position])) &&
-                $initLayout[$position][$name]['title'] !== $arr['title']) {
-
-                $layout[$position][$name]['title'] = $initLayout[$position][$name]['title'];
-                $changed = true;
-            }
-        }
-        if ($position === 'center') {
-            foreach($layout['hidden'] as $name=>$arr){
-                if (in_array ($name, array_keys ($initLayout[$position])) &&
-                    $initLayout[$position][$name]['title'] !== $arr['title']) {
-
-                    $layout['hidden'][$name]['title'] = $initLayout[$position][$name]['title'];
-                    $changed = true;
-                }
-            }
-        }
-
         if($changed){
-            $this->layout = json_encode($layout);
-            $this->update(array('layout'));
+            Yii::app()->params->profile->layout = json_encode($layout);
+            Yii::app()->params->profile->update(array('layout'));
         }
     }
 
@@ -970,56 +781,30 @@ class Profile extends CActiveRecord {
      * @return array
      */
     public function getLayout(){
-        $layout = $this->getAttribute('layout');
+        $layout = Yii::app()->params->profile->layout;
 
         $initLayout = $this->initLayout();
 
         if(!$layout){ // layout hasn't been initialized?
             $layout = $initLayout;
-            $this->layout = json_encode($layout);
-            $this->update(array('layout'));
+            Yii::app()->params->profile->layout = json_encode($layout);
+            Yii::app()->params->profile->update(array('layout'));
         }else{
             $layout = json_decode($layout, true); // json to associative array
-            $this->addRemoveLayoutElements('center', $layout, $initLayout);
-            $this->addRemoveLayoutElements('left', $layout, $initLayout);
-            $this->addRemoveLayoutElements('right', $layout, $initLayout);
+            $this->addRemoveCenterLayoutElements($layout, $initLayout);
         }
 
         return $layout;
     }
 
-    public function getHiddenProfileWidgetMenu () {
-        $profileWidgetLayout = $this->profileWidgetLayout;
-
-        $hiddenProfileWidgetsMenu = '';
-        $hiddenProfile = false;
-        foreach($profileWidgetLayout as $name => $widgetSettings){
-            $hidden = $widgetSettings['hidden'];
-            if ($hidden) {
-                $hiddenProfileWidgetsMenu .= '<li><span class="x2-hidden-widgets-menu-item profile-widget" id="'.$name.'">'.
-                    $widgetSettings['label'].'</span></li>';
-                $hiddenProfile = true;
-            }
-        }
-        $menu = '<div id="x2-hidden-profile-widgets-menu-container" style="display:none;">';
-        $menu .= '<ul id="x2-hidden-profile-widgets-menu" class="x2-hidden-widgets-menu-section">';
-        $menu .= $hiddenProfileWidgetsMenu;
-        $menu .= '<li><span class="no-hidden-profile-widgets-text" '.
-                 ($hiddenProfile ? 'style="display:none;"' : '').'>'.
-                 Yii::t('app', 'No Hidden Widgets').
-                 '</span></li>';
-        $menu .= '</ul>';
-        $menu .= '</div>';
-        return $menu;
-    }
-
     /**
      *  Returns an html list of hidden widgets used in the Widget Menu
+     *
      */
     public function getWidgetMenu(){
         $layout = $this->getLayout();
 
-        /*$menu = '<ul id="widget-menu">';
+        $menu = '<ul id="widget-menu">';
         foreach($layout['hidden'] as $name => $widget){
             $menu .= '<li><span class="x2-widget-menu-item" id="'.$name.'">'.$widget['title'].'</span></li>';
         }
@@ -1029,26 +814,7 @@ class Profile extends CActiveRecord {
         foreach($layout['hiddenRight'] as $name => $widget){
             $menu .= '<li><span class="x2-widget-menu-item widget-right" id="'.$name.'">'.$widget['title'].'</span></li>';
         }
-        $menu .= '</ul>';*/
-
-        // used to determine where section dividers should be placed
-        $hiddenCenter = !empty ($layout['hidden']);
-        $hiddenRight = !empty ($layout['hiddenRight']);
-
-        $menu = '<div id="x2-hidden-widgets-menu">';
-        $menu .= '<ul id="x2-hidden-center-widgets-menu" class="x2-hidden-widgets-menu-section">';
-        foreach($layout['hidden'] as $name => $widget){
-            $menu .= '<li><span class="x2-hidden-widgets-menu-item widget-center" id="'.$name.'">'.$widget['title'].'</span></li>';
-        }
         $menu .= '</ul>';
-        $menu .= '<ul id="x2-hidden-right-widgets-menu" class="x2-hidden-widgets-menu-section">';
-        $menu .= '<li '.(($hiddenCenter && $hiddenRight) ? '' : 'style="display: none;"').
-            'class="x2-hidden-widgets-menu-divider"></li>';
-        foreach($layout['hiddenRight'] as $name => $widget){
-            $menu .= '<li><span class="x2-hidden-widgets-menu-item widget-right" id="'.$name.'">'.$widget['title'].'</span></li>';
-        }
-        $menu .= '</ul>';
-        $menu .= '</div>';
 
         return $menu;
     }
@@ -1063,35 +829,4 @@ class Profile extends CActiveRecord {
         $this->update(array('layout'));
     }
 
-    /**
-     * Renders the avatar image with max dimension 95x95
-     * @param int $id the profile id 
-     */
-    public static function renderFullSizeAvatar ($id, $dimensionLimit=95) {
-        $model = Profile::model ()->findByPk ($id);
-        if(isset($model->avatar) && $model->avatar!='' && file_exists($model->avatar)) {
-            $imgSize = @getimagesize($model->avatar);
-            if(!$imgSize)
-                $imgSize = array(45,45);
-
-            $maxDimension = max($imgSize[0],$imgSize[1]);
-
-            $scaleFactor = 1;
-            if($maxDimension > $dimensionLimit)
-                $scaleFactor = $dimensionLimit / $maxDimension;
-
-            $imgSize[0] = round($imgSize[0] * $scaleFactor);
-            $imgSize[1] = round($imgSize[1] * $scaleFactor);
-            echo '<img id="avatar-image" width="'.$imgSize[0].'" height="'.$imgSize[1].
-                '" class="avatar-upload" '.
-                'src="'.Yii::app()->request->baseUrl.'/'.$model->avatar.'" />';
-        } else {
-            echo '<img id="avatar-image" width="'.$dimensionLimit.'" height="'.$dimensionLimit.'" src='.
-                Yii::app()->request->baseUrl."/uploads/default.png".'>';
-        }
-    }
-
-    public function getLastLogin () {
-        return $this->user['lastLogin'];
-    }
 }

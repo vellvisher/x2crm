@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -59,11 +59,11 @@ $('.search-form form').submit(function(){
 	'model'=>$model,
 )); ?>
 </div><!-- search-form -->
-<?php
+<?php 
 $this->widget('application.components.X2GridView', array(
 	'id'=>'invoices-grid',
 	'title'=>Yii::t('quotes','Invoices'),
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
 	'template'=> '<div class="page-title icon quotes">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->searchInvoice(),
 	// 'enableSorting'=>false,

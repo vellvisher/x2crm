@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -54,7 +54,7 @@ class X2FlowCreateEvent extends X2FlowAction {
             'options' => array(
                 array('name' => 'type', 'label' => Yii::t('studio', 'Post Type'), 'type' => 'dropdown', 'options' => $eventTypes),
                 array('name' => 'text', 'label' => Yii::t('studio', 'Text'), 'type' => 'text'),
-                array('name' => 'user', 'optional' => 1, 'label' => 'User (optional)', 'type' => 'dropdown', 'options' => array('' => '----------', 'auto' => 'Auto') + X2Model::getAssignmentOptions(false, false)),
+                // array('name'=>'user','label'=>'User','type'=>'dropdown','options'=>array(''=>'----------')+X2Model::getAssignmentOptions(false,false)),
                 array('name' => 'createNotif', 'label' => Yii::t('studio', 'Create Notification?'), 'type' => 'boolean', 'defaultVal' => true),
                 ));
     }
@@ -65,7 +65,7 @@ class X2FlowCreateEvent extends X2FlowAction {
         $event = new Events;
         $notif = new Notification;
 
-        $user = $this->parseOption('user', $params);
+        // $event->user = $this->parseOption('user'];
 
         $type = $this->parseOption('type', $params);
 
@@ -91,26 +91,11 @@ class X2FlowCreateEvent extends X2FlowAction {
             $event->type = 'feed';
             $event->subtype = $type;
             $event->text = $text;
-            if($user == 'auto' && isset($params['model']) && $params['model']->hasAttribute('assignedTo') && !empty($params['model']->assignedTo)){
-                $event->user = $params['model']->assignedTo;
-            }elseif(!empty($user)){
-                $event->user = $user;
-            }else{
-                $event->user = 'admin';
-            }
+            $event->user = 'admin';
         }
-        if(!$this->parseOption('createNotif', $params)) {
-            if (!$notif->save()) {
-                return array(false, array_shift($notif->getErrors()));
-            }
-        }
-
-        if ($event->save()) {
-            return array (true, "");
-        } else {
-            return array(false, array_shift($event->getErrors()));
-        }
-
+        if(!$this->parseOption('createNotif', $params))
+            $notif->save();
+        $event->save();
     }
 
 }

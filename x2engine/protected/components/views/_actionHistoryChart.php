@@ -1,7 +1,7 @@
-<?php
+<?php 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,7 +33,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
- 
+
+
+
 $this->widget('X2Chart', array (
 	'getChartDataActionName' => Yii::app()->request->getScriptUrl () . '/site/GetActionsBetweenAction',
 	'suppressChartSettings' => true,
@@ -53,13 +55,11 @@ $this->widget('X2Chart', array (
 		'note'=>Yii::t('app', 'Notes'),
 		'quotes'=>Yii::t('app', 'Quotes'),
 		'webactivity'=>Yii::t('app', 'Web Activity'),
-		'workflow'=>Yii::t('app', 'Process Actions'),
-		'time'=>Yii::t('app', 'Time Actions')
+		'workflow'=>Yii::t('app', 'Workflow Actions')
 	),
 	'chartType' => 'actionHistoryChart',
-	'getDataOnPageLoad' => true,
-	'hideByDefault' => $hideByDefault
-));
+	'getDataOnPageLoad' => true
+)); 
 
 ?>
 

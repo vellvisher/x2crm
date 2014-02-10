@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -47,22 +47,22 @@ class TopSites extends X2Widget {
 	}
 
 	public function run() {
-		$content=URL::model()->findAllByAttributes(
-            array('userid'=>Yii::app()->user->getId()),array('order'=>'timestamp DESC'));
+		$content=URL::model()->findAllByAttributes(array('userid'=>Yii::app()->user->getId()),array(
+			'order'=>'timestamp DESC',
+        ));
         $data = array();
         if(count($content)>0){
             foreach($content as $entry){
                 $dt['title'] = $entry->title;
-                if(strpos($entry->url,'http://') === false){
+                if(strpos($entry->url,'http://')===false){
                     $entry->url="http://".$entry->url;
                 }
                 $dt['url'] = $entry->url;
-                $dt['id'] = $entry->id;
                 $data[] = $dt;
             }
         }else{
             $dt['title'] = Yii::t('app',"Example");
-            $dt['url'] = "http://www.x2engine.com";
+            $dt['url'] = ".";
             $data[] = $dt;
         }
 		$this->render('topSites', array(
@@ -70,4 +70,3 @@ class TopSites extends X2Widget {
 		));
 	}
 }
-?>

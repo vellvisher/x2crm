@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -42,12 +42,9 @@ Child prototype of X2Chart
 function X2ActionHistoryChart (argsDict) {
 	X2Chart.call (this, argsDict);	
 
-	var thisX2Chart = this;
-
 	this.DEBUG = argsDict['DEBUG'];
-	this.dataStartDate = argsDict['dataStartDate'];
 
-	thisX2Chart.DEBUG && console.log ('dataStartDate = ' + this.dataStartDate);
+	var thisX2Chart = this;
 
 	var colors;
 	// color palette used for lines of action history chart
@@ -59,7 +56,6 @@ function X2ActionHistoryChart (argsDict) {
 		'#AB074F', // dark hot pink
 		//'#156A86', // dark blue
 		'#1B8FB5', // dark blue
-		'#FFC382',
 		'#3D1783', // dark purple
 		//'#5A1992',// deep purple
 		'#AACF7A',
@@ -68,6 +64,7 @@ function X2ActionHistoryChart (argsDict) {
 		//'#8DEB10',
 		'#C87010', // red rock
 		'#1D4C8C', // dark blue-purple
+		'#FFC382',
 		'#FFF882',
 		'#FF9CAD',
 		'#BAFFA1',
@@ -76,8 +73,8 @@ function X2ActionHistoryChart (argsDict) {
 		'#19FFF4',
 		'#A4F4FC',
 		'#99C9FF',
+		'#FFA8CE',
 		'#D099FF',
-		'#FCA74B',
 		'#E1A1FF',
 	];
 
@@ -87,7 +84,7 @@ function X2ActionHistoryChart (argsDict) {
 	});
 
 	this.cookieTypes = [
-		'startDate', 'endDate', 'dateRange', 'binSize', 'firstMetric', 'showRelationships'];
+		'startDate', 'endDate', 'binSize', 'firstMetric', 'showRelationships'];
 
 	/* 
 	set up event handlers which update action history chart on action 
@@ -125,28 +122,22 @@ function X2ActionHistoryChart (argsDict) {
 	});
 
 
-	//thisX2Chart.setDefaultSettings ();
+	thisX2Chart.setDefaultSettings ();
 
 	thisX2Chart.start ();
 
 }
 
-X2ActionHistoryChart.prototype = auxlib.create (X2Chart.prototype);
+X2ActionHistoryChart.prototype = Object.create (X2Chart.prototype);
 
-/*
-Sets initial state of chart setting ui elements
-*/
 X2ActionHistoryChart.prototype.setDefaultSettings = function () {
 	var thisX2Chart = this;
 
 	// start date picker default
-	if (thisX2Chart.dataStartDate) { 
+	if (thisX2Chart.actionsStartDate) { 
 		// default start date is beginning of action history
 		$('#' + thisX2Chart.chartType + '-chart-datepicker-from').datepicker(
-			'setDate', new Date (thisX2Chart.dataStartDate));
-	} else {
-		$('#' + thisX2Chart.chartType + '-chart-datepicker-from').datepicker(
-			'setDate', new Date ());
+			'setDate', new Date (thisX2Chart.actionsStartDate));
 	}
 
 	// end date picker default
@@ -161,9 +152,6 @@ X2ActionHistoryChart.prototype.setDefaultSettings = function () {
 
 };
 
-/*
-Filter function used by groupChartData to determine how chart data should be grouped
-*/
 X2ActionHistoryChart.prototype.chartDataFilter = function (dataPoint, type) {
 	var thisX2Chart = this;
 
@@ -173,49 +161,6 @@ X2ActionHistoryChart.prototype.chartDataFilter = function (dataPoint, type) {
 	} else {
 		return false;
 	}
-};
-
-/*
-Returns dictionary with keys equal to metric types and value equal to metric type
-labels
-*/
-X2ActionHistoryChart.prototype.getMetricTypes = function () {
-	var thisX2Chart = this;
-
-	var metricTypes = [];
-	$('#' + thisX2Chart.chartType + '-first-metric').children ().each (function () {
-		if (thisX2Chart.chartSubtype === 'pie' &&
-			$(this).val () === 'any') return;
-		metricTypes.push([$(this).val (), $(this).html ()]);
-	});
-
-	return metricTypes;
-};
-
-/*
-Add pie chart specific css rules
-*/
-X2ActionHistoryChart.prototype.postPieChartTearDown = function () {
-	var thisX2Chart = this;
-	$('#' + thisX2Chart.chartType + '-chart').removeClass ('pie');
-	$('#' + thisX2Chart.chartType + '-chart-legend').removeClass ('pie');
-	$('#' + thisX2Chart.chartType + '-bin-size-button-set').removeClass ('pie');
-	$('#' + thisX2Chart.chartType + '-datepicker-row').removeClass ('action-history-pie');
-	$('#' + thisX2Chart.chartType + '-top-button-row').removeClass ('pie');
-	$('#' + thisX2Chart.chartType + '-rel-chart-data-checkbox-container').removeClass ('pie');
-};
-
-/*
-Remove pie chart specific css rules
-*/
-X2ActionHistoryChart.prototype.postPieChartSetUp = function () {
-	var thisX2Chart = this;
-	$('#' + thisX2Chart.chartType + '-chart').addClass ('pie');
-	$('#' + thisX2Chart.chartType + '-chart-legend').addClass ('pie');
-	$('#' + thisX2Chart.chartType + '-bin-size-button-set').addClass ('pie');
-	$('#' + thisX2Chart.chartType + '-datepicker-row').addClass ('action-history-pie');
-	$('#' + thisX2Chart.chartType + '-top-button-row').addClass ('pie');
-	$('#' + thisX2Chart.chartType + '-rel-chart-data-checkbox-container').addClass ('pie');
 };
 
 

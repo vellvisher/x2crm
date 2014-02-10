@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -92,17 +92,6 @@ $form=$this->beginWidget('CActiveForm', array(
 <?php echo (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'];?>
 </textarea>
 		<br><br>
-        <hr />
-        <span class="mock-x2-form-label"><?php echo Yii::t('admin','Google Analytics (optional)'); ?></span><br />
-            <?php
-        foreach(array('public', 'internal') as $type){
-            echo $form->labelEx($model, "gaTracking_$type");
-            echo $form->textField($model, "gaTracking_$type", array('id' => "gaTracking_$type"));
-        }
-        echo '<br />';
-        echo Yii::t('admin', 'Enter property IDs to enable Google Analytics tracking. The public ID will be used on publicly-accessible web lead and service case forms. The internal one will be used within X2CRM, for tracking the activity of authenticated users.');
-        ?>
-    <br /><br /><hr />
 	<?php echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button'))."\n";?>
 	<?php //echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button'))."\n";?>
 <?php $this->endWidget();?>

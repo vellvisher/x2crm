@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,23 +34,16 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->setPageTitle(Yii::t('workflow', 'Process'));
-
-
 $isAdmin = (Yii::app()->params->isAdmin);
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('workflow','All Processes')),
+	array('label'=>Yii::t('workflow','All Workflows')),
 	array('label'=>Yii::t('app','Create'), 'url'=>array('create'), 'visible'=>$isAdmin),
 ));
-
-?>
-<div class='flush-grid-view'>
-<?php
 
 $this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider'=>$dataProvider,
 	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
-	'template'=> '<div class="page-title icon workflow"><h2>'.Yii::t('workflow','Processes').'</h2><div class="title-bar">{summary}</div></div>{items}',
+	'template'=> '<div class="page-title icon workflow"><h2>'.Yii::t('workflow','Workflows').'</h2><div class="title-bar">{summary}</div></div>{items}',
 	'summaryText' => Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
 	'enableSorting'=>false,
 	'columns'=>array(
@@ -72,4 +65,3 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		),
 	),
 )); ?>
-</div>

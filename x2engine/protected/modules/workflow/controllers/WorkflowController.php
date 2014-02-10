@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -88,14 +88,11 @@ class WorkflowController extends x2base {
 	
 	// Displays workflow table/funnel diagram
 	public function actionView($id) {
-        $dateRange=X2DateUtil::getDateRange();
+        $dateRange=$this->getDateRange();
 		if(isset($_GET['stage']) && is_numeric($_GET['stage']))
 			$viewStage = $_GET['stage'];
 		else
 			$viewStage = null;
-
-        // add workflow to user's recent item list
-        User::addRecentItem('w', $id, Yii::app()->user->getId()); 
 
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),'viewStage'=>$viewStage, 'dateRange'=>$dateRange,
@@ -286,7 +283,7 @@ class WorkflowController extends x2base {
 			$action->setScenario('workflow');
 
 			$action->createDate = Formatter::parseDate($_POST['Actions']['createDate']);
-            $action->completeDate = Formatter::parseDate($_POST['Actions']['completeDate']);
+			$action->completeDate = Formatter::parseDate($_POST['Actions']['completeDate']);
 			$action->actionDescription = $_POST['Actions']['actionDescription'];
 
 			if(isset($_POST['Actions']['completedBy']) && (Yii::app()->params->isAdmin || Yii::app()->params->admin->workflowBackdateReassignment))
@@ -304,8 +301,7 @@ class WorkflowController extends x2base {
 				
 				if($previouslyComplete)	// we're uncompleteing this thing
 					$this->updateWorkflowChangelog($action,'revert',$model);
-                
-                unset ($action->completeDate); // remove invalid value
+				
 			} else {
 				if($action->completeDate < $action->createDate)
 					$action->completeDate = $action->createDate;	// we can't have the completeDate before the createDate now can we
@@ -385,7 +381,7 @@ class WorkflowController extends x2base {
 				if(empty($workflowStatus['stages'][ -1*$workflowStatus['stages'][$stageNumber]['requirePrevious'] ]['complete']))
 					$previousCheck = false;
 			}
-			// is this stage OK to complete? if a comment is required, then is $comment empty?
+			// is this stage is OK to complete? if a comment is required, then is $comment empty?
 			if($previousCheck && (!$stage['requireComment'] || ($stage['requireComment'] && !empty($comment)))) {
 			
 			
@@ -407,8 +403,9 @@ class WorkflowController extends x2base {
 				$actionModels[0]->complete = 'Yes';
 				$actionModels[0]->completedBy = Yii::app()->user->getName();
 				// $actionModels[0]->actionDescription = $workflowId.':'.$stageNumber.$comment;
-                $actionModels[0]->actionDescription = $comment;
-				$actionModels[0]->save();
+				if($actionModels[0]->save()){
+                    $actionModels[0]->actionDescription = $comment;
+                }
 				
 				$model->updateLastActivity();
 				
@@ -525,7 +522,7 @@ class WorkflowController extends x2base {
 	public function actionGetStageMembers($workflowId,$stage,$start,$end,$range,$user) {
             
         
-        $dateRange=X2DateUtil::getDateRange();
+        $dateRange=$this->getDateRange();
         if(!empty($user)){
             $userString=" AND x2_actions.assignedTo='$user' ";
         }else{
@@ -704,7 +701,7 @@ class WorkflowController extends x2base {
 		$currentAmount=0;
 		$count=0;
 		foreach($models as $model){
-			$dateRange=X2DateUtil::getDateRange();
+			$dateRange=$this->getDateRange();
 			if(!empty($user)){
 				$userString=" AND x2_actions.assignedTo='$user' ";
 			}else{

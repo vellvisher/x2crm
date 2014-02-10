@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -84,10 +84,10 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->par
                 <div class="cell">
                     <?php echo $form->label($actionModel, 'associationType'); ?>
                     <?php
-                    echo $form->dropDownList($actionModel, 'associationType', array_merge(array('none' => Yii::t('app','None'), 'calendar' => Yii::t('calendar', 'Calendar')), $modelList), array(
+                    echo $form->dropDownList($actionModel, 'associationType', array_merge(array('none' => Yii::t('app','None')), $modelList), array(
                         'ajax' => array(
                             'type' => 'POST', //request type
-                            'url' => CController::createUrl('/actions/actions/parseType'), //url to call.
+                            'url' => CController::createUrl('/actions/parseType'), //url to call.
                             //Style: CController::createUrl('currentController/methodToCall')
                             'update' => '#', //selector to update
                             'success' => 'function(data){
@@ -108,11 +108,8 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || Yii::app()->par
                     }else{
                         $linkModel = null;
                     }
-                    if(!empty($linkModel) && class_exists($linkModel)){
-                        if($linkModel == 'X2Calendar')
-                            $linkSource = '';
-                        else
-                            $linkSource = $this->createUrl(X2Model::model($linkModel)->autoCompleteSource);
+                    if(class_exists($linkModel)){
+                        $linkSource = $this->createUrl(X2Model::model($linkModel)->autoCompleteSource);
                     }else{
                         $linkSource = "";
                     }

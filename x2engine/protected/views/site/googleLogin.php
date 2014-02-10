@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,19 +34,12 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::app()->clientScript->registerCssFile(Yii::app()->theme->getBaseUrl().'/css/login.css');
-
 $this->pageTitle = Yii::app()->name.' - Login';
 $admin = Admin::model()->findByPk(1);
-Yii::app()->clientScript->registerCss('googleLogin', "
-// fix menu shadow
+Yii::app()->clientScript->registerCss('fixMenuShadow', "
 #page .container {
 	position:relative;
 	z-index:2;
-}
-
-#google-login-logo {
-    margin: 8px 10px 0 -5px;
 }
 ", 'screen', CClientScript::POS_HEAD);
 ?>
@@ -62,14 +55,13 @@ Yii::app()->clientScript->registerCss('googleLogin', "
       s.parentNode.insertBefore(po, s);
     })();
 </script>
-<div class="container<?php echo (isset ($profileId) ? ' welcome-back-page' : ''); ?>" id="login-page">
-<div id="login-box">
 <div class="form" id="login-form">
     <div class="cell">
-        <?php echo CHtml::image(Yii::app()->baseUrl.'/images/x2engine_crm_login.png', 'X2Engine', array('id' => 'google-login-logo', 'width' => 80, 'height' => 71)); ?>
+        <?php echo CHtml::image(Yii::app()->baseUrl.'/images/x2engine_crm_login.png', 'X2Engine', array('id' => 'login-logo', 'width' => 74, 'height' => 84)); ?>
     </div>
     <?php if(isset($admin->googleIntegration) && $admin->googleIntegration == '1'){ ?>
         <div id="login-box">
+
             <div id="error-message">
                 <?php
                 if(isset($failure) && $failure == 'email'){
@@ -118,8 +110,6 @@ Yii::app()->clientScript->registerCss('googleLogin', "
         ?>
         <?php echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/mobile.png" id="mobile-icon" /> X2Touch Mobile', Yii::app()->getBaseUrl().'/index.php/x2touch', array('class' => 'x2touch-link')); ?>
     </div>
-</div>
-</div>
 </div>
 <script type="text/javascript">
 function signInCallback(authResult) {

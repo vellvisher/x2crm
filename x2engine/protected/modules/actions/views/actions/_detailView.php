@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -96,7 +96,7 @@ if($model->type=='note' || $model->type=='attachment') {
     <?php if($model->type=='email' || $model->type=='emailOpened') { ?>
         <tr>
             <td colspan="6" class="text-field">
-                <iframe style="width:100%;height:600px" src="<?php echo Yii::app()->controller->createAbsoluteUrl('/actions/actions/viewEmail',array('id'=>$model->id)); ?>"></iframe>
+                <iframe style="width:100%;height:600px" src="actions/viewEmail/<?php echo $model->id ?>"></iframe>
             </td>
         </tr>
     <?php } else { ?>
@@ -117,12 +117,7 @@ if ($model->associationType!="none") {
 			<?php echo $model->getAttributeLabel('associationName'); ?>
 		</td>
 		<td colspan="3">
-			<?php
-                            if ($model->associationType=="calendar")
-                                echo CHtml::link(Yii::t('calendar', "Calendar"), array('/'.$model->associationType.'/'));
-                            else
-                                echo CHtml::link($model->associationName,array('/'.$model->associationType.'/'.$model->associationId));
-                        ?>
+			<?php echo CHtml::link($model->associationName,array('/'.$model->associationType.'/'.$model->associationId)); ?>
 		</td>
 	</tr>
 

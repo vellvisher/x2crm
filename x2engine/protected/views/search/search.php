@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -39,7 +39,7 @@ function refreshQtip() {
 	$(".contact-name").each(function (i) {
 		var contactId = $(this).attr("href").match(/\\d+$/);
 
-		if(contactId !== null && contactId.length) {
+		if(typeof contactId != null && contactId.length) {
 			$(this).qtip({
 				content: {
 					text: "'.addslashes(Yii::t('app','loading...')).'",
@@ -61,7 +61,7 @@ $(function() {
 });
 ');
 ?>
-<div class='flush-grid-view'>
+
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'dataProvider' => $dataProvider,
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
@@ -71,7 +71,7 @@ $(function() {
 		array(
 			'name' => Yii::t('app','Name'),
 			'type' => 'raw',
-			'value' => '$data["#recordLink"]',
+			'value' => 'CHtml::link(CHtml::encode($data["name"]), "'.Yii::app()->request->baseUrl.'/index.php".$data["link"],$data["type"]=="Contact"?array("class"=>"contact-name"):"")', 
 		),
 		array(
 			'name' => Yii::t('app','Type'),
@@ -91,4 +91,3 @@ $(function() {
 	),
 ));
 ?>
-</div>

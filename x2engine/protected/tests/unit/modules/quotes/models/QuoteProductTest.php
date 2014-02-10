@@ -9,7 +9,7 @@ Yii::import('application.modules.quotes.models.*');
  * @package X2CRM.tests.unit.modules.quotes.models
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-class QuoteProductTest extends X2TestCase {
+class QuoteProductTest extends CTestCase {
 
 	public function testIsTotalAdjustment() {
 		foreach(array('totalPercent','totalLinear') as $adjType) {

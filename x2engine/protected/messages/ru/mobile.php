@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,17 +37,17 @@
 return array (
 // Text
 'Logout ({username})'=>'Выход ({username})',
-'New Record'=>'Новая запись',
+'New Record'=>'Новый рекорд',
 'Find Contacts'=>'Найти контакты',
-'Top Contacts'=>'Частые Контакты',
-'No top contacts for this user!'=>'Нет частых контактов для этого пользователя!',
+'Top Contacts'=>'Топ Контакты',
+'No top contacts for this user!'=>'Нет контактов на высшем для этого пользователя!',
 'Create Message'=>'Создать сообщение',
-'Message List'=>'Список сообщений',
-'Clear'=>'Очистить',
-'Search for a Contact'=>'Найти контакт',
-'Go to Full Site'=>'Перейти на полную версию сайта',
-'Who\'s Online'=>'Кто в онлайн',
+'Message List'=>'Список тем',
+'Clear'=>'ясно',
+'Search for a Contact'=>'Поиск Контакт',
+'Go to Full Site'=>'Перейти на главную сайта',
+'Who\'s Online'=>'Кто \ &#39;ы онлайн',
 'Back'=>'Назад',
-'No documents available.'=>'Нет доступных документов.',
-'No social items available.'=>'Нет доступных объектов.',
+'No documents available.'=>'Нет документов доступны.',
+'No social items available.'=>'Нет социальных экземпляров.',
 );

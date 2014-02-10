@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -43,7 +43,7 @@ Yii::import('application.models.X2LinkableBehavior');
 class ContactList extends X2List {
 
 	public static $modelName = 'Contacts';
-	public static $linkRoute = '/contacts/contacts/list';
+	public static $linkRoute = '/contacts/list';
 
 	/**
 	 * Behaviors for the model.
@@ -53,9 +53,9 @@ class ContactList extends X2List {
 		return array(
 			'X2LinkableBehavior'=>array(
 				'class'=>'X2LinkableBehavior',
-				'baseRoute'=>'/contacts/contacts',
-				'viewRoute'=>'/contacts/contacts/list',
-				'autoCompleteSource'=>'/contacts/contacts/getLists'
+				'baseRoute'=>'/contacts',
+				'viewRoute'=>'/contacts/list',
+				'autoCompleteSource'=>'/contacts/getLists'
 			)
 		);
 	}
@@ -75,11 +75,11 @@ class ContactList extends X2List {
 	 */
 	public static function getRoute($id) {
 		if($id=='all')
-			return array('/contacts/contacts/index');
+			return array('contacts/index');
 		else if (empty($id) || $id=='my')
-			return array('/contacts/contacts/viewMy');
+			return array('contacts/viewMy');
 		else
-			return array('/contacts/contacts/list','id'=>$id);
+			return array('contacts/list','id'=>$id);
 	}
 	
 	/**
@@ -89,7 +89,7 @@ class ContactList extends X2List {
 	 */
 	public function createLink() {
 		if(isset($this->id))
-			return CHtml::link($this->name,array($this->getDefaultRoute(),'id'=>$this->id));
+			return CHtml::link($this->name,array($this->getDefaultRoute().'/'.$this->id));
 		else
 			return $this->name;
 	}

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -61,7 +61,7 @@ class DocsController extends x2base {
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','view','create','createEmail','update','exportToHtml','changePermissions', 'delete', 'getItems', 'getItem', 'ajaxCheckEditPermission'),
+				'actions'=>array('index','view','create','createEmail','update','exportToHtml','changePermissions', 'delete', 'getItems', 'getItem'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -108,11 +108,8 @@ class DocsController extends x2base {
 			   !(($model->visibility==1 ||
 				($model->visibility==0 && $model->createdBy==Yii::app()->user->getName())) ||
 				Yii::app()->params->isAdmin|| $editFlag))
-			$this->redirect(array('/docs/docs/index'));
+			$this->redirect(array('docs/index'));
 
-        // add doc to user's recent item list
-        User::addRecentItem('d', $id, Yii::app()->user->getId());
-        X2Flow::trigger('RecordViewTrigger',array('model'=>$model));
 		$this->render('view', array(
 			'model' => $model,
 		));
@@ -122,21 +119,11 @@ class DocsController extends x2base {
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
 	 */
-	public function actionFullView($id,$json=0,$replace=0) {
+	public function actionFullView($id,$json=0) {
+
 		$model = $this->loadModel($id);
-        $response = array(
-            'body' => $model->text,
-            'subject' => $model->subject
-        );
-        if($replace)
-            foreach(array_keys($response) as $key)
-                $response[$key] = str_replace('{signature}', Yii::app()->params->profile->signature, $response[$key]);
-        if($json){
-            header('Content-type: application/json');
-            echo json_encode($response);
-        }else{
-            echo $response['body'];
-        }
+
+		echo $json ? CJSON::encode(array('body'=>$model->text,'subject'=>$model->subject)) : $model->text;
 	}
 
 	/**
@@ -171,7 +158,7 @@ class DocsController extends x2base {
 			$arr = $model->editPermissions;
 			if(isset($arr))
 				if(is_array($arr))
-					$model->editPermissions = Fields::parseUsers($arr);
+					$model->editPermissions = Accounts::parseUsers($arr);
 
 			$model->createdBy = Yii::app()->user->getName();
 			$model->createDate = time();
@@ -209,7 +196,7 @@ class DocsController extends x2base {
 			$model->editPermissions = '';
 			// $arr=$model->editPermissions;
 			// if(isset($arr))
-				// $model->editPermissions=Fields::parseUsers($arr);
+				// $model->editPermissions=Accounts::parseUsers($arr);
 
 			$model->createdBy = Yii::app()->user->getName();
 			$model->createDate = time();
@@ -243,7 +230,7 @@ class DocsController extends x2base {
 			$model->editPermissions = '';
 			// $arr=$model->editPermissions;
 			// if(isset($arr))
-				// $model->editPermissions=Fields::parseUsers($arr);
+				// $model->editPermissions=Accounts::parseUsers($arr);
 
 			$model->createdBy = Yii::app()->user->getName();
 			$model->createDate = time();
@@ -273,7 +260,7 @@ class DocsController extends x2base {
 				$model->attributes = $_POST['Docs'];
 				$arr=$model->editPermissions;
 
-				$model->editPermissions = Fields::parseUsers($arr);
+				$model->editPermissions = Accounts::parseUsers($arr);
 				if($model->save()) {
 					$this->redirect(array('view','id'=>$id));
 				}
@@ -313,50 +300,31 @@ class DocsController extends x2base {
 		));
 	}
 
-    public function titleUpdate($old_title, $new_title) {
-        if ((sizeof(Modules::model()->findAllByAttributes(array('name' => $new_title))) == 0) && ($old_title != $new_title)) {
-            Yii::app()->db->createCommand()->update('x2_modules',
-                    array('title' => $new_title,),
-                    'title=:old_title', array(':old_title' => $old_title));
-        }
-    }
-
-    /**
+	/**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param integer $id the ID of the model to be updated
 	 */
 	public function actionUpdate($id) {
-        $model = $this->loadModel($id);
-       if($model->type == null)
-        {
-            $model->scenario = 'menu';
-        }
-        $old_title= $model->name;
-        $new_title = $old_title;
-
-        if (isset($_POST['Docs']))
-        {
-            $new_title = $_POST['Docs']['name'];
-        }
-        $perm = $model->editPermissions;
-        $pieces = explode(', ', $perm);
-        if (Yii::app()->user->checkAccess('DocsAdmin') || Yii::app()->user->getName() == $model->createdBy || array_search(Yii::app()->user->getName(), $pieces) !== false || Yii::app()->user->getName() == $perm) {
-            if (isset($_POST['Docs'])) {
-                $model->attributes = $_POST['Docs'];
+		$model = $this->loadModel($id);
+		$perm = $model->editPermissions;
+		$pieces = explode(', ',$perm);
+		if(Yii::app()->user->checkAccess('DocsAdmin') || Yii::app()->user->getName()==$model->createdBy || array_search(Yii::app()->user->getName(),$pieces)!==false || Yii::app()->user->getName()==$perm) {
+			if(isset($_POST['Docs'])) {
+				$model->attributes = $_POST['Docs'];
                 $model->visibility = $_POST['Docs']['visibility'];
-                if ($model->save()) {
-                    $this->titleUpdate($old_title, $new_title);
-                    $event = new Events;
-                    $event->associationType = 'Docs';
-                    $event->associationId = $model->id;
-                    $event->type = 'doc_update';
-                    $event->user = Yii::app()->user->getName();
-                    $event->visibility = $model->visibility;
-                    $event->save();
-                    $this->redirect(array('update', 'id' => $model->id, 'saved' => true, 'time' => time()));
+				// $model=$this->updateChangeLog($model,'Edited');
+				if($model->save()) {
+					$event = new Events;
+					$event->associationType='Docs';
+					$event->associationId=$model->id;
+					$event->type='doc_update';
+					$event->user=Yii::app()->user->getName();
+					$event->visibility=$model->visibility;
+					$event->save();
+					$this->redirect(array('update','id'=>$model->id,'saved'=>true, 'time'=>time()));
                 }
-            }
+			}
 
 			$this->render('update',array(
 				'model'=>$model,
@@ -415,43 +383,12 @@ class DocsController extends x2base {
 
 	public function actionAutosave($id) {
 		$model = $this->loadModel($id);
-
-        $old_title= $model->name;
-        $new_title = $old_title;
-       if (isset($_POST['Docs']))
-        {
-            $new_title = $_POST['Docs']['name'];
-        }
-
 		if(isset($_POST['Docs'])) {
 			$model->attributes = $_POST['Docs'];
 			// $model = $this->updateChangeLog($model,'Edited');
-
-            if($model->save()) {
-                   if ($old_title != $new_title) {
-                      $this->titleUpdate($old_title, $new_title);
-                 }
-               echo Yii::t('docs', 'Saved at') . ' ' . Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('medium'), time());
+			if($model->save()) {
+				echo Yii::t('docs', 'Saved at') . ' ' . Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('medium'), time());
 			};
 		}
-    }
-
-    /**
-     * Echoes 'true' if User has permission, 'false' otherwise
-     * @param int id id of doc model  
-     */
-    public function actionAjaxCheckEditPermission ($id) {
-        if (!isset ($id)) {
-            echo 'failure';
-            return;
-        }
-        $doc = Docs::model ()->findByPk ($id);
-        if (isset ($doc)) {
-            $canEdit = $doc->checkEditPermission () ? 'true' : 'false';
-        } else {
-            $canEdit = 'false';
-        }
-        echo $canEdit;
-        return;
-    }
+	}
 }

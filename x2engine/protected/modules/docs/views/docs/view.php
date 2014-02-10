@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,8 +35,6 @@
  *****************************************************************************************/
 $this->setPageTitle($model->name);
 $themeUrl = Yii::app()->theme->getBaseUrl();
-
-
 Yii::app()->getClientScript()->registerScript('docIframeAutoExpand','
 $("#docIframe").load(function() {
 	$(this).height($(this).contents().height());
@@ -45,9 +43,17 @@ $(window).resize(function() {
 	$("#docIframe").height($("#docIframe").height(650).contents().height());
 });
 ',CClientScript::POS_READY);
-
-$title = Yii::t('docs','Document:');
-$this->renderPartial('_docPageHeader',compact('title','model'));
 ?>
+<div class="page-title icon docs"><h2><span class="no-bold"><?php echo Yii::t('docs','Document:'); ?></span> <?php echo $model->name; ?></h2>
 
-<iframe src="<?php echo $this->createUrl('/docs/docs/fullView',array('id'=>$model->id)); ?>" id="docIframe" frameBorder="0" scrolling="no" height="650" width="100%" style="background:#fff;overflow:hidden;"></iframe>
+<?php
+$perm=$model->editPermissions;
+$pieces=explode(", ",$perm);
+if(Yii::app()->user->checkAccess('DocsUpdate') && (Yii::app()->user->checkAccess('DocsAdmin') || Yii::app()->user->getName()==$model->createdBy || array_search(Yii::app()->user->getName(),$pieces)!==false || Yii::app()->user->getName()==$perm))
+	echo CHtml::link('<span></span>',array('/docs/docs/update','id'=>$model->id),array('class'=>'x2-button x2-hint icon edit right','title'=>Yii::t('docs','Edit')));
+    echo CHtml::link('<span></span>',array('/docs/docs/create','duplicate'=>$model->id),array('class'=>'x2-button icon copy right x2-hint','title'=>Yii::t('docs','Make a copy')));
+echo "<br>\n";
+?>
+</div>
+<iframe src="<?php echo $this->createUrl('/docs/docs/fullView/'.$model->id); ?>" id="docIframe" frameBorder="0" scrolling="no" height="650" width="100%" style="background:#fff;overflow:hidden;"></iframe>
+

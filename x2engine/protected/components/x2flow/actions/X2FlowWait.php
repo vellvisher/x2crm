@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -41,7 +41,6 @@
  */
 class X2FlowWait extends X2FlowAction {
 	public $title = 'Wait';
-    public $requiresCron = true;
 	public $info = 'Delay execution of the remaining steps until the specified time.';
 
 	public $flowId = null;
@@ -59,7 +58,6 @@ class X2FlowWait extends X2FlowAction {
 		return array(
 			'title' => Yii::t('studio',$this->title),
 			'info' => Yii::t('studio',$this->info),
-            'requiresCron' => $this->requiresCron,
 			'options' => array(
 				// array('name'=>'user','label'=>'User','type'=>'assignment','options'=>$assignmentOptions),	// just users, no groups or 'anyone'
 				// array('name'=>'type','label'=>'Type','type'=>'dropdown','options'=>$notifTypes),
@@ -69,30 +67,26 @@ class X2FlowWait extends X2FlowAction {
 			));
 	}
 
-	public function execute(&$params, $triggerLogId=null) {
+	public function execute(&$params) {
 		$options = &$this->config['options'];
-        $options['delay']['value']=$this->parseOption('delay',$params);
+
 		if(!is_array($this->flowPath) || !is_numeric($options['delay']['value']))
-			return array (false, "");
+			return false;
 
-		$time = X2FlowItem::calculateTimeOffset(
-            (int)$options['delay']['value'],$options['unit']['value']);
+		$time = X2FlowItem::calculateTimeOffset((int)$options['delay']['value'],$options['unit']['value']);
 
-		if($time === false) {
-			return array (false, "");
-        }
+		if($time === false)
+			return false;
 		$time += time();
 
-        // add 1 to the branch position in the flow path, to skip this action
-		$this->flowPath[count($this->flowPath)-1]++;	
+		$this->flowPath[count($this->flowPath)-1]++;	// add 1 to the branch position in the flow path, to skip this action
 
 		$cron = new CronEvent;
 		$cron->type = 'x2flow';
 		$cron->createDate = time();
 		$cronData = array(
 			'flowId'=>$this->flowId,
-			'flowPath'=>$this->flowPath,
-            'triggerLogId'=>$triggerLogId
+			'flowPath'=>$this->flowPath
 		);
 		$cron->time = $time;
 
@@ -101,12 +95,8 @@ class X2FlowWait extends X2FlowAction {
 			$cronData['modelClass'] = get_class($params['model']);
 		}
 		foreach(array_keys($params) as $param) {
-
-            // remove any models so the JSON doesn't get crazy long
-			if(is_object($params[$param]) && $params[$param] instanceof CActiveRecord){	
-				$tmpModel = $params['model'];
-                unset($params['model']);
-            }
+			if(is_object($params[$param]) && $params[$param] instanceof CActiveRecord)	// remove any models so the JSON doesn't get crazy long
+				unset($params['model']);
 		}
 
 		$cronData['params'] = $params;
@@ -114,14 +104,8 @@ class X2FlowWait extends X2FlowAction {
 		$cron->data = CJSON::encode($cronData);
 		// $cron->validate();
 		// die(var_dump($cron->getErrors()));
-        if(isset($tmpModel)){
-            $params['model']=$tmpModel;
-        }
-		if ($cron->save()) {
-			return array (true, "");
-        } else {
-			return array (false, "");
-        }
+
+		return $cron->save();
 		// $notif->user = $this->parseOption('user',$params);
 
 	}

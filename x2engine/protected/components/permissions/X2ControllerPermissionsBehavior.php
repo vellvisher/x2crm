@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -41,54 +41,27 @@
  */
 class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
 
-    /**
-     * Extension of a base Yii function, this method is run before every action
-     * in a controller. If true is returned, it procedes as normal, otherwise
-     * it will redirect to the login page or generate a 403 error.
-     * @param string $action The name of the action being executed.
-     * @return boolean True if the user can procede with the requested action
-     */
     public function beforeAction($action = null) {
-        if(is_int(Yii::app()->locked) && !Yii::app()->user->checkAccess('GeneralAdminSettingsTask')) {
-            $this->owner->appLockout();
-        }
+		//return false;
 		$auth = Yii::app()->authManager;
 		$params = array();
-        if(empty($action))
-            $action = $this->owner->getAction()->getId();
-        elseif(is_string($action)){
-            $action = $this->owner->createAction($action);
-        }
-        $actionId=$action->getId();
-        // These actions all have a model provided with them but its assignment should not be checked for an exception.
-        // They either have permission for this action or they do not.
+		$action = $this->owner->getAction()->getId();
 		$exceptions = array('updateStageDetails','deleteList','updateList','userCalendarPermissions','exportList','updateLocation');
         if(class_exists($this->owner->modelClass)){
             $model=X2Model::model($this->owner->modelClass);
         }
-		if(isset($_GET['id']) && !in_array($actionId,$exceptions) && !Yii::app()->user->isGuest && isset($model)) {
-            $retrieved = false;
- 			if ($model->hasAttribute('assignedTo')) { // If we have an assignment field, we may have an exception in the permissions
-               $model=X2Model::model($this->owner->modelClass)->findByPk($_GET['id']);
-               $retrieved = true;
-               if($model!==null){ // Pass the assigned to into the params array to be used for biz rules.
+		if(isset($_GET['id']) && !in_array($action,$exceptions) && !Yii::app()->user->isGuest && isset($model)) {
+			if ($model->hasAttribute('assignedTo')) {
+				$model=X2Model::model($this->owner->modelClass)->findByPk($_GET['id']);
+                if($model!==null){
                     $params['assignedTo']=$model->assignedTo;
                 }
             }
-            if($model->hasAttribute('createdBy')){ // If we have a created by field, we may have an exception in the permissions
-                if(!$retrieved) // Skip fetching if it's here already
-                    $model = X2Model::model($this->owner->modelClass)->findByPk($_GET['id']);
-                if($model !== null){ // Pass the assigned to into the params array to be used for biz rules.
-                    $params['createdBy'] = $model->createdBy;
-                }
-            }
 		}
-        
-        // Generate the proper name for the auth item
-		$actionAccess = ucfirst($this->owner->getId()) . ucfirst($actionId);
+
+		$actionAccess = ucfirst($this->owner->getId()) . ucfirst($this->owner->getAction()->getId());
 		$authItem = $auth->getAuthItem($actionAccess);
-        // Return true if the user is explicitly allowed to do it, or if there is no permission item, or if they are an admin
-		if(Yii::app()->user->checkAccess($actionAccess, $params) || is_null($authItem) || Yii::app()->params->isAdmin)
+		if(Yii::app()->user->checkAccess($actionAccess, $params) || is_null($authItem) || Yii::app()->user->getName() == 'admin')
 			return true;
 		elseif(Yii::app()->user->isGuest){
 			Yii::app()->user->returnUrl = Yii::app()->request->url;
@@ -147,13 +120,6 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
             return false;
     }
 
-    /**
-     * Format the left sidebar menu of links to remove items which a user is not
-     * allowed to perform due to role settings.
-     * @param array $array An array of menu items to be formatted
-     * @param array $params An array of special parameters to be used for a role's biz rule
-     * @return array The formatted list of menu items
-     */
     function formatMenu($array, $params = array()) {
         $auth = Yii::app()->authManager;
         foreach ($array as &$item) {

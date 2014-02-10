@@ -3,7 +3,7 @@
 return array(
     'name'=>"Calendar",
     'install'=>array(
-		implode(DIRECTORY_SEPARATOR,array(__DIR__,'data','install.sql')),
+		dirname(__FILE__) . '/data/install.sql',
 		array(
 			'INSERT INTO x2_form_layouts 
 						(id,model,version,layout,defaultView,defaultForm,createDate,lastUpdated) 
@@ -12,7 +12,7 @@ return array(
 			),
 	),
     'uninstall'=>array(
-		implode(DIRECTORY_SEPARATOR,array(__DIR__,'data','uninstall.sql')),
+		dirname(__FILE__) . '/data/uninstall.sql',
     ),
     'editable'=>false,
     'searchable'=>false,

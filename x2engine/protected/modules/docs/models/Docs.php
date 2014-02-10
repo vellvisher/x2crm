@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -83,26 +83,7 @@ class Docs extends X2Model {
 		);
 	}
 
-    public function rules() {
-
-        return array_merge(array(
-            array('name','menuCheck','on'=>'menu')
-        ),
-                parent::rules()
-                );
-    }
-
-    public function menuCheck($attr,$params=array()) {
-        $this->$attr;
-        $this->scenario = 'menu';
-
-        if(sizeof(Modules::model()->findAllByAttributes(array('name'=>$this->name))) > 0)
-        {
-            $this->addError('name', 'That name is not available.');
-        }
-      }
-
-    public function parseType() {
+	public function parseType() {
 		if (!isset($this->type))
 			$this->type = '';
 		switch ($this->type) {
@@ -184,7 +165,18 @@ class Docs extends X2Model {
 
 		if($model instanceof X2Model) {
 			if(get_class($model) !== 'Quote') {
-				$str = Formatter::replaceVariables($str, $model);
+				$matches = array();
+				preg_match_all('/{\w+}/',$str,$matches);
+
+				if(isset($matches[0])) {
+					$attributes = array();
+					foreach($matches[0] as &$match) {	// loop through the things (email body)
+						$attribute = substr($match, 1, -1); // remove { and }
+						if($model->hasAttribute($attribute))
+							$attributes[$match] = $model->renderAttribute($attribute,false,true); // get the correctly formatted attribute (which is already in HTML)
+					}
+					$str = strtr($str,$attributes);	// replace any attributes that were found
+				}
 			} else {
 				// Specialized, separate method for quotes that can use details from
 				// either accounts or quotes.
@@ -278,23 +270,5 @@ class Docs extends X2Model {
 		}
 		return $templateLinks;
 	}
-
-    /**
-     * @return bool true if user has edit permissions, false otherwise 
-     */
-    public function checkEditPermission () {
-        $perm = $this->editPermissions;
-        $pieces = explode(", ",$perm);
-        if (Yii::app()->user->checkAccess('DocsUpdate') && 
-            (Yii::app()->user->checkAccess('DocsAdmin') || 
-             Yii::app()->user->getName()==$this->createdBy || 
-             array_search(Yii::app()->user->getName(),$pieces)!==false || 
-             Yii::app()->user->getName()==$perm)) {
-
-             return true;
-        } else {
-            return false;
-        }
-    }
 
 }

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -71,24 +71,6 @@ class StudioController extends x2base {
 		$this->render('flowIndex');
 	}
 
-	public function actionTriggerLogs($pageSize=null) {
-        $triggerLogsDataProvider = new CActiveDataProvider('TriggerLog', array(
-                    'criteria' => array(
-                        'order' => 'triggeredAt DESC'
-                    ),
-                    'pagination'=>array(
-				        'pageSize' => !empty($pageSize) ?
-                            $pageSize :
-                            Profile::getResultsPerPage()
-                    ),
-                ));
-        $viewParams['triggerLogsDataProvider'] = $triggerLogsDataProvider;
-		$this->render('triggerLogs', array (
-            'triggerLogsDataProvider' => $triggerLogsDataProvider
-            )
-        );
-	}
-
 	public function actionDeleteFlow($id) {
 		$model = $this->loadModel($id);
 		$model->delete();
@@ -153,16 +135,14 @@ class StudioController extends x2base {
 
 	public function actionGetParams($name,$type) {
 
-		if($type === 'action') {
+		if($type === 'action')
 			$paramRules = X2FlowAction::getParamRules($name);	// X2Flow Actions
-		} elseif($type === 'trigger') {
+		elseif($type === 'trigger')
 			$paramRules = X2FlowTrigger::getParamRules($name);	// X2Flow Triggers
-		} elseif($type === 'condition') {
-            // generic conditions (for triggers and switches)
-			$paramRules = X2FlowTrigger::getGenericCondition($name); 
-		} else {
+		elseif($type === 'condition')
+			$paramRules = X2FlowTrigger::getGenericCondition($name); // generic conditions (for triggers and switches)
+		else
 			$paramRules = false;
-        }
 
 		if($paramRules !== false) {
 			if($type === 'condition') {
@@ -200,7 +180,7 @@ class StudioController extends x2base {
 			if($field->readOnly)
 				$data['readOnly'] = 1;
 			if($field->type === 'assignment' || $field->type === 'optionalAssignment' ) {
-				$data['options'] = X2FlowAction::dropdownForJson(X2Model::getAssignmentOptions(true, true));
+				$data['options'] = X2FlowAction::dropdownForJson(User::getNames());
 			} elseif($field->type === 'dropdown') {
 				$data['linkType'] = $field->linkType;
 				$data['options'] = X2FlowAction::dropdownForJson(Dropdowns::getItems($field->linkType));
@@ -219,40 +199,4 @@ class StudioController extends x2base {
 		}
 		echo CJSON::encode($fields);
 	}
-
-    function actionDeleteAllTriggerLogs ($flowId) {
-        if (isset ($flowId)) {
-            $triggerLogs = TriggerLog::model()->findAllByAttributes (array (
-                'flowId' => $flowId
-            ));
-            foreach ($triggerLogs as $log) {
-                $log->delete ();
-            }
-            echo "success";
-        } else {
-            echo "failure";
-        }
-    }
-
-    function actionDeleteAllTriggerLogsForAllFlows () {
-        $triggerLogs = TriggerLog::model()->findAll ();
-        foreach ($triggerLogs as $log) {
-            $log->delete ();
-        }
-        echo "success";
-    }
-
-    function actionDeleteTriggerLog ($id) {
-        if (isset ($id)) {
-            $triggerLog = TriggerLog::model()->findByAttributes (array (
-                'id' => $id
-            ));
-            if (!empty ($triggerLog)) {
-                $triggerLog->delete ();
-                echo "success";
-                return;
-            }
-        }
-        echo "failure";
-    }
 }

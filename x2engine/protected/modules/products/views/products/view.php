@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,35 +35,13 @@
  *****************************************************************************************/
 
 $themeUrl = Yii::app()->theme->getBaseUrl();
-
-$menuItems = array(
+$this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('products','Product List'), 'url'=>array('index')),
 	array('label'=>Yii::t('products','Create'), 'url'=>array('create')),
 	array('label'=>Yii::t('products','View')),
 	array('label'=>Yii::t('products','Update'), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('products','Delete'), 'url'=>'#', 
-		'linkOptions'=>array(
-			'submit'=>array('delete','id'=>$model->id),
-			'confirm'=>Yii::t('app','Are you sure you want to delete this item?')
-		)
-	),
-);
-
-$menuItems[] = array(
-	'label' => Yii::t('app', 'Print Record'), 
-	'url' => '#',
-	'linkOptions' => array (
-		'onClick'=>"window.open('".
-			Yii::app()->createUrl('/site/printRecord', array (
-				'modelClass' => 'Product', 
-				'id' => $model->id, 
-				'pageTitle' => Yii::t('app', 'Product').': '.$model->name
-			))."');"
-	)
-);
-
-$this->actionMenu = $this->formatMenu($menuItems);
-
+	array('label'=>Yii::t('products','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
+));
 $modelType = json_encode("Products");
 $modelId = json_encode($model->id);
 Yii::app()->clientScript->registerScript('widgetShowData', "
@@ -98,10 +76,9 @@ $this->widget('Publisher',
 		'associationType'=>'products',
 		'associationId'=>$model->id,
 		'assignedTo'=>Yii::app()->user->getName(),
-		'calendar' => false
+		'halfWidth'=>true
 	)
 );
 
 $this->widget('History',array('associationType'=>'products','associationId'=>$model->id));
 ?>
-</div>

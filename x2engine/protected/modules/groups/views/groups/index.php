@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -39,10 +39,6 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('groups','Create Group'), 'url'=>array('create')),
 ));
 
-?>
-<div class="flush-grid-view">
-<?php 
-
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'roles-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
@@ -64,4 +60,3 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		),
 	),
 )); ?>
-</div>

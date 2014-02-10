@@ -50,6 +50,8 @@ return array (
 'Select deals with status'=>'',
 
 // // Data Options
+'Last Week'=>'',
+'Last Month'=>'',
 'This Year'=>'',
 'Last Year'=>'',
 'All Time'=>'',

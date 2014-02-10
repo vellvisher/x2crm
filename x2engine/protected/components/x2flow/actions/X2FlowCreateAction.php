@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -54,13 +54,12 @@ class X2FlowCreateAction extends X2FlowAction {
 			'3' => Yii::t('actions','High')
 		);
 		// $assignmentOptions = array('{assignedTo}'=>'{'.Yii::t('studio','Owner of Record').'}') + X2Model::getAssignmentOptions(false,true);	// '{assignedTo}', groups, no 'anyone'
-		$assignmentOptions = array('{assignedTo}' => '{'.Yii::t('studio', 'Owner of Record').'}') + X2Model::getAssignmentOptions(false, true);	// '{assignedTo}', groups, no 'anyone'
+		$assignmentOptions = X2Model::getAssignmentOptions(false,true);	// '{assignedTo}', groups, no 'anyone'
 
 		return array(
 			'title' => Yii::t('studio',$this->title),
 			'options' => array(
 				// array('name'=>'attributes'),
-                array('name'=>'dueDate','label'=>Yii::t('actions','Due Date'),'type'=>'dateTime', 'optional'=>1),
 				array('name'=>'subject','label'=>Yii::t('actions','Subject'),'optional'=>1),
 				array('name'=>'description','label'=>Yii::t('actions','Description'),'type'=>'text'),
 				array('name'=>'assignedTo','label'=>Yii::t('actions','Assigned To'),'type'=>'dropdown','options'=>$assignmentOptions),
@@ -76,7 +75,6 @@ class X2FlowCreateAction extends X2FlowAction {
 		$action = new Actions;
 
 		$action->subject = $this->parseOption('subject',$params);
-        $action->dueDate = $this->parseOption('dueDate',$params);
 		$action->actionDescription = $this->parseOption('description',$params);
 		$action->priority = $this->parseOption('priority',$params);
 		$action->visibility = $this->parseOption('visibility',$params);
@@ -85,16 +83,12 @@ class X2FlowCreateAction extends X2FlowAction {
 		if(isset($params['model']))
 			$action->assignedTo = $this->parseOption('assignedTo',$params);
 
+		// replaceVariables($str, &$model, $vars = array(), $encode = false)
+
 		// if(isset($this->config['attributes']))
 			// $this->setModelAttributes($action,$this->config['attributes'],$params);
 
-        if ($action->save()) {
-            return array (
-                true,
-                Yii::t('studio', "View created action: ").$action->getLink ());
-        } else {
-            return array(false, array_shift($action->getErrors()));
-        }
+		return $action->save();
 
 
 

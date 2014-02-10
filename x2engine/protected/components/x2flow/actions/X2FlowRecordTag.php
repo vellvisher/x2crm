@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -41,7 +41,7 @@
  */
 class X2FlowRecordTag extends X2FlowAction {
 	public $title = 'Add or Remove Tags';
-	public $info = 'Enter a comma-separated list of tags to add to the record';
+	public $info = 'Enter a commna-separated list of tags to add to the record';
 
 	public function paramRules() {
 		$tagActions = array(
@@ -62,30 +62,13 @@ class X2FlowRecordTag extends X2FlowAction {
 	public function execute(&$params) {
 		$tags = Tags::parseTags($this->parseOption('tags',$params));
 
-        $retVal;
-        $model = $params['model'];
 		switch($this->parseOption('action',$params)) {
 			case 'add':
-				$retVal = $model->addTags($tags);
-                break;
+				return $params['model']->addTags($tags);
 			case 'remove':
-				$retVal = $model->removeTags($tags);
-                break;
+				return $params['model']->removeTags($tags);
 			case 'clear':
-				$retVal = $model->clearTags();
-                break;
+				return $params['model']->clearTags();
 		}
-        if ($retVal) {
-		    if(is_subclass_of ($model,'X2Model')) {
-                return array (
-                    true,
-                    Yii::t('studio', 'View updated record: ').$model->getLink ()
-                );
-            } else {
-                return array (true, "");
-            }
-        } else {
-            return array (false, "");
-        }
 	}
 }

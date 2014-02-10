@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,7 +36,7 @@
 
 /**
  * This is the model class for table "x2_form_versions".
- *
+ * 
  * @package X2CRM.models
  * @property integer $id
  * @property string $model
@@ -128,50 +128,4 @@ class FormLayout extends CActiveRecord {
 			'criteria'=>$criteria,
 		));
 	}
-
-    /**
-     * Returns fieldName, fieldLabel pairs for all fields for which the user has edit rights and
-     * which are present in the layout.
-     */
-    public function getEditableFieldsInLayout ($modelName) {
-        $editableFieldsFieldInfo = X2Model::model ($modelName)->getEditableFieldNames (false);
-
-        // Construct criteria for finding the right form layout.
-        $attributes = array('model'=>ucfirst($modelName),'defaultForm'=>1);
-
-        $layout = self::model()->findByAttributes($attributes);
-
-        $layoutData = json_decode((isset($layout)? $layout->layout : X2Model::getDefaultFormLayout($modelName)),true);
-
-        $editableFieldsInLayout = array ();
-	    if(isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
-		    foreach($layoutData['sections'] as &$section) {
-				foreach($section['rows'] as &$row) {
-					if(isset($row['cols'])) {
-						foreach($row['cols'] as &$col) {
-							if(isset($col['items'])) {
-								foreach($col['items'] as &$item) {
-
-                                    if(isset($item['name'],$item['labelType'],$item['readOnly'],
-                                        $item['height'],$item['width'])) {
-
-                                        $fieldName = preg_replace('/^formItem_/u','',$item['name']);
-
-                                        if(in_array (
-                                            $fieldName, array_keys ($editableFieldsFieldInfo))) {
-
-                                            $editableFieldsInLayout[$fieldName] =
-                                                $editableFieldsFieldInfo[$fieldName];
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return $editableFieldsInLayout;
-    }
-
 }

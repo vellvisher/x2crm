@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -52,10 +52,6 @@ class MediaController extends x2base {
      * @param integer $id the ID of the model to be displayed
      */
     public function actionView($id){
-
-        // add media object to user's recent item list
-        User::addRecentItem('m', $id, Yii::app()->user->getId()); 
-
         $this->render('view', array(
             'model' => $this->loadModel($id),
         ));
@@ -66,11 +62,7 @@ class MediaController extends x2base {
      */
     public function actionDownload($id){
         $model = $this->loadModel($id);
-        $filePath = $model->getPath();
-        if ($filePath != null)
-            $file = Yii::app()->file->set($filePath);
-        else
-            throw new CHttpException(404);
+        $file = Yii::app()->file->set($model->getPath());
         if($file->exists)
             $file->send();
         //Yii::app()->getRequest()->sendFile($model->fileName,@file_get_contents($fileName));
@@ -256,6 +248,10 @@ class MediaController extends x2base {
         if(Yii::app()->request->isPostRequest){
             // we only allow deletion via POST request
             $model = $this->loadModel($id);
+            if(file_exists("uploads/{$model->uploadedBy}/{$model->fileName}"))
+                unlink("uploads/{$model->uploadedBy}/{$model->fileName}");
+            else if(file_exists("uploads/{$model->fileName}"))
+                unlink("uploads/{$model->fileName}");
             $model->delete();
 
             // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -372,14 +368,9 @@ class MediaController extends x2base {
                 return false;
             }
         }catch(Google_AuthException $e){
-            if(isset($_SESSION['access_token']) || isset($_SESSION['token'])){ // If these are set it's possible the token expired and there is a refresh token available
-                $auth->flushCredentials(false); // Only flush the recently received information
-                return $this->printFolder($folderId); // Try again, it will use a refresh token if available this time, otherwise it will fail.
-            }else{
-                $auth->flushCredentials();
-                $auth->setErrors($e->getMessage());
-                return false;
-            }
+            $auth->flushCredentials();
+            $auth->setErrors($e->getMessage());
+            return false;
         }catch(Google_ServiceException $e){
             $auth->setErrors($e->getMessage());
             return false;

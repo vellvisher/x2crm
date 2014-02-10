@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -113,13 +113,11 @@ class MenuList extends X2Widget {
     protected function renderMenuItem($item) {
         if (isset($item['url'])) {
             $url = $item['url'];
-            $params = array();
-            if (!is_string($url)) {
-                $route = $url[0];
-                $params = array_splice($url,1);
-            }
-            $route = $this->getController()->createUrl($route,$params);
-            //Yii::trace('url|route='.(is_string ($url) ? $url : 'Array').'|'.$route); 
+            if (!is_string($url))
+                $url = $url[0];
+            $route = $this->getController()->createUrl($url);
+            $route=$route.'/';
+            Yii::trace('url|route='.$url.'|'.$route);
             $label = $this->linkLabelWrapper === null ? $item['label'] : '<' . $this->linkLabelWrapper . '>' . $item['label'] . '</' . $this->linkLabelWrapper . '>';
         if (isset($item['left'])) 
             return CHtml::link($label, $route, $this->leftOptions);

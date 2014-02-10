@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -129,6 +129,100 @@ class X2Calendar extends CActiveRecord
 		return $names;
 	}
 	
+/*	// get a list of calendar names that the current user has permission to view
+	public static function getViewableCalendarNames() {
+		$calendars = X2Calendar::model()->findAllByAttributes(array('googleCalendar'=>false));
+		
+		$names = array();
+		foreach($calendars as $calendar) {
+			$viewPermissions = explode(',', $calendar->viewPermission);
+			if (in_array(Yii::app()->user->name, $viewPermissions))  // current user has permission to view calendar?
+				$names["{$calendar->id}"] = $calendar->name;
+			else if (Yii::app()->user->name == 'admin' || // current user is admin?
+					Yii::app()->user->name == $calendar->createdBy) // current user created this calendar?
+				$names["{$calendar->id}"] = $calendar->name;
+			else { // check if user belongs to a group that can view this calendar
+				foreach($viewPermissions as $permission)
+					if(is_numeric($permission)) {
+						$groups = GroupToUser::model()->findAllByAttributes(array('groupId'=>$permission));
+						foreach($groups as $group)
+							if(Yii::app()->user->id == $group->userId)
+								$names["{$calendar->id}"] = $calendar->name;
+					}
+			}
+		}
+		
+		return $names;
+	}
+	
+	// get a list of calendar names that the current user has permission to view
+	public static function getViewableGoogleCalendarNames() {
+		$calendars = X2Calendar::model()->findAllByAttributes(array('googleCalendar'=>true));
+		
+		$names = array();
+		foreach($calendars as $calendar) {
+			$viewPermissions = explode(',', $calendar->viewPermission);
+			$viewPermissions = array_map('trim', $viewPermissions); // fix bug with extra space causing user names not to be found
+			if (in_array(Yii::app()->user->name, $viewPermissions))  // current user has permission to view calendar?
+				$names["{$calendar->id}"] = $calendar->name;
+			else if (Yii::app()->user->name == 'admin' || // current user is admin?
+					Yii::app()->user->name == $calendar->createdBy) // current user created calendar?
+				$names["{$calendar->id}"] = $calendar->name;
+			else { // check if user belongs to a group that can view this calendar
+				foreach($viewPermissions as $permission)
+					if(is_numeric($permission)) {
+						$groups = GroupToUser::model()->findAllByAttributes(array('groupId'=>$permission));
+						foreach($groups as $group)
+							if(Yii::app()->user->id == $group->userId)
+								$names["{$calendar->id}"] = $calendar->name;
+					}
+			}
+		}
+				
+		return $names;
+	}
+	
+	// get a list of calendar names that the current user has permission to edit
+	public static function getEditableCalendarNames() {
+		$calendars = X2Calendar::model()->findAll();
+		
+		foreach($calendars as $key=>$calendar)
+			if($calendar->googleCalendar && !$calendar->googleCalendarId)
+				unset($calendars[$key]);
+		
+		$names = array();
+		foreach($calendars as $calendar) {
+			$editPermissions = explode(',', $calendar->editPermission);
+			if (in_array(Yii::app()->user->name, $editPermissions)) // current user has permission to view calendar?
+				$names["{$calendar->id}"] = $calendar->name;
+			else if (Yii::app()->user->name == 'admin' || // current user is admin?
+					Yii::app()->user->name == $calendar->createdBy) // current user created this calendar?
+				$names["{$calendar->id}"] = $calendar->name;
+			else { // check if user belongs to a group that can view this calendar
+				foreach($editPermissions as $permission)
+					if(is_numeric($permission)) {
+						$groups = GroupToUser::model()->findAllByAttributes(array('groupId'=>$permission));
+						foreach($groups as $group)
+							if(Yii::app()->user->id == $group->userId)
+								$names["{$calendar->id}"] = $calendar->name;
+					}
+			}
+		}
+		
+		return $names;
+	}
+	
+	public static function getGoogleCalendarNames() {
+		$calendars = X2Calendar::model()->findAllByAttributes(array('googleCalendar'=>true));
+		
+		$names = array();
+		foreach($calendars as $calendar)
+			$names["{$calendar->id}"] = $calendar->name;
+		
+		return $names;
+	}
+	*/
+	
 	public static function getCalendarFilters() {
 		$user = User::model()->findByPk(Yii::app()->user->id);
 		$calendarFilters = explode(',', $user->calendarFilter);
@@ -235,14 +329,14 @@ class X2Calendar extends CActiveRecord
 	public function search() {
 		$criteria=new CDbCriteria;
 		$parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
-		if(!Yii::app()->user->checkAccess('CalendarAdminAccess')) // if not admin
+		if(Yii::app()->user->name != 'admin') // if not admin 
 			$criteria->condition = "createdBy='". Yii::app()->user->name . "'"; // user can only edit shared calendar they have created
 		$criteria->scopes=array('findAll'=>array($parameters));
 
 		return $this->searchBase($criteria);
 	}
 	
-	private function searchBase($criteria, $pageSize=null, $uniqueId=null) {
+	private function searchBase($criteria) {
 		$criteria->compare('name',$this->name,true);
 		
 		return new SmartDataProvider(get_class($this), array(

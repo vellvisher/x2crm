@@ -143,7 +143,4 @@ return array (
 '{user} completed an action: {action}'=>'{user} 작업을 완료 : {action}',
 'Stage {n}: {stage} was completed for {record}'=>'무대 {n} : {stage} 에 대한 완성 된 {record}',
 '{user} completed stage {n}: {stage} was completed for {record}'=>'{user} 완료 단계 {n} : {stage} 에 대한 완성 된 {record}',
-'Log Time'=>'로그인 시간',
-'Time started'=>'시간 시작',
-'Time ended'=>'종료 시간',
 );

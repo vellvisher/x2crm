@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,7 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
- 
+
 /**
  * Standalone model class for interaction with X2CRM's API
  *
@@ -174,7 +174,7 @@ class APIModel {
 		$ch = $this->_curlHandle("api/tags?".http_build_query(array(
 					'model' => $modelName,
 					'id' => $modelId
-				),'','&'));
+				)));
 		return json_decode(curl_exec($ch),1);
 	}
 
@@ -261,7 +261,7 @@ class APIModel {
 	public function modelCreateUpdate($modelName,$action,$attributes=array()) {
         $ccUrl = "api/$action/model/$modelName";
 		if($action=='update')
-			$ccUrl .= '?'.http_build_query(array('id'=>$this->id),'','&');
+			$ccUrl .= '?'.http_build_query(array('id'=>$this->id));
         $this->responseObject = $this->_send($ccUrl, array_merge($this->attributes, $attributes));
 		return $this->processResponse();
 	}
@@ -365,7 +365,7 @@ class APIModel {
 			//
 			// if "?" is there already, concatenate with "&". Otherwise, "?"
 			$appendParams = strpos($url,'?') !== false; // use "&" to concatenates
-			$url .= ($appendParams ? '&' : '?').http_build_query($authOpts,'','&');
+			$url .= ($appendParams ? '&' : '?').http_build_query($authOpts);
 		}
 		// Curl handle
 		$ch = curl_init($this->_baseUrl.'/'.$url);

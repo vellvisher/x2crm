@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -41,16 +41,7 @@ echo CHtml::ajaxLink(Yii::t('app','Just Me'), $justMeUrl,array('success'=>'funct
 <div id="myTags" <?php echo ($showAllUsers? 'style="display:none;"' : ''); ?>>
 <?php
 foreach($myTags as &$tag) {
-	echo 
-        '<span style="position:relative;" class="tag hide" tag-name="'.substr($tag['tag'],1).'">'.
-            CHtml::link(
-                CHtml::encode ($tag['tag']),
-                array(
-                    '/search/search','term'=>'#'.ltrim($tag['tag'],'#')
-                ),
-                array('class'=>'x2-link x2-tag')
-            ).
-        '</span>';
+	echo '<span style="position:relative;" class="tag hide" tag-name="'.substr($tag['tag'],1).'">'.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1)), array('class'=>'x2-link x2-tag')).'</span>';
 }
 ?>
 </div>
@@ -58,17 +49,7 @@ foreach($myTags as &$tag) {
 <div id="allTags"  <?php echo ($showAllUsers? '' : 'style="display:none;"'); ?>>
 <?php
 foreach($allTags as &$tag) {
-	echo 
-        '<span style="position:relative;" class="tag hide" tag-name="'.substr($tag['tag'],1).'">'.
-            CHtml::link(
-                CHtml::encode ($tag['tag']),
-                array(
-                    '/search/search',
-                    'term'=>'#'.ltrim($tag['tag'],'#'),
-                ),
-                array('class'=>'x2-link x2-tag')
-            ).
-        '</span>';
+	echo '<span style="position:relative;" class="tag hide" tag-name="'.substr($tag['tag'],1).'">'.CHtml::link($tag['tag'],array('/search/search?term=%23'.substr($tag['tag'],1)), array('class'=>'x2-link x2-tag')).' </span>';
 }
 ?>
 </div>

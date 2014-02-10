@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -61,8 +61,8 @@ class X2List extends CActiveRecord {
 		return array(
 			'X2LinkableBehavior'=>array(
 				'class'=>'X2LinkableBehavior',
-				'baseRoute'=>'/contacts/contacts/list',
-				'autoCompleteSource'=>'/contacts/contacts/getLists',
+				'baseRoute'=>'/contacts/list',
+				'autoCompleteSource'=>'/contacts/getLists',
 			)
 		);
 	}
@@ -108,12 +108,12 @@ class X2List extends CActiveRecord {
 	}
 
 	public function getDefaultRoute() {
-		return '/contacts/contacts/list';
+		return '/contacts/list';
 	}
 
 	public function createLink() {
 		if(isset($this->id))
-			return CHtml::link($this->name,array($this->getDefaultRoute(),'id'=>$this->id));
+			return CHtml::link($this->name,array($this->getDefaultRoute().'/'.$this->id));
 		else
 			return $this->name;
 	}
@@ -172,20 +172,20 @@ class X2List extends CActiveRecord {
 	}
 
 	public static function load($id) {
-         if(!Yii::app()->params->isAdmin) {
-             $condition = 't.visibility="1" OR t.assignedTo="Anyone"  OR t.assignedTo="'.Yii::app()->user->getName().'"';
-			 /* x2temp */
-			 $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-			 if(!empty($groupLinks))
-				 $condition .= ' OR t.assignedTo IN ('.implode(',',$groupLinks).')';
+        // if(Yii::app()->params->isAdmin) {
+            // $condition = 't.visibility="1" OR t.assignedTo="Anyone"  OR t.assignedTo="'.Yii::app()->user->getName().'"';
+			// /* x2temp */
+			// $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
+			// if(!empty($groupLinks))
+				// $condition .= ' OR t.assignedTo IN ('.implode(',',$groupLinks).')';
 
-			 $condition .= 'OR (t.visibility=2 AND t.assignedTo IN
-				 (SELECT username FROM x2_group_to_user WHERE groupId IN
-					 (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-		 } else {
-			 $condition='';
-		 }
-		return self::model()->with('listItems')->findByPk((int)$id,$condition);
+			// $condition .= 'OR (t.visibility=2 AND t.assignedTo IN
+				// (SELECT username FROM x2_group_to_user WHERE groupId IN
+					// (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
+		// } else {
+			// $condition='';
+		// }
+		return self::model()->with('listItems')->findByPk((int)$id,X2Model::model('Contacts')->getAccessCriteria());
 	}
 
 	/**
@@ -258,7 +258,7 @@ class X2List extends CActiveRecord {
 							$search->mergeWith($subSearch, $logicMode);
 							break;
 						case '>':
-							$search->compare($criterion->attribute, '>='.$thisDay, true, $logicMode); break;
+							$search->compare($criterion->attribute, '>='.$nextDay, true, $logicMode); break;
 						case '<':
 							$search->compare($criterion->attribute, '<'.$thisDay, true, $logicMode); break;
 						case 'notEmpty':
@@ -428,13 +428,13 @@ class X2List extends CActiveRecord {
 			else
 				$vcrData['next'] = '<li class="next">'.CHtml::link('>','javascript:void(0);',array('class'=>'x2-button disabled')).'</li>';
 			*/
-			if($vcrIndex > 0  && isset($vcrModels[0]))		// there's a record before the current one
-				$vcrData['prev'] = CHtml::link('<',array('view','id'=>$vcrModels[0]['id']),array('title'=>$vcrModels[0]['name'],'class'=>'x2-button'));
+			if($vcrIndex > 0)		// there's a record before the current one
+				$vcrData['prev'] = CHtml::link('<',array('view/'.$vcrModels[0]['id']),array('title'=>$vcrModels[0]['name'],'class'=>'x2-button'));
 			else
 				$vcrData['prev'] = CHtml::link('<','javascript:void(0);',array('class'=>'x2-button disabled'));
 
 			if(count($vcrModels) - 1 > $vcrIndex)	// there's a record after the current one
-				$vcrData['next'] = CHtml::link('>', array('view','id'=>$vcrModels[$vcrIndex+1]['id']), array('title'=>$vcrModels[$vcrIndex+1]['name'],'class'=>'x2-button'));
+				$vcrData['next'] = CHtml::link('>', array('view/'.$vcrModels[$vcrIndex+1]['id']), array('title'=>$vcrModels[$vcrIndex+1]['name'],'class'=>'x2-button'));
 			else
 				$vcrData['next'] = CHtml::link('>','javascript:void(0);',array('class'=>'x2-button disabled'));
 
@@ -500,14 +500,6 @@ class X2List extends CActiveRecord {
 		// been denied access to it to begin with.
 		$conditions = X2Model::model('Campaign')->getAccessCriteria()->condition;
 		$params = array('listId'=>$this->id);
-
-		$count = Yii::app()->db->createCommand()
-			->select ('count(*)')
-			->from(X2ListItem::model()->tableName().' as list')
-			->leftJoin(X2Model::model($this->modelName)->tableName().' t', 'list.contactId=t.id')
-			->where('list.listId=:listId AND ('.$conditions.')',array(':listId'=>$this->id))
-			->queryScalar ();
-
 		$sql = Yii::app()->db->createCommand()
 			->select('list.*, t.*')
 			->from(X2ListItem::model()->tableName().' as list')
@@ -518,7 +510,6 @@ class X2List extends CActiveRecord {
 
 		return new CSqlDataProvider($sql, array(
 			'params'=>$params,
-			'totalItemCount'=>$count,
 			'pagination'=>array(
 				'pageSize'=>!empty($pageSize)? $pageSize : ProfileChild::getResultsPerPage(),
 			),
@@ -634,18 +625,14 @@ class X2List extends CActiveRecord {
 			return false;
 
 		$criteria = new CDbCriteria();
-		$criteria->compare('listId',$this->id);
+		$criteria->compare('listId',$list->id);
 		$criteria->addInCondition('contactId',(array)$ids);
-
-        $model = CActiveRecord::model('X2ListItem');
 
 		// delete all the things!
 		if(CActiveRecord::model('X2ListItem')->deleteAll($criteria)) {
 			$this->count = CActiveRecord::model('X2ListItem')->countByAttributes(array('listId'=>$this->id));
-			$this->update(array('count'));
-            return true;
-		} 
-        return false;
+			return $this->update(array('count'));
+		}
 	}
 
 	/**
@@ -662,24 +649,12 @@ class X2List extends CActiveRecord {
 
 	public static function getRoute($id) {
 		if($id=='all')
-			return array('/contacts/contacts/index');
+			return array('/contacts/index');
 		else if ($id=='new')
-			return array('/contacts/contacts/newContacts');
+			return array('/contacts/newContacts');
 		else if (empty($id) || $id=='my')
-			return array('/contacts/contacts/myContacts');
+			return array('/contacts/myContacts');
 		else
-			return array('/contacts/contacts/list','id'=>$id);
+			return array('/contacts/list/'.$id);
 	}
-
-    public static function getAllStaticListNames ($controller) {
-        $listNames = array();
-
-        // get all static lists
-        foreach(X2List::model()->findAllByAttributes(array('type'=>'static')) as $list) {
-            if($controller->checkPermissions($list,'edit'))	// check permissions
-                $listNames[$list->id] = $list->name;
-        }
-        return $listNames;
-    }
-
 }

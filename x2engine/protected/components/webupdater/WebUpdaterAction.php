@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -72,31 +72,21 @@ abstract class WebUpdaterAction extends CAction{
 			)
 		));
 		// Be certain we can continue safely:
-		$this->requireDependencies();
+		$this->checkDependencies();
 	}
 
     /**
 	 * Wrapper for {@link UpdaterBehavior::updateUpdater} that displays errors
 	 * in a user-friendly way and reloads the page.
-     *
-     * It contains hideous references to the controller (specifically,
-     * {@link AdminController}) only to avoid code duplication while at the same
-     * time remaining backwards-compatible with earlier versions (which will
-     * download AdminController, hence necessitating that AdminController have
-     * all the necessary functions for throwing errors in cases of missing
-     * dependencies that can't be auto-retrieved).
 	 */
 	public function runUpdateUpdater($updaterCheck, $redirect){
-        try{
-            if(count($classes = $this->updateUpdater($updaterCheck))){
-                $this->output(Yii::t('admin', 'One or more dependencies of AdminController are missing and could not be automatically retrieved. They are {classes}', array('{classes}' => implode(', ', $classes))), 'error', 1);
-                $this->controller->missingClassesException($classes);
-            }
-            $this->output(Yii::t('admin', 'The updater is now up-to-date and compliant with the updates server.'));
-            $this->controller->redirect($redirect);
-        }catch(Exception $e){
-            $this->controller->error500($e->getMessage());
-        }
-    }
+		try{
+			if(count($classes = $this->updateUpdater($updaterCheck)))
+				$this->controller->missingClassesException($classes);
+			$this->controller->redirect($redirect);
+		}catch(Exception $e){
+			$this->controller->error500($e->getMessage());
+		}
+	}
 }
 ?>

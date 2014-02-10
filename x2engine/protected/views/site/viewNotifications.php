@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,11 +34,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
-?>
-<div class="flush-grid-view">
-<?php
-
 $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'actions-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
@@ -67,21 +62,14 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		array(
 			'class'=>'CButtonColumn',
 			'template'=>'{delete}',
-			'deleteButtonUrl'=>'Yii::app()->controller->createUrl("/notifications/delete",array("id"=>$data->id))',
-			'afterDelete'=>'function(link,success,data){
-                var match = $(link).attr ("href").match (/[0-9]+$/);
-                if (match !== null) x2.Notifs.triggerNotifRemoval (match[0]);
-            }',
+			'deleteButtonUrl'=>'Yii::app()->controller->createUrl("/notifications/delete/".$data->id)',
+			'afterDelete'=>'function(link,success,data){ removeNotification(data); }',
 			'deleteConfirmation'=>false,
 			'headerHtmlOptions'=>array('style'=>'width:40px'),
 		 ),
 	),
 	'rowCssClassExpression'=>'$data->viewed? "" : "unviewed"',
 ));
-
-?>
-</div>
-<?php
 
 foreach($dataProvider->getData() as $notif) {
 	if(!$notif->viewed) {

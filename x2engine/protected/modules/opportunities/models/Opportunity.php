@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -123,7 +123,7 @@ class Opportunity extends X2Model {
 
 		$links = array();
 		foreach($allOpportunities as $model) {
-			$links[] = CHtml::link($model->name,array('/opportunities/opportunities/view','id'=>$model->id));
+			$links[] = CHtml::link($model->name,array('/opportunities/view','id'=>$model->id));
 		}
 		return implode(', ',$links);
 	}
@@ -201,13 +201,13 @@ class Opportunity extends X2Model {
 		return $temp;
 	}
 
-	public function search($resultsPerPage=null, $uniqueId=null) {
+	public function search() {
 		$criteria=new CDbCriteria;
 		// $parameters=array("condition"=>"salesStage='Working'",'limit'=>ceil(ProfileChild::getResultsPerPage()));
 		$parameters=array('limit'=>ceil(ProfileChild::getResultsPerPage()));
 		$criteria->scopes=array('findAll'=>array($parameters));
 
-		return $this->searchBase($criteria, $resultsPerPage, $uniqueId);
+		return $this->searchBase($criteria);
 	}
 
 	public function searchAdmin() {

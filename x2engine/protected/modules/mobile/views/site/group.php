@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -43,7 +43,7 @@ Yii::app()->clientScript->registerScript('updateChat', "
 	function updateChat(){
 		$.ajax({
 			type: 'POST',
-			url: '".$this->createUrl('/mobile/site/getMessages')."',
+			url: '".$this->createUrl('site/getMessages')."',
 			success:
 			function (data){
 				//alert('old: '+$('#chat-box').html()+'<br><br>new: '+data);
@@ -67,7 +67,7 @@ echo CHtml::textArea('chat-message', '');
 
 echo CHtml::ajaxSubmitButton(
 	'Send',
-	array('/site/newMessage'),
+	array('site/newMessage'),
 	array(
 		'update'=>'#chat-box',
 		'success'=>"function(response) {

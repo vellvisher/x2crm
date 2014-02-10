@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -48,7 +48,7 @@ $opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportuni
 $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 
 if($opportunityModule->visible && $accountModule->visible)
-	$menuItems[] = array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'contacts'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
+	$menuItems[] = 	array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'contacts'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
 
 $this->actionMenu = $this->formatMenu($menuItems);
 
@@ -127,5 +127,5 @@ $this->widget('zii.widgets.grid.CGridView', array(
 	),
 )); ?>
 <div class="form">
-<?php echo CHtml::link('<span class="add-button">'.Yii::t('app','New List').'</span>',array('/contacts/contacts/createList'),array('class'=>'x2-button')); ?>
+<?php echo CHtml::link('<span class="add-button">'.Yii::t('app','New List').'</span>',array('/contacts/createList'),array('class'=>'x2-button')); ?>
 </div>

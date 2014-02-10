@@ -48,14 +48,6 @@
 		 * @return object the jQuery object
 		 */
 		init: function (options) {
-            /* x2modstart */  
-            var uniqueId = $(this).selector.replace (/(^[a-zA-Z])|([^0-9a-zA-Z]?)/g, '');
-            $(document).unbind ('click.yiiGridView' + uniqueId);
-            $(document).unbind ('change.yiiGridView' + uniqueId);
-            $(document).unbind ('keydown.yiiGridView' + uniqueId);
-            $(window).unbind('statechange.' + uniqueId);
-            /* x2modend */ 
-
 			var settings = $.extend({
 					ajaxUpdate: [],
 					ajaxVar: 'ajax',
@@ -90,10 +82,7 @@
 				gridSettings[id] = settings;
 
 				if (settings.ajaxUpdate.length > 0) {
-                    /* x2modstart */  
-					$(document).on('click.yiiGridView' + uniqueId, 
-                    /* x2modend */      
-                        settings.updateSelector, function () {
+					$(document).on('click.yiiGridView', settings.updateSelector, function () {
 						// Check to see if History.js is enabled for our Browser
 						if (settings.enableHistory && window.History.enabled) {
 							// Ajaxify this link
@@ -109,12 +98,7 @@
 					});
 				}
 
-                /* x2modstart */     
-				$(document).on(
-                    'change.yiiGridView' + uniqueId + ' keydown.yiiGridView' + uniqueId, 
-                    /* x2modend */ 
-                    settings.filterSelector, function (event) {
-
+				$(document).on('change.yiiGridView keydown.yiiGridView', settings.filterSelector, function (event) {
 					if (event.type === 'keydown') {
 						if( event.keyCode !== 13) {
 							return; // only react to enter key
@@ -145,9 +129,7 @@
 				});
 
 				if (settings.enableHistory && settings.ajaxUpdate !== false && window.History.enabled) {
-                    /* x2modstart */ 
-					$(window).bind('statechange.' + uniqueId, function() { // Note: We are using statechange instead of popstate
-                    /* x2modend */  
+					$(window).bind('statechange', function() { // Note: We are using statechange instead of popstate
 						var State = window.History.getState(); // Note: We are using History.getState() instead of event.state
 						$('#' + id).yiiGridView('update', {url: State.url});
 					});
@@ -155,9 +137,7 @@
 
 				if (settings.selectableRows > 0) {
 					selectCheckedRows(this.id);
-                    /* x2modstart */  
-					$(document).on('click.yiiGridView'+ uniqueId, '#' + id + ' .' + settings.tableClass + ' > tbody > tr', function (e) {
-                        /* x2modend */ 
+					$(document).on('click.yiiGridView', '#' + id + ' .' + settings.tableClass + ' > tbody > tr', function (e) {
 						var $currentGrid, $row, isRowSelected, $checks,
 							$target = $(e.target);
 
@@ -182,9 +162,7 @@
 						}
 					});
 					if (settings.selectableRows > 1) {
-                        /* x2modstart */ 
-						$(document).on('click.yiiGridView' + uniqueId, '#' + id + ' .select-on-check-all', function () {
-                            /* x2modend */ 
+						$(document).on('click.yiiGridView', '#' + id + ' .select-on-check-all', function () {
 							var $currentGrid = $('#' + id),
 								$checks = $('input.select-on-check', $currentGrid),
 								$checksAll = $('input.select-on-check-all', $currentGrid),
@@ -204,9 +182,7 @@
 						});
 					}
 				} else {
-                    /* x2modstart */  
-					$(document).on('click.yiiGridView' + uniqueId, '#' + id + ' .select-on-check', false);
-                    /* x2modend */  
+					$(document).on('click.yiiGridView', '#' + id + ' .select-on-check', false);
 				}
 			});
 		},
@@ -275,8 +251,6 @@
 					success: function (data) {
 						var $data = $('<div>' + data + '</div>');
 						$grid.removeClass(settings.loadingClass);
-
-                        /* x2modstart  */
 						if($grid.hasClass('x2-gridview')) {
 							var $data = data;
 							$grid.replaceWith(data);
@@ -287,8 +261,6 @@
 								$(updateId).replaceWith($(updateId, $data));
 							});
 						}
-                        /* x2modend */
-
 						if (settings.afterAjaxUpdate !== undefined) {
 							settings.afterAjaxUpdate(id, data);
 						}

@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -66,13 +66,6 @@ class Media extends X2Model {
         return 'x2_media';
     }
 
-    public function afterDelete() {
-        parent::afterDelete();
-        
-        if (file_exists($this->getPath()))
-            unlink($this->getPath());
-    }
-    
     public function behaviors(){
         $behaviors = array_merge(parent::behaviors(), array(
             'X2LinkableBehavior' => array(
@@ -164,12 +157,7 @@ class Media extends X2Model {
     // return '' if file is not an image
     public function getImage(){
         if($this->fileExists() && $this->isImage())
-            return CHtml::image(
-                $this->url, '', 
-                array(
-                    'class' => 'attachment-img',
-                )
-            );
+            return CHtml::image($this->url, '', array('class' => 'attachment-img'));
         return '';
     }
 
@@ -177,13 +165,12 @@ class Media extends X2Model {
      * Magic path getter
      *
      * Obtains the full, absolute path to a file.
-     * @return String|NULL Returns a path to the file or NULL if the file does not exist.
      */
     public function getPath(){
         if(!isset($this->_path)){
             $pathFmt = array(
-                implode(DIRECTORY_SEPARATOR, array('{bp}', 'uploads', 'media', '{uploadedBy}', '{fileName}')),
-                implode(DIRECTORY_SEPARATOR, array('{bp}', 'uploads', '{fileName}'))
+                '{bp}/uploads/media/{uploadedBy}/{fileName}',
+                '{bp}/uploads/{fileName}'
             );
             $basePath = realpath(Yii::app()->basePath.DIRECTORY_SEPARATOR.'..');
             $params = array(
@@ -197,7 +184,6 @@ class Media extends X2Model {
                     $this->_path = $path;
                     break;
                 }else{
-                    // The file does not exist.
                     $this->_path = null;
                 }
             }
@@ -397,24 +383,6 @@ class Media extends X2Model {
         return "exe, bat, dmg, js, jar, swf, php, pl, cgi, htaccess, py";
     }
 
-    private static function getImageText ($str, $makeLink, $makeImage, $media) {
-        $fileExists = $media->fileExists();
-
-        if($fileExists == false)
-            return $str.' '.Yii::t('media', '(deleted)');
-
-        if($makeLink)
-            $str .= $media->getMediaLink();
-        else
-            $str .= "";
-
-        if($makeImage && $media->isImage()) { // to render an image, first check file extension
-            $str .= $media->getImage();
-        }
-
-        return $str;
-    }
-
     /**
      * @param string $str
      * @param boolean $makeLink
@@ -433,7 +401,20 @@ class Media extends X2Model {
                 if(isset($media)){
                     $str = Yii::t('media', 'File:').' ';
 
-                    return self::getImageText ($str, $makeLink, $makeImage, $media);
+                    $fileExists = $media->fileExists();
+
+                    if($fileExists == false)
+                        return $str.' '.Yii::t('media', '(deleted)');
+
+                    if($makeLink)
+                        $str .= $media->getMediaLink();
+                    else
+                        $str .= "";
+
+                    if($makeImage && $media->isImage()) // to render an image, first check file extension
+                        $str .= $media->getImage();
+
+                    return $str;
                 }
             }
         }elseif(preg_match('/^<a target="_blank" href="https:\/\/drive.google.com\/file\/d\/(.+)">.+<\/a>$/i', $str, $matches)){
@@ -442,7 +423,19 @@ class Media extends X2Model {
                 if(isset($media)){
                     $str = Yii::t('media', 'Google Drive:').' ';
 
-                    return self::getImageText ($str, $makeLink, $makeImage, $media);
+                    $fileExists = $media->fileExists();
+
+                    if($fileExists == false)
+                        return $str.' '.Yii::t('media', '(deleted)');
+
+                    if($makeLink)
+                        $str .= $media->getMediaLink();
+                    else
+                        $str .= "";
+
+                    if($makeImage && $media->isImage()) // to render an image, first check file extension
+                        $str .= $media->getImage();
+                    return $str;
                 }
             }
         }
@@ -480,7 +473,7 @@ class Media extends X2Model {
             if($makeLink){
                 $str .= $media->getMediaLink();
                 if(!$media->drive){
-                    $str .= " | ".CHtml::link('[Download]', array('/media/media/download','id'=>$media->id));
+                    $str .= " | ".CHtml::link('[Download]', array('/media/download/'.$media->id));
                 }
             }else
                 $str .= $data[0];

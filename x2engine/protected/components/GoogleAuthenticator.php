@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -218,7 +218,7 @@ class GoogleAuthenticator {
             switch($state){
                 case 'calendar':
                     $_SESSION['calendarForceRefresh']=1;
-                    $client->setRedirectUri((@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].Yii::app()->controller->createUrl('/calendar/calendar/syncActionsToGoogleCalendar'));
+                    $client->setRedirectUri((@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].Yii::app()->controller->createUrl('/calendar/syncActionsToGoogleCalendar'));
                     break;
                 default:
                     $client->setRedirectUri($this->redirectUri);
@@ -299,20 +299,14 @@ class GoogleAuthenticator {
      * Sometimes, terrible things happen. When an auth error occurs or a problem
      * with the credentials arises, flush every place they're stored immediately
      * to stop any errors badly provided credentials may be causing.
-     *
-     * @param boolean full Whether or not to flush all credentials or just temporary
-     * ones. This is useful because the token in the session will not contain a refresh
-     * token in most cases, but the refresh token may still be valid. In that case,
-     * just clearing the session tokens will allow for another attempt using the
-     * refresh token.
      */
-    public function flushCredentials($full = true){
+    public function flushCredentials(){
         if($this->_enabled){
             unset($_SESSION['access_token']);
             unset($_SESSION['token']);
             unset($_GET['code']);
             $profile = Yii::app()->params->profile;
-            if($full && isset($profile)){
+            if(isset($profile)){
                 $profile->googleRefreshToken = null;
                 $profile->update(array('googleRefreshToken'));
             }

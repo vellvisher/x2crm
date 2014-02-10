@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -70,15 +70,7 @@ class X2FlowRecordCreateAction extends X2FlowAction {
         if($params['model']->hasAttribute('visibility'))
             $action->visibility = $params['model']->visibility;
 
-        if ($action->save()) {
-            return array (
-                true,
-                Yii::t('studio', "View created action: ").$action->getLink ()
-            );
-        } else {
-            return array(false, array_shift($action->getErrors()));
-        }
-
+        return $action->save();
     }
 
 }

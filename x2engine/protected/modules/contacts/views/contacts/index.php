@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,18 +33,17 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
 $menuItems = array(
 	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
 	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
 	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
 	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
 	array('label'=>Yii::t('contacts','View List')),
+	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
     array('label'=>Yii::t('contacts','Import Contacts'),'url'=>array('importExcel')),
 	array('label'=>Yii::t('contacts','Export to CSV'),'url'=>array('exportContacts')),
     array('label'=>Yii::t('contacts','Contact Map'),'url'=>array('googleMaps')),
     array('label'=>Yii::t('contacts','Saved Maps'),'url'=>array('savedMaps')),
-    //array('label'=>Yii::t('contacts','Saved Searches'),'url'=>array('savedSearches'))
 );
 
 $heading = '';
@@ -71,9 +70,8 @@ if($opportunityModule->visible && $accountModule->visible)
 
 $this->actionMenu = $this->formatMenu($menuItems);
 
-
 Yii::app()->clientScript->registerScript('search', "
-/*$('.search-button').unbind('click').click(function(){
+$('.search-button').unbind('click').click(function(){
 	$('.search-form').toggle();
 	return false;
 });
@@ -82,27 +80,72 @@ $('.search-form form').submit(function(){
 		data: $(this).serialize()
 	});
 	return false;
-});*/
+});
 
 $('#content').on('mouseup','#contacts-grid a',function(e) {
 	document.cookie = 'vcr-list=".$this->getAction()->getId()."; expires=0; path=/';
 });
+
+$('#createList').unbind('click').click(function() {
+	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
+	if(selectedItems.length > 0) {
+		var listName = prompt('".addslashes(Yii::t('app','What should the list be named?'))."','');
+
+		if(listName != '' && listName != null) {
+			$.ajax({
+				url:'".$this->createUrl('/contacts/createListFromSelection')."',
+				type:'post',
+				data:{listName:listName,modelName:'Contacts',gvSelection:selectedItems},
+				success:function(response) { if(response != '') window.location.href=response; }
+			});
+		}
+	}
+	return false;
+});
+$('#addToList').unbind('click').click(function() {
+	var selectedItems = $.fn.yiiGridView.getChecked('contacts-grid','C_gvCheckbox');
+
+	var targetList = $('#addToListTarget').val();
+
+	if(selectedItems.length > 0) {
+		$.ajax({
+			url:'".$this->createUrl('/contacts/addToList')."',
+			type:'post',
+			data:{listId:targetList,gvSelection:selectedItems},
+			success:function(response) { if(response=='success') alert('".addslashes(Yii::t('app','Added items to list.'))."'); else alert(response); }
+		});
+	}
+	return false;
+});
 ",CClientScript::POS_READY);
 
-/*Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/X2QTipManager.js',
-    CClientScript::POS_HEAD);*/
-
-
-
 // init qtip for contact names
-/*Yii::app()->clientScript->registerScript('contact-qtip', '
-x2.qtipManager = new X2QtipManager ({
-    loadingText: "'.addslashes(Yii::t('app','loading...')).'",
-    qTipSelector: ".contact-name"
-});
+Yii::app()->clientScript->registerScript('contact-qtip', '
+function refreshQtip() {
+	$(".contact-name").each(function (i) {
+		var contactId = $(this).attr("href").match(/\\d+$/);
 
-x2.qtipManager.refresh ();
-',CClientScript::POS_READY);*/
+		if(typeof contactId != null && contactId.length) {
+			$(this).qtip({
+				content: {
+					text: "'.addslashes(Yii::t('app','loading...')).'",
+					ajax: {
+						url: yii.scriptUrl+"/contacts/qtip",
+						data: { id: contactId[0] },
+						method: "get"
+					}
+				},
+				style: {
+				}
+			});
+		}
+	});
+}
+
+$(function() {
+	refreshQtip();
+});
+');
 ?>
 
 
@@ -114,29 +157,30 @@ x2.qtipManager.refresh ();
 </div><!-- search-form -->
 <form>
 <?php
+$listActions = '<div class="list-actions">'.CHtml::link(Yii::t('app','New List From Selection'),'#',array('id'=>'createList','class'=>'list-action'));
+
+$listNames = array();
+foreach(X2List::model()->findAllByAttributes(array('type'=>'static')) as $list) {	// get all static lists
+	if($this->checkPermissions($list,'edit'))	// check permissions
+		$listNames[$list->id] = $list->name;
+}
+
+if(!empty($listNames)) {
+	$listActions .= ' | '.CHtml::link(Yii::t('app','Add to list:'),'#',array('id'=>'addToList','class'=>'list-action'));
+	$listActions .= CHtml::dropDownList('addToListTarget',null,$listNames, array());
+}
+$listActions .= '</div>';
 
 $this->widget('application.components.X2GridView', array(
 	'id'=>'contacts-grid',
-    'enableQtips' => true,
-    'qtipManager' => array (
-        'X2QtipManager',
-        'loadingText'=> addslashes(Yii::t('app','loading...')),
-        'qtipSelector' => ".contact-name"
-    ),
 	'title'=>$heading,
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
-	'template'=> 
-        '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
-        '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
-        '<div id="x2-gridview-page-title" '.
-         'class="page-title icon contacts x2-gridview-fixed-title">'.
-        '{title}{buttons}{filterHint}{massActionButtons}{summary}{topPager}{items}{pager}',
-    'fixedHeader'=>true,
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'template'=> '<div class="page-title icon contacts">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$dataProvider,
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	'filter'=>$model,
-	'pager'=>array('class'=>'CLinkPager','maxButtonCount'=>10),
+	'pager'=>array('class'=>'CLinkPager','header'=>$listActions, 'maxButtonCount'=>10),
 	// 'columns'=>$columns,
 	'modelName'=>'Contacts',
 	'viewName'=>'contacts',
@@ -159,9 +203,6 @@ $this->widget('application.components.X2GridView', array(
 			'type'=>'raw',
 		),
 	),
-    'massActions'=>array(
-        'addToList', 'newList'
-    ),
 	'enableControls'=>true,
 	'enableTags'=>true,
 	'fullscreen'=>true,

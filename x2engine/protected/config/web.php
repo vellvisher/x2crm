@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,18 +37,10 @@
 $config = require('main.php');
 
 $custom = dirname(__FILE__).'/../../custom/protected/config/web.php';
-if($custom = realpath($custom)){
-    $customConfig = include($custom);
-    if(is_array($customConfig)){
-        foreach($customConfig as $key => $value){
-            if(isset($config[$key])){
-                $config[$key] = array_merge($config[$key], $customConfig[$key]);
-            }else{
-                $config[$key] = $customConfig[$key];
-            }
-        }
-    }
+if($custom = realpath($custom)) {
+	include($custom);
 }
 
 return $config;
+
 ?>

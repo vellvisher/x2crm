@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -40,14 +40,7 @@
 		<?php
 		$parent=Events::model()->findByPk($data->associationId);
 		if($data->user==Yii::app()->user->getName() || $parent->associationId==Yii::app()->user->getId() || Yii::app()->params->isAdmin)
-			echo CHtml::link(
-                '[x]',
-                array(
-                    '/profile/deletePost',
-                    'id'=>$data->id,
-                    'profileId'=>$profileId,
-                )
-            ); //,array('class'=>'x2-button') ?>
+			echo CHtml::link('[x]',array('profile/deletePost','id'=>$data->id,'redirect'=>Yii::app()->controller->action->id)); //,array('class'=>'x2-button') ?>
 	</div>
 	<?php echo User::getUserLinks($data->user) ?> <span class="comment-age"><?php echo Formatter::formatFeedTimestamp($data->timestamp); ?></span><br />
 	<?php echo $data->text; ?>

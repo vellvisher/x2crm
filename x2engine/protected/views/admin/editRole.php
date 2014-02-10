@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -52,7 +52,7 @@ foreach($list as $role){
 )); ?>
 
 	<em><?php echo Yii::t('app','Fields with <span class="required">*</span> are required.'); ?></em><br />
-
+        
         <div class="row">
             <?php echo $form->labelEx($model,'name'); ?>
             <?php echo $form->dropDownList($model,'name',$names,array(
@@ -60,20 +60,20 @@ foreach($list as $role){
                 'id'=>'editDropdown',
                 'ajax' => array(
                 'type'=>'POST', //request type
-                'url'=>CController::createUrl('/admin/getRole'), //url to call.
+                'url'=>CController::createUrl('admin/getRole'), //url to call.
                 //Style: CController::createUrl('currentController/methodToCall')
                 'update'=>'#roleForm', //selector to update
                 'complete'=>"function(){
                     $('.multiselect').multiselect();
                 }"
-                //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()'
+                //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()' 
                 //leave out the data key to pass all form values through
                 ))); ?>
             <?php echo $form->error($model,'name'); ?>
         </div>
-
+        
         <div id="roleForm">
-
+            
         </div>
         <br />
 	<div class="row buttons">

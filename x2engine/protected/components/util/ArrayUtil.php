@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -39,7 +39,7 @@
  * Standalone class with miscellaneous array functions
  * 
  * @package
- * @author Demitri Morgan <demitri@x2engine.com>, Derek Mueller <derek@x2engine.com>
+ * @author Demitri Morgan <demitri@x2engine.com>
  */
 class ArrayUtil {
 
@@ -73,98 +73,6 @@ class ArrayUtil {
 
 		return $fields;
 	}
-
-    /**
-     * A recursive version of normalizeToArray (). 
-     *
-	 * @param array $expectedFields The array with key => default value pairs
-	 * @param array $currentFields The array to copy values from
-	 * @return array
-     */
-	public static function normalizeToArrayR ($expectedFields, $currentFields) {
-        $fields = array ();
-
-        /* 
-        Use values in current fields if they are present, otherwise use default values in
-        expected fields. If the default value is an array, Apply array normalization 
-        recursively.
-        */
-        foreach ($expectedFields as $key => $val) {
-            if (is_array ($val) && isset ($currentFields[$key]) && 
-                is_array ($currentFields[$key])) {
-
-                $fields[$key] = self::normalizeToArrayR (
-                    $expectedFields[$key], $currentFields[$key]);
-            } else if (isset ($currentFields[$key])) {
-                $fields[$key] = $currentFields[$key];
-            } else {
-                $fields[$key] = $expectedFields[$key];
-            }
-        }
-
-        /*
-        Maintain array ordering of current fields
-        */
-        $orderedFields = array ();
-        foreach ($currentFields as $key => $val) {
-            if (in_array ($key, array_keys ($fields))) {
-                $orderedFields[$key] = $fields[$key];
-                unset ($fields[$key]);
-            }
-        }
-
-        /* 
-        Add fields not specified in currentFields. These fields can't be sorted so they are 
-        simply appended.
-        */
-        foreach ($fields as $key => $val) {
-            $orderedFields[$key] = $fields[$key];
-        }
-
-        return $orderedFields;
-    }
-
-    /**
-     * Determines whether a given array is associative
-     *
-     * @param array $array The array for which the check is made
-     * @return bool True if $array is associative, false otherwise
-     */
-    public static function is_assoc ($array) {
-        $keys = array_keys ($array);
-        $type;
-        foreach ($keys as $key) {
-            if (gettype ($key) === 'string') {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    /**
-     * Improved version of array_search that allows for regex searching
-     *
-     * @param string $find Regex to search on
-     * @param array $in_array An array to search in
-     * @param array $keys_found An array of keys which meet the regex
-     * @return type Returns the an array of keys if $in_array is valid, or false if not.
-     */
-    public static function arraySearchPreg($find, $in_array, $keys_found = Array()) {
-        if (is_array($in_array)) {
-            foreach ($in_array as $key => $val) {
-                if (is_array($val))
-                    self::arraySearchPreg($find, $val, $keys_found);
-                else {
-                    if (preg_match('/' . $find . '/', $val))
-                        $keys_found[] = $key;
-                }
-            }
-            return $keys_found;
-        }
-        return false;
-    }
-
 }
 
 ?>

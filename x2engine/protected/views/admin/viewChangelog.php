@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -49,7 +49,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
     'columns' => array(
         array(
             'header' => Yii::t('admin', 'History'),
-            'value' => '$data->type=="Contacts"?CHtml::link(Yii::t("app","View"),array("/contacts/contacts/revisions","id"=>$data->itemId,"timestamp"=>$data->timestamp),array("class"=>"x2-hint","title"=>Yii::t("admin","Click to view the record at this point in its history."))):""',
+            'value' => '$data->type=="Contacts"?CHtml::link(Yii::t("app","View"),Yii::app()->controller->createUrl("/contacts/revisions?id=$data->itemId&timestamp=$data->timestamp"),array("class"=>"x2-hint","title"=>Yii::t("admin","Click to view the record at this point in its history."))):""',
             'type' => 'raw',
         ),
         array(

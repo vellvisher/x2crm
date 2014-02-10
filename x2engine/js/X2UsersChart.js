@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -39,8 +39,6 @@ Child prototype of X2Chart
 
 
 function X2UsersChart (argsDict) {
-    argsDict = $.extend (true, {prototype: X2UsersChart.prototype}, argsDict);
-
 	X2Chart.call (this, argsDict);	
 
 	var thisX2Chart = this;
@@ -50,18 +48,52 @@ function X2UsersChart (argsDict) {
 	this.visibilityTypes = argsDict['visibilityTypes'];
 	this.DEBUG = argsDict['DEBUG'];
 
-	// color palette used for lines of feed chart
-	this.colors;
 
-	this.metricOptionsColors = {}; // used to pair colors with metrics
-	//thisX2Chart.resetMetricOptionColors ();
+	// color palette used for lines of feed chart
+	this.colors = [
+		'#7EB2E6', // pale blue
+		'#FFC382', // pastel orange
+		'#E8E172', // pastel yellow
+		'#FF9CAD', // pastel pink
+		'#BAFFA1', // pastel green
+		//'#CA8613', // orange brown
+		//'#C6B019', // dark sand
+		'#94E3DF', // pastel light blue
+		'#56D6E3', // pastel mid blue
+		'#99C9FF', // pastel dark blue
+		'#FFA8CE', // pastel dark pink
+		'#D099FF', // pastel dark purple
+		'#E1A1FF', // pastel light purple
+		'#CEC415', // mustard
+		'#BC0D2C', // pomegranate
+		'#45B41D', // apple green
+		'#AB074F', // dark hot pink
+		//'#156A86', // dark blue
+		'#1B8FB5', // dark blue
+		'#3D1783', // dark purple
+		//'#5A1992',// deep purple
+		'#AACF7A',
+		'#7BB57C', // olive green
+		//'#69B10A', // dark lime green
+		//'#8DEB10',
+		'#C87010', // red rock
+		'#1D4C8C', // dark blue-purple
+	];
+
+	thisX2Chart.resetMetricOptionColors ();
 
 	this.cookieTypes = [
 		'startDate', 'endDate', 'binSize', 'firstMetric', 'chartSetting', 
-		'eventsFilter', 'socialSubtypesFilter', 'visibilityFilter', 'dateRange'];
+		'eventsFilter', 'socialSubtypesFilter', 'visibilityFilter'];
 	this.filterTypes = ['eventsFilter', 'socialSubtypesFilter', 'visibilityFilter'];
 
 	this.filters = {};
+
+	/*if ($.cookie (thisX2Chart.cookiePrefix + 'chartIsShown') === 'true') {
+		$('#' + this.chartType + '-chart-container').show ();
+		$('#' + this.chartType + '-show-chart').hide ();
+		$('#' + this.chartType + '-hide-chart').show ();
+	}*/
 
 	thisX2Chart.setUpFilters ();
 
@@ -69,143 +101,18 @@ function X2UsersChart (argsDict) {
 
 }
 
-/************************************************************************************
-Static Methods
-************************************************************************************/
+X2UsersChart.prototype = Object.create (X2Chart.prototype);
 
-
-/************************************************************************************
-Instance Methods
-************************************************************************************/
-
-X2UsersChart.prototype = auxlib.create (X2Chart.prototype);
-
-/*
-Generate color palette after number of selected users is determined
-*/
-X2UsersChart.prototype.postSetSettingsFromCookie = function (userCount) {
-	var thisX2Chart = this;
-
-    var selectedMetrics = $('#' + thisX2Chart.chartType + '-first-metric').val ();
-    if (selectedMetrics === null) return;
-
-	// color palette used for lines of feed chart
-	this.colors = thisX2Chart.getColorPalette ($(selectedMetrics).length);
-	thisX2Chart.resetMetricOptionColors ();
-
-};
-
-/*
-Generate an array of color hex values with a color for each user.
-*/
-X2UsersChart.prototype.getColorPalette = function (userCount) {
-	var thisX2Chart = this;
-
-	function leftPadZeros (str) {
-		var length = str.length;
-		for (var i = 0; i < 6 - length; ++i) str = '0' + str;
-		return str;
-	}
-
-	//var userCount = thisX2Chart.getMetricTypes ().length;
-	var minColor = 0 + 4194304;
-	var maxColor = 16777216 - 4194304;
-	var colorInterval = Math.floor ((maxColor - minColor) / userCount);
-	var colors = [];
-	var currColor = minColor;
-    var hexCode, hexRed, hexGreen, hexBlue, modColor, colorSum, colorOffset;
-	while (currColor < maxColor) {
-		thisX2Chart.DEBUG && console.log ('currColor = ' + currColor);
-        hexCode = leftPadZeros (currColor.toString (16));
-
-		thisX2Chart.DEBUG && console.log ('hexCode = ' + hexCode);
-        hexRed = parseInt (hexCode.slice (0, 2), 16);
-        hexGreen = parseInt (hexCode.slice (2, 4), 16);
-        hexBlue = parseInt (hexCode.slice (4, 6), 16);
-        thisX2Chart.DEBUG && console.log (hexRed, hexGreen, hexBlue);
-
-        /*// brighten overly dark colors
-        colorSum = hexBlue + hexRed + hexGreen;
-        if (colorSum < 300) {
-            colorOffset = Math.floor ((300 - colorSum) / 3);
-            hexBlue += colorOffset;
-            hexRed += colorOffset;
-            hexGreen += colorOffset;
-            hexBlue = hexBlue > 255 ? 255 : hexBlue;
-            hexGreen = hexGreen > 255 ? 255 : hexGreen;
-            hexBlue = hexRed > 255 ? 255 : hexRed;
-        }
-
-        // darken overly bright colors
-        if (colorSum > 620) {
-            colorOffset = Math.floor ((colorSum - 620) / 3);
-            hexBlue -= colorOffset;
-            hexRed -= colorOffset;
-            hexGreen -= colorOffset;
-            hexBlue = hexBlue < 0 ? 0 : hexBlue;
-            hexGreen = hexGreen < 0 ? 0 : hexGreen;
-            hexBlue = hexRed < 0 ? 0 : hexRed;
-        }
-        thisX2Chart.DEBUG && console.log (hexRed, hexGreen, hexBlue);
-        */
-
-        // make muddy colors less muddy
-        if (Math.abs (hexRed - 128) < 40 &&
-            Math.abs (hexGreen - 128) < 40) {
-            hexRed -= 40;
-        } else if (Math.abs (hexGreen - 128) < 40 &&
-            Math.abs (hexBlue - 128) < 40) {
-            hexGreen -= 40;
-        } else if (Math.abs (hexBlue - 128) < 40 &&
-            Math.abs (hexRed - 128) < 40) {
-            hexBlue -= 40;
-        }
-
-
-        var modColor = hexRed * Math.pow (16, 4) + hexGreen * 
-            Math.pow (16, 2) + hexBlue;
-        hexCode = leftPadZeros (modColor.toString (16));
-		colors.push ('#' + hexCode);
-		currColor += colorInterval;
-	}
-
-    // sort light to dark
-    function colorCompare (colorA, colorB) {
-        // remove '#' symbols
-        colorA = colorA.slice (1);
-        colorB = colorB.slice (1);
-        var colorSumA, colorSumB;
-        colorSumA = parseInt (colorA.slice (0, 2), 16) +
-            parseInt (colorA.slice (2, 4), 16)
-            parseInt (colorA.slice (4, 6), 16);
-        colorSumB = parseInt (colorB.slice (0, 2), 16) +
-            parseInt (colorB.slice (2, 4), 16)
-            parseInt (colorB.slice (4, 6), 16);
-        return colorSumA < colorSumB;
-    }
-
-    colors.sort (colorCompare);
-
-    return colors;
-};
-
-/*
-Sets initial state of chart setting ui elements
-*/
 X2UsersChart.prototype.setDefaultSettings = function () {
 	var thisX2Chart = this;
 
 	thisX2Chart.DEBUG && console.log ('setDefaultSettings: ' + this.chartType);
 
 	// start date picker default
-	if (($.cookie (thisX2Chart.cookiePrefix + 'dateRange') === null || 
-	     $.cookie (thisX2Chart.cookiePrefix + 'dateRange') !== 'Custom') &&
-	    $.cookie (thisX2Chart.cookiePrefix + 'startDate') === null) {
-
+	if ($.cookie (thisX2Chart.cookiePrefix + 'startDate') === null) {
 		// default start date 
 		$('#' + thisX2Chart.chartType + '-chart-datepicker-from').
-			datepicker('setDate', new Date (new Date () - X2Chart.MSPERWEEK)); 
-
+			datepicker('setDate', '-7d'); 
 		$.cookie (
 			thisX2Chart.cookiePrefix + 'startDate', 
 			$('#' + thisX2Chart.chartType + '-chart-datepicker-from').
@@ -213,11 +120,8 @@ X2UsersChart.prototype.setDefaultSettings = function () {
 	}
 
 	// end date picker default
-	if (($.cookie (thisX2Chart.cookiePrefix + 'dateRange') === null || 
-	     $.cookie (thisX2Chart.cookiePrefix + 'dateRange') !== 'Custom') &&
-		$.cookie (thisX2Chart.cookiePrefix + 'endDate') === null) {
+	if ($.cookie (thisX2Chart.cookiePrefix + 'endDate') === null) {
 		thisX2Chart.DEBUG && console.log ('setting default for eventsChart to date');
-
 		// default start date 
 		$('#' + thisX2Chart.chartType + '-chart-datepicker-to').
 			datepicker('setDate', new Date ()); // default end date
@@ -227,46 +131,13 @@ X2UsersChart.prototype.setDefaultSettings = function () {
 			datepicker ('getDate').valueOf ());
 	}
 
-	// metric default, select all
-	$('#' + thisX2Chart.chartType + '-first-metric').children ().each (function () {
-        $(this).attr ('selected', 'selected')
-    });
-	$('#' + thisX2Chart.chartType + '-first-metric').multiselect2 ('refresh');
 
 };
 
-/*
-Generate color palette based on number of chart data types
-*/
-X2UsersChart.prototype.preJqplotPlotPieData = function (chartData) {
-	var thisX2Chart = this;
 
-    //thisX2Chart.DEBUG && console.log ('preJqplotPlotPieData: ' + chartData.length);
-
-	thisX2Chart.colors = thisX2Chart.getColorPalette (
-	    chartData.length);
-    thisX2Chart.resetMetricOptionColors ();
-};
-
-/*
-Generate color palette based on number of chart data types
-*/
-X2UsersChart.prototype.preJqplotPlotLineData = function (chartData) {
-	var thisX2Chart = this;
-
-    if (chartData === null) return;
-
-    thisX2Chart.preJqplotPlotPieData (chartData);
-
-};
-
-/*
-Filter function used by groupChartData to determine how chart data should be grouped
-*/
 X2UsersChart.prototype.chartDataFilter = function (dataPoint, type) {
 	var thisX2Chart = this;
 
-    // group by type, filter out types specified in filters
 	if ((!(type === 'anyone' || type === '') && dataPoint['user'] !== type) ||
 		(type === '' && dataPoint['user'] !== null) ||
 		($.inArray (dataPoint['type'], thisX2Chart.filters['eventsFilter']) !== -1 &&
@@ -281,9 +152,6 @@ X2UsersChart.prototype.chartDataFilter = function (dataPoint, type) {
 	}
 };
 
-/*
-Map colors to users
-*/
 X2UsersChart.prototype.resetMetricOptionColors = function () {
 	var thisX2Chart = this;
 	thisX2Chart.metricOptionsColors = {}; 
@@ -296,7 +164,7 @@ X2UsersChart.prototype.resetMetricOptionColors = function () {
 	});
 };
 
-X2UsersChart.prototype.selectMetricOptionColorsForSelected = function (firstMetricVal) {
+X2UsersChart.prototype.selectMetricOptionsForSelected = function (firstMetricVal) {
 	var thisX2Chart = this;
 	thisX2Chart.metricOptionsColors = {}; 
 	for (var i in firstMetricVal) {
@@ -306,67 +174,24 @@ X2UsersChart.prototype.selectMetricOptionColorsForSelected = function (firstMetr
 	}
 };
 
-/*
-Limit number of selected users for line chart.
-*/
 X2UsersChart.prototype.postMetricSelectionSetup = function () {
 	var thisX2Chart = this;
 
 	$('#' + thisX2Chart.chartType + '-first-metric').bind ("multiselect2beforeclose", 
 		function (evt, ui) {
-
 			var firstMetricVal = $(this).val ();
 			var maxSelected = 21;
 			if (firstMetricVal !== null) {
 				thisX2Chart.applyMultiselectSettings (
 					$(this), firstMetricVal.slice (0, maxSelected));
-				/*if (firstMetricVal.length > maxSelected) {
-					thisX2Chart.selectMetricOptionColorsForSelected (firstMetricVal);
+				if (firstMetricVal.length > maxSelected) {
+					thisX2Chart.selectMetricOptionsForSelected (firstMetricVal);
 				} else {
 					thisX2Chart.resetMetricOptionColors ();
-				}*/
+				}
 			}
-			thisX2Chart.DEBUG && console.log (
-				'postMetricSelectionSetup: metric1.val = ' + firstMetricVal);
+			thisX2Chart.DEBUG && console.log ('postMetricSelectionSetup: metric1.val = ' + firstMetricVal);
 		});
-};
-
-/*
-Undo pie chart specific ui. Rebind filter ui element event handlers since the
-filter elements get removed from the DOM when the chart subtype is switched.
-*/
-X2UsersChart.prototype.postPieChartTearDown = function (uiSetUp) {
-	var thisX2Chart = this;
-	$('#' + thisX2Chart.chartType + '-chart').removeClass ('pie');
-	$('#' + thisX2Chart.chartType + '-chart-legend').removeClass ('pie');
-	$('#' + thisX2Chart.chartType + '-datepicker-row').removeClass ('pie');
-	$('#' + thisX2Chart.chartType + '-top-button-row').removeClass ('feed-pie');
-	$('#' + thisX2Chart.chartType + '-create-setting-button').removeClass ('pie');
-	$('#' + thisX2Chart.chartType + '-predefined-settings').removeClass ('pie');
-	$('#' + thisX2Chart.chartType + '-first-metric-container').show ();
-	$('#' + thisX2Chart.chartType + '-bin-size-button-set').show ();
-	var filterToggleContainer = $('#' + thisX2Chart.chartType + '-filter-toggle-container').remove ();
-	$('#' + thisX2Chart.chartType + '-first-metric-container').after (filterToggleContainer);
-    thisX2Chart.bindFilterEvents ();
-};
-
-/*
-Set up pie chart specific ui. Rebind filter ui element event handlers since the
-filter elements get removed from the DOM when the chart subtype is switched.
-*/
-X2UsersChart.prototype.postPieChartSetUp = function (uiSetUp) {
-	var thisX2Chart = this;
-	$('#' + thisX2Chart.chartType + '-chart').addClass ('pie');
-	$('#' + thisX2Chart.chartType + '-chart-legend').addClass ('pie');
-	$('#' + thisX2Chart.chartType + '-datepicker-row').addClass ('pie');
-	$('#' + thisX2Chart.chartType + '-top-button-row').addClass ('feed-pie');
-	$('#' + thisX2Chart.chartType + '-create-setting-button').addClass ('pie');
-	$('#' + thisX2Chart.chartType + '-predefined-settings').addClass ('pie');
-	$('#' + thisX2Chart.chartType + '-first-metric-container').hide ();
-	$('#' + thisX2Chart.chartType + '-bin-size-button-set').hide ();
-	var filterToggleContainer = $('#' + thisX2Chart.chartType + '-filter-toggle-container').remove ();
-	$('#' + thisX2Chart.chartType + '-datepicker-row').append (filterToggleContainer);
-    thisX2Chart.bindFilterEvents ();
 };
 
 

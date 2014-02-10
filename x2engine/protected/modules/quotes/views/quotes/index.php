@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -59,37 +59,26 @@ $('.search-form form').submit(function(){
 	'model'=>$model,
 )); ?>
 </div><!-- search-form -->
-<?php
+<?php 
 $this->widget('application.components.X2GridView', array(
 	'id'=>'quotes-grid',
 	'title'=>Yii::t('quotes','Quotes'),
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
-	'template'=> 
-        '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
-        '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
-        '<div id="x2-gridview-page-title" '.
-         'class="page-title icon quotes x2-gridview-fixed-title">'.
-        '{title}{buttons}{filterHint}'.
-        
-        '{summary}{topPager}{items}{pager}',
-    'fixedHeader'=>true,
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'template'=> '<div class="page-title icon quotes">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	'filter'=>$model,
-	'pager'=>array('class'=>'CLinkPager','maxButtonCount'=>10),
 	// 'columns'=>$columns,
 	'modelName'=>'Quote',
 	'viewName'=>'quotes',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-        'gvCheckbox' => 30,
 		'name' => 244,
 		'probability' => 67,
 		'expectedCloseDate' => 117,
 		'assignedTo' => 120,
-		'lastActivity' => 90,
-        'gvControls' => 72,
+		'lastActivity' => 70,
 	),
 	'specialColumns'=>array(
 		'name'=>array(

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -44,11 +44,6 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('docs','Create Quote'), 'url'=>array('createQuote')),
 ));
 
-Yii::app()->clientScript->registerCss('docsIndexCss', "
-    #attachments-grid {
-        margin-top: 17px;
-    }
-");
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){
 	$('.search-form').toggle();
@@ -124,10 +119,8 @@ $('.search-form form').submit(function(){
 $this->widget('application.components.X2GridView', array(
 	'id'=>'docs-grid',
 	'title'=>Yii::t('docs','Docs'),
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
-	'template'=> '<div class="page-title icon docs">{title}{buttons}{filterHint}'.
-            
-            '{summary}</div>{items}{pager}',
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector'),
+	'template'=> '<div class="page-title icon docs">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->search(),
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
@@ -176,12 +169,11 @@ $this->widget('application.components.X2GridView', array(
 ));
 ?>
 <br />
-<div class='flush-grid-view'>
 <?php
 	$this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'attachments-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title rounded-top icon docs"><h2>'.Yii::t('docs','Uploaded Docs').'</h2>{summary}</div>{items}{pager}',
+	'template'=> '<div class="page-title icon docs"><h2>'.Yii::t('docs','Uploaded Docs').'</h2>{summary}</div>{items}{pager}',
 	'dataProvider'=>$attachments,
 	'columns'=>array(
 		array(
@@ -203,7 +195,6 @@ $this->widget('application.components.X2GridView', array(
 	),
 ));
 	?>
-</div>
-<br/>
+
 <?php
 $this->widget('Attachments',array('associationType'=>'docs','associationId'=>$model->id)); ?>

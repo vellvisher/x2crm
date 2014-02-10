@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -89,7 +89,10 @@ if(isset($associationModel) && $model->associationType=='contacts') {
 	<form id="complete-action" name="complete-action" action="complete/<?php echo $model->id; ?>" method="POST">
 		<b><?php echo Yii::t('actions','Completion Notes'); ?></b>
 		<textarea name="note" rows="4" ></textarea>
-	<div class="row buttons">
+<?php
+		//echo CHtml::link(Yii::t('actions','Complete'),array('/actions/complete','id'=>$model->id),array('class'=>'x2-button'));
+		//echo CHtml::link(,array('/actions/complete','id'=>$model->id,'createNew'=>1,'redirect'=>1),array('class'=>'x2-button'));
+?>	<div class="row buttons">
 		<button type="submit" name="submit" class="x2-button" value="complete"><?php echo Yii::t('actions','Complete'); ?></button>
 		<button type="submit" name="submit" class="x2-button" value="completeNew"><?php echo Yii::t('actions','Complete + New Action'); ?></button>
 

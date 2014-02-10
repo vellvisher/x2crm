@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -60,7 +60,7 @@
 	else:
 		$mandatoryFields = array('unique_id', 'firstName', 'lastName', 'email');
 		if (in_array($form->config['unique_id'],array(Null,'none'))) {
-			echo '<span class="registration-sub-text">'.$form->message['registrationSubtext'] . '</span>';
+			echo $form->message['registrationSubtext'] . '<br><br>';
 			$form->textFields($mandatoryFields);
 			echo '<br>'.$form->message['registrationPostText'].': <a href="http://www.x2engine.com/contact/">x2engine.com</a><br><br>';
 		} else {
@@ -200,11 +200,16 @@
 					postData.emailHash = SHA256(idEmail+SHA256(idEmail));
 				}
 				var loadingImg = $('<img src="<?php echo $form->config['themeUrl']; ?>/images/loading.gif">').css({'display':'block','margin-left':'auto','margin-right':'auto'});
-                
-                /**
-                 * Response data handler
-                 */
-				var handleResponse = function(data,statusObj,jqXHR) {
+				
+				if(!isos || ((postData.unique_id == 'none' || empty(postData.unique_id)) && elts.receiveUpdates.is(":checked"))) {
+					form.find('.error').removeClass('error');
+					status.fadeIn(300).html(loadingImg);
+					$.ajax({
+						type:'POST',
+						url:'http://x2planet.com/installs/registry/<?php echo $form->os ? 'new' : 'register'; ?>',
+						data:postData,
+						dataType:'json'
+					}).done(function(data,statusObj,jqXHR) {
 						var messages = "<h3>"+data.message+"</h3>";
 						if(data.errors != undefined || data.log != undefined) {
 							messages += '<ul id="registryerrors">';
@@ -231,40 +236,10 @@
 								elts.edition.val(data.edition);
 							setTimeout(function(){submitExternalForm();},500);
 						}
-					};
-                var handleErr = function() {
-                            status.html('<?php echo str_replace("'", "\\'", '<h3>' . $form->message['connectionErrHeader'] . '</h3>' . ($form->os ? $form->message['connectionErrMessage'] : $form->message['connectionNOsMessage'])); ?>');
-                        };
-                    
-                // Now it is time to connect to the updates server
-				if(!isos || ((postData.unique_id == 'none' || empty(postData.unique_id)) && elts.receiveUpdates.is(":checked"))) {
-                    var submitToUrl = 'http://x2planet.com/installs/registry/<?php echo $form->os ? 'new' : 'register'; ?>';
-					form.find('.error').removeClass('error');
-					status.fadeIn(300).html(loadingImg);
-                    if($.browser.msie || typeof window.XDomainRequest != 'undefined') {
-                        // Internet Explorer needs its own way of connecting to
-                        // the updates server 'cause it's special
-                        var xdr = new XDomainRequest();
-                        var formData = $.param(postData);
-                        xdr.onerr = handleErr;
-                        xdr.onload = function() {
-                            handleResponse(JSON.parse(xdr.responseText));
-                        }
-                        xdr.ontimeout = handleErr;
-                        xdr.timeout = 10000;
-                        xdr.open("POST", submitToUrl);
-                        xdr.send(formData);
-                        return 0;
-                    }
-                    // For every other browser it's much simpler:
-					$.ajax({
-						type:'POST',
-						url:submitToUrl,
-						data:postData,
-						dataType:'json'
-					}).done(handleResponse).fail(function(data,statusObj,jqXHR) {
-						handleErr();
+					}).fail(function(data,statusObj,jqXHR) {
+						status.html('<?php echo str_replace("'", "\\'", '<h3>' . $form->message['connectionErrHeader'] . '</h3>' . ($form->os ? $form->message['connectionErrMessage'] : $form->message['connectionNOsMessage'])); ?>');
 					});
+					
 				} else {
 					// Submit form as usual
 					status.fadeIn(300).html('<h3></h3><ul></ul>');

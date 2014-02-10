@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -56,26 +56,11 @@ class X2FlowRecordUpdate extends X2FlowAction {
     }
 
     public function execute(&$params){
-        if(!isset($this->config['attributes']) || empty($this->config['attributes'])) {
-            return array (
-                false, 
-                Yii::t('studio', "Flow item configuration error: No attributes added"));
-        }
-        $model = $params['model'];
+        if(!isset($this->config['attributes']) || empty($this->config['attributes']))
+            return false;
 
-        $this->setModelAttributes($model, $this->config['attributes'], $params);
-        if ($model->updateByPk($model->id, $model->attributes)) {
-		    if(is_subclass_of($model,'X2Model')) {
-                return array (
-                    true,
-                    Yii::t('studio', 'View updated record: ').$model->getLink ()
-                );
-            } else {
-                return array (true, "");
-            }
-        } else {
-            return array (false, "");
-        }
+        $this->setModelAttributes($params['model'], $this->config['attributes'], $params);
+        return $params['model']->updateByPk($params['model']->id, $params['model']->attributes);
     }
 
 }

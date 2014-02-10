@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,7 +38,7 @@
 <script type="text/javascript">
 $('#aboutPage').live('pagecreate',function(event){
     alert("FISH");
-  $.mobile.changePage("<?php echo $this->createUrl('/mobile/site/login'); ?>");
+  $.mobile.changePage("<?php echo $this->createUrl('site/login/'); ?>");
 });</script>
 <div id="aboutPage" data-role="page"><h1>Welcome to <i><?php echo CHtml::encode(Yii::app()->name); ?></i></h1></div>
 

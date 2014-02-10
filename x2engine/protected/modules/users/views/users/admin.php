@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 $this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('profile','Social Feed'),'url'=>array('/profile/index')),
+    array('label' => Yii::t('profile', 'Social Feed'), 'url' => array('/profile')),
     array('label' => Yii::t('users', 'Manage Users')),
     array('label' => Yii::t('users', 'Create User'), 'url' => array('create')),
     array('label' => Yii::t('users', 'Invite Users'), 'url' => array('inviteUsers')),
@@ -68,7 +68,6 @@ else
     ));
     ?>
 </div><!-- search-form -->
-<div class='flush-grid-view'>
 <?php
 $this->widget('zii.widgets.grid.CGridView', array(
     'id' => 'users-grid',
@@ -78,7 +77,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
     .CHtml::link('<span></span>', array(Yii::app()->controller->action->id, 'clearFilters' => 1), array('title' => Yii::t('app', 'Clear Filters'), 'class' => 'x2-button filter-button')).'</div>'
     .CHtml::link(Yii::t('app', 'Today'), array('admin', 'offset' => '0:00'), array('class' => 'x2-button'))
     .CHtml::link(Yii::t('app', 'This Week'), array('admin', 'offset' => 'first day of this week'), array('class' => 'x2-button'))
-    .CHtml::link(Yii::t('app', 'This Month'), array('admin', 'offset' => 'first day of this month'), array('class' => 'x2-button x2-last-child'))
+    .CHtml::link(Yii::t('app', 'This Month'), array('admin', 'offset' => 'first day of this month'), array('class' => 'x2-button'))
     .X2GridView::getFilterHint()
     .'{summary}</div>{items}{pager}',
     'summaryText' => Yii::t('app', '<b>{start}&ndash;{end}</b> of <b>{count}</b>')
@@ -108,11 +107,11 @@ $this->widget('zii.widgets.grid.CGridView', array(
             'value' => '$data->login?date("Y-m-d",$data->login):"n/a"',
             'type' => 'raw',
         ),
-//        array(
-//            'header' => '<b>'.Yii::t('users', 'Records Updated').'</b>',
-//            'value' => '(Changelog::model()->countByAttributes(array(),"changedBy=\"$data->username\" AND timestamp > '.strtotime("$offset").'"))',
-//            'type' => 'raw',
-//        ),
+        array(
+            'header' => '<b>'.Yii::t('users', 'Records Updated').'</b>',
+            'value' => '(Changelog::model()->countByAttributes(array(),"changedBy=\"$data->username\" AND timestamp > '.strtotime("$offset").'"))',
+            'type' => 'raw',
+        ),
         array(
             'header' => Yii::t('app', 'Active'),
             'value' => '$data->status? Yii::t("app","Yes") : Yii::t("app","No")',
@@ -129,7 +128,6 @@ $this->widget('zii.widgets.grid.CGridView', array(
     ),
 ));
 ?>
-</div>
 <?php if($count > 0){ ?>
     <br />
     <h2><?php echo Yii::t('users', "Invited Users"); ?></h2>

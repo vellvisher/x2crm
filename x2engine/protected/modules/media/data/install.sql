@@ -19,14 +19,14 @@ CREATE TABLE x2_media(
 /*&*/
 INSERT INTO `x2_modules`
 			(`name`,	title,	visible,	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
-	VALUES	("media",	"Media",1,			13,				0,			0,			0,			0,		0);
+	VALUES	("media",	"Media",1,			11,				0,			0,			0,			0,		0);
 /*&*/
 INSERT INTO x2_fields
 (modelName,	fieldName,			attributeLabel,			modified,	custom,		type,			required,	readOnly,	linkType,		searchable,	isVirtual,	relevance)
 VALUES
-("Media",	"id",				"ID",					0,			0,			"varchar",		0,			1,			NULL,			0,			0,			""),
-("Media",	"associationType",	"Association Type",		0,			0,			"varchar",		1,			1,			NULL,			0,			0,			""),
-("Media",	"associationId",	"Association ID",		0,			0,			"int",			0,			1,			NULL,			0,			0,			""),
+("Media",	"id",				"ID",					0,			0,			"varchar",		0,			0,			NULL,			0,			0,			""),
+("Media",	"associationType",	"Association Type",		0,			0,			"varchar",		1,			0,			NULL,			0,			0,			""),
+("Media",	"associationId",	"Association ID",		0,			0,			"int",			0,			0,			NULL,			0,			0,			""),
 ("Media",	"uploadedBy",		"Uploaded By",			0,			0,			"assignment",	0,			1,			NULL,			0,			0,			""),
 ("Media",	"fileName",			"File Name",			0,			0,			"varchar",		0,			0,			NULL,			1,			0,			"High"),
 ("Media",	"title",			"Title",                0,			0,			"varchar",		0,			0,			NULL,			1,			0,			"High"),

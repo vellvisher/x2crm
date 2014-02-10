@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -191,8 +191,7 @@ class Quote extends X2Model {
 	 *
 	 * Note: line numbers should be computed client-side and thus shouldn't need to be recalculated.
 	 *
-	 * @param array $items Each entry is an associative array of QuoteProduct [attribute]=>[value] 
-     *  pairs
+	 * @param array $items Each entry is an associative array of QuoteProduct [attribute]=>[value] pairs
 	 * @param integer $quoteId ID of quote for which to update items
 	 * @param bool $save Whether or not to save changes in the database after finishing
 	 * @return array Array of QuoteProduct instances representing the item set after changes.
@@ -206,8 +205,7 @@ class Quote extends X2Model {
 		}
 
 		// Check for valid input:
-		$typeErrMsg = 'The setter of Quote.lineItems requires an array of QuoteProduct objects or '.
-            '[attribute]=>[value] arrays.';
+		$typeErrMsg = 'The setter of Quote.lineItems requires an array of QuoteProduct objects or [attribute]=>[value] arrays.';
 		$firstElt = reset($items);
 		$type = gettype($firstElt);
 		if ($type != 'object' && $type != 'array') // Must be one or the other
@@ -267,27 +265,22 @@ class Quote extends X2Model {
 		// Put all the items together into the same arrays
 		$this->_lineItems = array_merge($newItems, array_values($itemSet));
 		usort($this->_lineItems,'self::lineItemOrder');
-		$this->_deleteLineItems = array_map(
-            function($id) use($existingItems) {return $existingItems[$id];}, $deleteItemIds);
+		$this->_deleteLineItems = array_map(function($id) use($existingItems) {return $existingItems[$id];}, $deleteItemIds);
 
 		// Remove symbols from numerical input values and convert to numeric.
 		// Behavior:
 		// - Use the quote's currency if it isn't empty.
 		// - Use the app's currency otherwise.
-		$defaultCurrency = empty($this->currency)?
-            Yii::app()->params->admin->currency:$this->currency;
-
+		$defaultCurrency = empty($this->currency)?Yii::app()->params->admin->currency:$this->currency;
 		$curSym = Yii::app()->locale->getCurrencySymbol($defaultCurrency);
 		foreach($this->_lineItems as $lineItem) {
 			$lineItem->quoteId = $this->id;
 			if(empty($lineItem->currency))
 				$lineItem->currency = $defaultCurrency;
 			if($lineItem->isPercentAdjustment) {
-				$lineItem->adjustment = Fields::strToNumeric(
-                    $lineItem->adjustment,'percentage');
+				$lineItem->adjustment = Fields::strToNumeric($lineItem->adjustment,'percentage');
 			} else {
-				$lineItem->adjustment = Fields::strToNumeric(
-                    $lineItem->adjustment,'currency',$curSym);
+				$lineItem->adjustment = Fields::strToNumeric($lineItem->adjustment,'currency',$curSym);
 			}
 			$lineItem->price = Fields::strToNumeric($lineItem->price,'currency',$curSym);
 			$lineItem->total = Fields::strToNumeric($lineItem->total,'currency',$curSym);
@@ -548,7 +541,7 @@ class Quote extends X2Model {
 
 		$links = array();
 		foreach ($quotesList as $model) {
-			$links[] = CHtml::link($model->name, array('/quotes/quotes/view', 'id' => $model->id));
+			$links[] = CHtml::link($model->name, array('quotes/view', 'id' => $model->id));
 		}
 		return implode(', ', $links);
 	}
@@ -614,14 +607,13 @@ class Quote extends X2Model {
 		return $temp;
 	}
 
-	public function search($pageSize=null, $uniqueId=null) {
-	    $pageSize = $pageSize === null ? ProfileChild::getResultsPerPage() : $pageSize;
+	public function search() {
 		$criteria = new CDbCriteria;
-		$parameters = array('limit' => ceil($pageSize));
+		$parameters = array('limit' => ceil(ProfileChild::getResultsPerPage()));
 		$criteria->scopes = array('findAll' => array($parameters));
 		$criteria->addCondition("t.type!='invoice' OR t.type IS NULL");
 
-		return $this->searchBase($criteria, $pageSize, $uniqueId);
+		return $this->searchBase($criteria);
 	}
 
 	public function searchInvoice() {
@@ -639,7 +631,7 @@ class Quote extends X2Model {
 		return $this->searchBase($criteria);
 	}
 
-	public function searchBase($criteria, $pageSize=null, $uniqueId=null) {
+	public function searchBase($criteria) {
 
 		$dateRange = Yii::app()->controller->partialDateRange($this->expectedCloseDate);
 		if ($dateRange !== false)
@@ -653,7 +645,7 @@ class Quote extends X2Model {
 		if ($dateRange !== false)
 			$criteria->addCondition('lastUpdated BETWEEN ' . $dateRange[0] . ' AND ' . $dateRange[1]);
 
-		return parent::searchBase($criteria, $pageSize, $uniqueId);
+		return parent::searchBase($criteria);
 	}
 
 	/**

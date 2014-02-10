@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -231,7 +231,4 @@ return array (
 '{user} completed an action: {action}'=>'{user} завершено действие: {action}',
 'Stage {n}: {stage} was completed for {record}'=>'Стадия {n} : {stage} была завершена {record}',
 '{user} completed stage {n}: {stage} was completed for {record}'=>'{user} завершен этап {n} : {stage} была завершена {record}',
-'Log Time'=>'Вход Время',
-'Time started'=>'Время начала',
-'Time ended'=>'Время закончилась',
 );

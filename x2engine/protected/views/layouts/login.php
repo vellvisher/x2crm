@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -65,7 +65,7 @@ foreach($checkFiles as $key=>$value) {
 }
 $theme2Css = '';
 if($checkResult)
-	$theme2Css = 'html * {background:url('.CHtml::normalizeUrl(array('/site/warning')).') !important;} #bg{display:none !important;}';
+	$theme2Css = 'html * {background:url('.CHtml::normalizeUrl(array('site/warning')).') !important;} #bg{display:none !important;}';
 
 // check for background image, use it if one is set
 if(empty(Yii::app()->params->profile->backgroundImg))
@@ -79,8 +79,7 @@ if(!empty(Yii::app()->params->profile->backgroundColor)) {
 	if(!empty($backgroundImg)) {
 		$shadowRgb = 'rgb(0,0,0,0.5)';	// use a black shadow if there is an image
 	} else {
-        // if there is no BG image, calculate a darker tone for the shadow
-		$shadowColor = X2Color::hex2rgb(Yii::app()->params->profile->backgroundColor);	
+		$shadowColor = X2Color::hex2rgb(Yii::app()->params->profile->backgroundColor);	// if there is no BG image, calculate a darker tone for the shadow
 
 		foreach($shadowColor as &$value) {
 			$value = floor(0.5*$value);
@@ -88,10 +87,10 @@ if(!empty(Yii::app()->params->profile->backgroundColor)) {
 		$shadowRgb = 'rgb('.implode(',',$shadowColor).')';
 	}
 	$themeCss .= "#page {
-        -moz-box-shadow: 0 0 30px $shadowRgb;
-        -webkit-box-shadow: 0 0 30px $shadowRgb;
-        box-shadow: 0 0 30px $shadowRgb;
-    }\n";
+-moz-box-shadow: 0 0 30px $shadowRgb;
+-webkit-box-shadow: 0 0 30px $shadowRgb;
+box-shadow: 0 0 30px $shadowRgb;
+}\n";
 }
 if(!empty(Yii::app()->params->profile->menuBgColor))
 	$themeCss .= '#main-menu-bar {background:#'.Yii::app()->params->profile->menuBgColor.";}\n";
@@ -123,6 +122,10 @@ Yii::app()->clientScript->registerCss('applyTheme2',$theme2Css,'screen',CClientS
 </head>
 <body id="body-tag"  class="login">
 <!--<div class="ie-shadow" style="display:none;"></div>-->
-<?php echo $content; ?>
+<div class="container" id="login-page">
+	<?php echo $content; ?>
+	<span id="login-version"><?php echo Yii::app()->params->edition=='pro'? 'PROFESSIONAL EDITION' : 'OPEN SOURCE EDITION'; ?>, VERSION <?php echo Yii::app()->params->version; ?></span>
+	<br><span id="login-x2engine"><a href="http://www.x2engine.com">X2Engine, Inc.</a><?php if(Yii::app()->params->admin->edition == 'opensource'){echo '&nbsp;&bull;&nbsp;'.CHtml::link("LICENSE",Yii::app()->baseUrl.'/LICENSE.txt');} ?></span>
+    </div>
 </body>
 </html>

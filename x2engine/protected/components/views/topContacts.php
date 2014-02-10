@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,7 +37,7 @@
 Yii::app()->clientScript->registerScript('topContacts',"
 function addTopContact(contactId) {
 	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('/users/users/addTopContact')) . "',
+		url: '" . CHtml::normalizeUrl(array('/users/addTopContact')) . "',
 		type: 'GET',
 		data: 'contactId='+contactId,
 		//data: 'contactId='+contactId+'&viewId='+viewId,
@@ -50,7 +50,7 @@ function addTopContact(contactId) {
 }
 function removeTopContact(contactId) {
 	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('/users/users/removeTopContact')) . "',
+		url: '" . CHtml::normalizeUrl(array('/users/removeTopContact')) . "',
 		type: 'GET',
 		data: 'contactId='+contactId,
 		// data: 'contactId='+contactId+'&viewId='+viewId,
@@ -75,7 +75,7 @@ foreach($topContacts as $contact) {
 	$contactIdList[] = $contact->id;
 	echo '<li id="contact' . $contact->id . '">';
 	$link = '<strong>'.$contact->firstName.' '.$contact->lastName.'</strong><br />'.$contact->phone;
-	echo CHtml::link($link,array('/contacts/contacts/view','id'=>$contact->id));
+	echo CHtml::link($link,array('/contacts/'.$contact->id));
 	
 	echo CHtml::link('[x]','#',array(
 		'class'=>'delete-link',

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -241,7 +241,7 @@ refreshQtip();
 Yii::app()->clientScript->registerScript('map-controls',"
 $('#mapControlForm').submit(function(){
     var tags=new Array();
-    $.each($(this).find ('.x2-tag-list a'),function(){
+    $.each($('#x2-tag-list-filter a'),function(){
         tags.push($(this).text());
     });
     $('#params_tags').val(tags);
@@ -255,7 +255,7 @@ $('#save-button').click(function(e){
     if(mapName){
         var center=map.getCenter();
         var tags=new Array();
-        $.each($('#mapControlForm').find ('.x2-tag-list a'),function(){
+        $.each($('#x2-tag-list-filter a'),function(){
             tags.push($(this).text());
         })
         var parameters={'assignedTo':'".(empty($assignment)?"":$assignment)."','tags':tags};
@@ -284,7 +284,7 @@ $('#save-button').click(function(e){
         'action' => 'googleMaps',
         'id' => 'mapControlForm',
         'enableAjaxValidation' => false,
-        'method' => 'POST',
+        'method' => 'POST'
     ));
     echo CHtml::hiddenField('contactId',isset($contactId)?$contactId:'');
     // $range = 30; //$model->dateRange;

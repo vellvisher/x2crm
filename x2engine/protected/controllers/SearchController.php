@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -283,7 +283,7 @@ class SearchController extends x2base {
             $records = array();
             $userRecords = array();
 
-            $regEx = "/".preg_quote($term, '/')."/i";
+            $regEx = "/$term/i";
 
             foreach($other as $key => $recordType){
                 $fieldList = $comparisons[$key];
@@ -362,13 +362,7 @@ class SearchController extends x2base {
 
             $records = Record::convert($records, false);
             if(count($records) == 1){
-                // Only one match, so go straight to it.
-                // 
-                // The record's corresponding model class must have
-                // X2LinkableBehavior for this to be possible.
-                if(!empty($records[0]['#recordUrl'])) {
-                    $this->redirect($records[0]['#recordUrl']);
-                }
+                $this->redirect($this->createUrl($records[0]['link']));
             }
             $dataProvider = new CArrayDataProvider($records, array(
                         'id' => 'id',
@@ -385,11 +379,8 @@ class SearchController extends x2base {
         }else{
             Yii::app()->user->setState('vcr-list', $term);
             $_COOKIE['vcr-list'] = $term;
-            $criteria = new CDbCriteria();
-            $criteria->addCondition ('tag=:tag');
-            $criteria->params = array (':tag' => $term);
             $results = new CActiveDataProvider('Tags', array(
-                        'criteria' => $criteria,
+                        'criteria' => array('condition' => 'tag="'.$term.'"'),
                         'pagination' => array(
                             'pageSize' => ProfileChild::getResultsPerPage(),
                         ),

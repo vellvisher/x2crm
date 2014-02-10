@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -44,7 +44,6 @@
 .quote-table input {
     overflow: hidden;
     text-overflow: ellipsis;
-    vertical-align:middle;
     margin: 0 0 0 0;
 }
 
@@ -138,8 +137,8 @@
 	border-radius: 3px;
 }
 
-.quote-table > tbody#line-items > tr > td.x2-7th-child input,
-.quote-table > tbody#adjustments > tr > td.x2-7th-child input, 
+.quote-table > tbody#line-items > tr > td:nth-child(7) input,
+.quote-table > tbody#adjustments > tr > td:nth-child(7) input, 
 .quote-table input#total,
 .quote-table input#subtotal {
     background: none;
@@ -160,7 +159,7 @@ set width of input fields in the quotes table
 }
 
 /* line item name cell */
-.quote-table > tbody#line-items > tr > td.x2-2nd-child {
+.quote-table > tbody#line-items > tr > td:nth-child(2) {
 	text-align: left;
     width: 22%;
     padding-right: 0;
@@ -169,7 +168,8 @@ set width of input fields in the quotes table
 
 /* line item name */
 .quote-table > thead > tr > th.line-item-name, 
-.quote-table > tbody#line-items > tr > td.x2-2nd-child input {
+.quote-table > tbody#line-items > tr > td:nth-child(2) input
+{
     margin: 0 0 0 0;
     width: 85%;
     float: left;
@@ -193,78 +193,78 @@ set width of input fields in the quotes table
 }
 
 /* unit price cell */
-.quote-table > tbody#line-items > tr > td.x2-3rd-child {
+.quote-table > tbody#line-items > tr > td:nth-child(3) {
 	text-align: left;
     width: 16%;
 }
 
 /* unit price */
-.quote-table > tbody#line-items > tr > td.x2-3rd-child input {
+.quote-table > tbody#line-items > tr > td:nth-child(3) input {
     width: 100%;
 	text-align: right;
 	font-size: 12px;
 }
 
 /* quantity cell */
-.quote-table > tbody#line-items > tr > td.x2-4th-child,
-.quote-table > tbody#adjustments> tr > td.x2-4th-child {
+.quote-table > tbody#line-items > tr > td:nth-child(4),
+.quote-table > tbody#adjustments> tr > td:nth-child(4) {
 	text-align: left;
     width: 12%;
 }
 
 /* quantity */
-.quote-table > tbody#line-items > tr > td.x2-4th-child input {
+.quote-table > tbody#line-items > tr > td:nth-child(4) input {
     width: 100%;
 	text-align: right;
 	font-size: 12px;
 }
 
 /* adjustment name */
-.quote-table > tbody#adjustments> tr > td.x2-4th-child input {
+.quote-table > tbody#adjustments> tr > td:nth-child(4) input {
     width: 100%;
 	text-align: left;
 	font-size: 12px;
 }
 
 /* adjustments cell */
-.quote-table > tbody#line-items > tr > td.x2-5th-child,
-.quote-table > tbody#adjustments > tr > td.x2-5th-child {
+.quote-table > tbody#line-items > tr > td:nth-child(5),
+.quote-table > tbody#adjustments > tr > td:nth-child(5) {
 	text-align: left;
     width: 12%;
 }
 
 /* adjustments */
-.quote-table > tbody#line-items > tr > td.x2-5th-child input,
-.quote-table > tbody#adjustments > tr > td.x2-5th-child input {
+.quote-table > tbody#line-items > tr > td:nth-child(5) input,
+.quote-table > tbody#adjustments > tr > td:nth-child(5) input {
     width: 100%;
 	font-size: 12px;
 	text-align: right;
 }
 
 /* description cell */
-.quote-table > tbody#line-items > tr > td.x2-6th-child,
-.quote-table > tbody#adjustments > tr > td.x2-6th-child {
+.quote-table > tbody#line-items > tr > td:nth-child(6),
+.quote-table > tbody#adjustments > tr > td:nth-child(6) {
 	text-align: left;
     width: 12%;
 }
 
 /* description */
-.quote-table > tbody#line-items > tr > td.x2-6th-child input,
-.quote-table > tbody#adjustments > tr > td.x2-6th-child input {
+.quote-table > tbody#line-items > tr > td:nth-child(6) input,
+.quote-table > tbody#adjustments > tr > td:nth-child(6) input {
     width: 100%;
 	font-size: 12px;
 }
 
 /* line total cell */
-.quote-table > tbody#line-items > tr > td.x2-7th-child,
-.quote-table > tbody#adjustments > tr > td.x2-7th-child {
+.quote-table > tbody#line-items > tr > td:nth-child(7),
+.quote-table > tbody#adjustments > tr > td:nth-child(7) {
 	text-align: left;
     width: 24%;
 }
 
 /* line total */
-.quote-table > tbody#line-items > tr > td.x2-7th-child input,
-.quote-table > tbody#adjustments > tr > td.x2-7th-child input {
+.quote-table > tbody#line-items > tr > td:nth-child(7) input,
+.quote-table > tbody#adjustments > tr > td:nth-child(7) input {
     width: 100%;
 	font-size: 12px;
 }

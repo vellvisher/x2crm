@@ -1,9 +1,14 @@
 <?php
 
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
 /**
- * This is a modified version of the default Yii class. The only change that has
- * been made is the inclusion of "common.php" as a shared source of translation
- * messages. Ctrl + F for "X2CHANGE" to find the exact location of this customization.
+ * Description of X2MessageSource
+ *
+ * @author jake
  */
 class X2MessageSource extends CMessageSource {
 
@@ -77,7 +82,6 @@ class X2MessageSource extends CMessageSource {
      */
     protected function translateMessage($category, $message, $language){
         $key = $language.'.'.$category;
-        // X2CHANGE The customization occurs here, see comments below.
         if(!isset($this->_messages[$key]))
             $this->_messages[$key] = $this->loadMessages($category, $language); // Load the messages for the chosen language.
         if(isset($this->_messages[$key][$message]) && $this->_messages[$key][$message] !== ''){

@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -44,8 +44,8 @@
  * @param String editorId The ID of the textarea to be replaced
  * @param Object editorConfig Optional config object containing options for the editor
  */
-function createCKEditor(editorId,editorConfig,callback, toolbar) {
-    var toolbar = typeof toolbar === 'undefined' ? 'MyEmailToolbar' : toolbar;
+function createCKEditor(editorId,editorConfig,callback) {
+
 	if (x2.isAndroid) {
 		if (editorConfig) {
 			if ('height' in editorConfig) {
@@ -62,7 +62,7 @@ function createCKEditor(editorId,editorConfig,callback, toolbar) {
 		return null;
 	}
 
-    var editor = $('#'+editorId).ckeditor(
+    return $('#'+editorId).ckeditor(
         function() {
             $('#cke_'+editorId).droppable({
                 accept: '.media',
@@ -108,7 +108,7 @@ function createCKEditor(editorId,editorConfig,callback, toolbar) {
                         link.setAttribute('href',mediaUrl);
                         link.setHtml(text);
                         var editorId='email-message';
-                        //var editor=$('#'+editorId).ckeditorGet();
+                        var editor=$('#'+editorId).ckeditorGet();
                         var range = editor.createRange();
                         range.moveToPosition( range.root, CKEDITOR.POSITION_BEFORE_END );
                         editor.getSelection().selectRanges( [ range ] );
@@ -122,7 +122,7 @@ function createCKEditor(editorId,editorConfig,callback, toolbar) {
                         var img = new CKEDITOR.dom.element('img');
                         img.setAttribute('src',mediaUrl);
 
-                        editor.insertElement(img);
+                        $('#'+editorId).ckeditorGet().insertElement(img);
                     }
                 }
             });
@@ -130,7 +130,7 @@ function createCKEditor(editorId,editorConfig,callback, toolbar) {
                 callback();
         },
         $.extend({
-            toolbar:toolbar,
+            toolbar:'MyEmailToolbar',
             height:300,
             // filebrowserBrowseUrl: '/browser/browse/type/all',
             // filebrowserUploadUrl: '/browser/upload/type/all',
@@ -140,7 +140,6 @@ function createCKEditor(editorId,editorConfig,callback, toolbar) {
             filebrowserWindowHeight: 500
         },editorConfig)
         ).ckeditorGet();
-    return editor;
 }
 
 

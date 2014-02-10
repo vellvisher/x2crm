@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -62,11 +62,9 @@ class X2FlowRecordListAdd extends X2FlowAction {
         }else{
             $list = CActiveRecord::model('X2List')->findByAttributes(array('name'=>$listIdentifier));
         }
-		if($list !== null && $list->modelName === get_class($params['model'])) {
-			if ($list->addIds($params['model']->id)) {
-                return array (true, "");
-            }
-		} 
-        return array (false, "");
+		if($list !== null && $list->modelName === get_class($params['model']))
+			return $list->addIds($params['model']->id);
+		else
+			return false;
 	}
 }

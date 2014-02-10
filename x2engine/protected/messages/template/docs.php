@@ -6,6 +6,7 @@ return array (
 'Body'=>'',
 
 // Labels
+'Doc'=>'',
 'Document:'=>'',
 'Edit Document:'=>'',
 'Manage Docs'=>'',

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -45,11 +45,9 @@
  */
 class InlineQuotes extends X2Widget {
 
-	public $recordId; // quotes displayed here are related to this record
-    private $_contactId; // id of associated contact (optional)
+	public $contactId; // quotes displayed here are associated with this contact
 	public $contact;
-	public $account = null; // name of associated account (optional)
-    public $modelName;
+	public $account = null;
 
 	public $errors = array();
 	public $startHidden = false;
@@ -61,67 +59,62 @@ class InlineQuotes extends X2Widget {
 
 		if($this->startHidden) {			
 		// register css
-		Yii::app()->clientScript->registerCss('inline-quotes-style','
-            #wide-quote-form {
-                background: #F8F8F8;
-            }
+		Yii::app()->clientScript->registerCssFile(Yii::app()->theme->getBaseUrl() .'/css/inlinequotes.css');
 
-            .viewQuote hr {
-            	background-color: black;
-            	overflow: visible;
-            }
+		// register (lots of) javascript
+		// toggleQuotes() - show/hide the quotes form in the contact view
+		// sendQuoteEmail(quote) - fill the inline email form with some info about a quote: name, table of products, description
+		Yii::app()->clientScript->registerScript('toggleQuotes',
+			($this->startHidden? "$(document).ready(function() { $('#quotes-form').hide();
+			 });\n" : '')
+			. "function toggleQuotes() {
 
-            .product-table th {
-            	background-color: inherit;
-            }
+				var wasHidden = $('#quotes-form').is(':hidden');
+				if(wasHidden) {
+					$('.focus-mini-module').removeClass('focus-mini-module');
+					$('#quotes-form').find('.wide.form').addClass('focus-mini-module');
+					$('html,body').animate({
+						scrollTop: ($('#quote-form-wrapper').offset().top - 100)
+					}, 300);
+				}
+				$('#quotes-form').toggle('blind',300,function() {
+					$('#quotes-form').focus();
+				});
+				if(!wasHidden) {
+					$('html,body').animate({
+						scrollTop: ($('body').offset().top)
+					}, 300);
+				}
+			}
+			
+			$(function() {
+				$('#quotes-form').click(function() {
+					if(sendingQuote) {
+						sendingQuote = false;
+					} else {
+						if(!$('#quotes-form').find('.wide.form').hasClass('focus-mini-module')) {
+							$('.focus-mini-module').removeClass('focus-mini-module');
+							$('#quotes-form').find('.wide.form').addClass('focus-mini-module');
+						}
+					}
 
-            .product-table tfoot {
-            	font-style: normal;
-            }
+				});
+			});
+			",CClientScript::POS_HEAD);
+			
+		Yii::app()->clientScript->registerScript('emailQuote', "
+		function appendEmail(line) {
+			var email = $('#email-message');
+			email.val(email.val() + line + ".'""'.");
+		}
+		
+		var sendingQuote = false;
+		function sendQuoteEmail(quoteId,quoteTemplate) {  // fill the inline email form with some info about a quote: name, table of products, description
+			quickQuote.setInlineEmail(quoteId,quoteTemplate);
+		    sendingQuote = true; // stop quote mini-module from stealing focus away from email
+		}
+		", CClientScript::POS_HEAD);
 
-            .quote-detail-table {
-            	padding: 0;
-            	width: 100%;
-            }
-
-            .quote-detail-table th {
-            	background-color: inherit;
-            	color: #666;
-            	font-weight: normal;
-            	font-size: 0.8em;
-            	padding: 5px 0 0 0;
-
-            }
-
-            .quote-detail-table td {
-            	font-weight: bold;
-            	padding: 0;
-            }
-
-            .quote-create-table {
-            	width: 100%;
-            	padding: 0;
-            }
-
-            .quote-create-table th {
-            	background-color: inherit;
-	            font-weight: bold;
-	            font-size: 0.8em;
-	            padding: 5px 0 0 0;
-            }
-
-            .quote-detail-table td {
-            	padding: 0;
-            }
-
-            .items td {
-	            border-top: none;
-	            border-bottom: none;
-            }');
-
-        if($this->startHidden)
-            Yii::app()->clientScript->registerScript('startQuotesHidden',"$('#quotes-form').hide();" ,CClientScript::POS_READY);
-        
 		$products = Product::model()->findAll(array('select'=>'id, name, price'));
 		$jsProductList = "\$(productList).append(\$('<option>', {value: 0}).append(''));\n";
 		$jsProductPrices = "var prices = [];\n";
@@ -135,130 +128,79 @@ class InlineQuotes extends X2Widget {
 		$jsonProductList = json_encode($productNames);
 
 		$region = Yii::app()->getLocale()->getId();
+		Yii::app()->clientScript->registerScript('productTable', "
+function toggleUpdateQuote(id, locked, strict) {
+	var confirmBox = $('<div></div>')
+		.html('This quote is locked. Are you sure you want to update this quote?')
+		.dialog({
+			title: 'Locked', 
+			autoOpen: false,
+			resizable: false,
+			buttons: {
+				'Yes': function() {
+					$(this).dialog('close');
+					quickQuote.openForm(id);
+				},
+				'No': function() {
+					$(this).dialog('close');
+				}
+			},
+		});
 
-        // Set up the new create form:
-        Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/inlineQuotes.js', CClientScript::POS_HEAD);
-        $quotesAssetsUrl = Yii::app()->assetManager->publish(Yii::getPathOfAlias('application.modules.quotes.assets'), false, -1, true);
-        Yii::app()->clientScript->registerCssFile($quotesAssetsUrl.'/css/lineItemsMain.css');
-        Yii::app()->clientScript->registerCssFile($quotesAssetsUrl.'/css/lineItemsWrite.css');
-        Yii::app()->clientScript->registerCoreScript('jquery.ui');
+	var denyBox = $('<div></div>')
+		.html('This quote is locked.')
+		.dialog({
+			title: 'Locked', 
+			autoOpen: false,
+			resizable: false,
+			buttons: {
+				'OK': function() {
+					$(this).dialog('close');
+				},
+			},
+		});
+		
+	if(locked)
+		if(strict)
+			denyBox.dialog('open');
+		else
+			confirmBox.dialog('open');
+	else {
+		quickQuote.openForm(id);
+	}
+}", CClientScript::POS_HEAD);
 
-        $this->contact = X2Model::model ('Contacts')->findByPk ($this->contactId);
+			// Set up the new create form:
+			Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/quickquote.js',CClientScript::POS_HEAD);
+			$quotesAssetsUrl = Yii::app()->assetManager->publish(Yii::getPathOfAlias('application.modules.quotes.assets'), false, -1, true);
 
-        //$this->contact = Contacts::model()->findByPk($this->contactId);
-        $iqConfig = array(
-                'contact' => ($this->contact instanceof Contacts) ? $this->contact->name : '',
-                'account' => $this->account,
-                'sendingQuote' => false,
-                'lockedMessage' => Yii::t('quotes','This quote is locked. Are you sure you want to update this quote?'),
-                'deniedMessage' => Yii::t('quotes','This quote is locked.'),
-                'lockedDialogTitle' => Yii::t('quotes','Locked'),
-                'failMessage' => Yii::t('quotes', 'Could not save quote.'),
-                'reloadAction' => CHtml::normalizeUrl(
-                    array(
-                        '/quotes/quotes/viewInline',
-                        'recordId' => $this->recordId,
-                        'recordType' => $this->modelName,
-                    )
-                ),
-                'createAction' => CHtml::normalizeUrl(
-                    array(
-                        '/quotes/quotes/create',
-                        'quick' => 1,
-                        'recordId' => $this->recordId,
-                        'recordType' => $this->modelName,
-                    )
-                ),
-                'updateAction' => CHtml::normalizeUrl(
-                    array(
-                        '/quotes/quotes/update', 
-                        'quick' => 1,
-                    )
-                ),
-            );
-            Yii::app()->clientScript->registerScript('quickquote-vars', '
-                if(typeof x2 == "undefined"){
-                    x2 = {};
-                }
-                var iqConfig = '.CJSON::encode($iqConfig).';
-                if(typeof x2.inlineQuotes=="undefined") {
-                    x2.inlineQuotes = iqConfig;
-                } else {
-                    $.extend(x2.inlineQuotes,iqConfig);
-                }', CClientScript::POS_HEAD);
-        }
-        parent::init();
+			Yii::app()->clientScript->registerCssFile($quotesAssetsUrl.'/css/lineItemsMain.css');
+			Yii::app()->clientScript->registerCssFile($quotesAssetsUrl.'/css/lineItemsWrite.css');
+			Yii::app()->clientScript->registerCoreScript('jquery.ui');
+
+			$this->contact = Contacts::model()->findByPk($this->contactId);
+			$qqConfig = array(
+				'contact'=>($this->contact instanceof Contacts) ? $this->contact->name :'',
+				'account'=> $this->account,
+				'failMessage'=>Yii::t('quotes', 'Could not save quote.'),
+				'reloadAction'=>CHtml::normalizeUrl(array('quotes/viewInline'))."?contactId={$this->contactId}",
+				'createAction'=>CHtml::normalizeUrl(array('quotes/create')).'?quick=1',
+				'updateAction'=>CHtml::normalizeUrl(array('quotes/update')).'?quick=1'
+			);
+			Yii::app()->clientScript->registerScript('quickquote-vars', 'quickQuote = '.CJSON::encode($qqConfig).';', CClientScript::POS_HEAD);
+		}
+		parent::init();
 	}
 
-        /**
-         * Getter and setter for contactId will also update recordId
-         * in order to remain backwards compatible.
-         */
-        public function getContactId() {
-          return $this->_contactId;  
-        }
-
-        public function setContactId($value) {
-            $this->_contactId = $value;
-            $this->recordId = $value;
-        }
-
-    /**
-     * Returns all related invoices or quotes 
-     * @param bool $invoices
-     * @return array array of related quotes models
-     */
-    public function getRelatedQuotes ($invoices=false) {
-        if ($this->contact instanceof Contacts) {
-            $associatedContactCondition = "quotes.associatedContacts=".$this->recordId." AND ";
-        } else {
-            $associatedContactCondition = "";
-        }
-
-        if ($invoices) {
-            $invoiceCondition = "type='invoice'";
-        } else {
-            $invoiceCondition = "type IS NULL OR type!='invoice'";
-        }
-
-        /*
-        Select all quotes which have a related record with the current record's id
-        */
-        $quotes = Yii::app()->db->createCommand ()
-            ->select ('quotes.id')
-            ->from ('x2_quotes as quotes, x2_relationships as relationships')
-            ->where ($associatedContactCondition."(".$invoiceCondition.") AND ".
-                "((relationships.firstType='Quote' AND ".
-                  "relationships.secondType=:recordType AND relationships.secondId=:recordId) OR ".
-                "(relationships.secondType='Quote' AND ".
-                  "relationships.firstType=:recordType AND relationships.firstId=:recordId)) AND ".
-                '((quotes.id=relationships.firstId AND relationships.firstType="Quote") OR '.
-                 '(quotes.id=relationships.secondId AND relationships.secondType="Quote"))',
-                 array (
-                    ':recordId' => $this->recordId,
-                    ':recordType' => $this->modelName
-                ))
-            ->queryAll ();
-
-        // get models from ids
-        $getId = function ($a) { return $a['id']; };
-        $quotes = X2Model::model('Quote')->findAllByPk (array_map ($getId, $quotes));
-
-        return $quotes;
-    }
-
 	public function run() {
-        // Permissions that affect the behavior of the widget:
-        $canDo = array();
-        foreach(array('QuickDelete','QuickUpdate','QuickCreate') as $subAction) {
-            $canDo[$subAction] = Yii::app()->user->checkAccess('Quotes'.$subAction);
-        }
+	
+//		Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->getBaseUrl() .'/css/gridview/jquery.yiigridview.js');
 
-		/*$relationships = Relationships::model()->findAllByAttributes(array(
+		$relationships = Relationships::model()->findAllByAttributes(array(
 			'firstType'=>'quotes', 
 			'secondType'=>'contacts', 
 			'secondId'=>$this->contactId,
-		));*/
+		));
 		
 		echo '<div id="quotes-form">';
 		echo '<div id="wide-quote-form" class="wide form" style="overflow: visible;">';
@@ -269,10 +211,13 @@ class InlineQuotes extends X2Widget {
 		// Mini Create Quote Form
 		$model = new Quote;
 
-        if($canDo['QuickCreate']){
-            $this->render('createQuote');
-            echo '<br /><hr />';
-        }
+		$this->render('createQuote', array(
+			'model'=>$model,
+			'contactId'=>$this->contactId,
+			// 'productNames'=>$productNames,
+	//		'showNewQuote'=>$showNewQuote,
+		));
+		echo '<br /><hr />';
 
 		// get a list of products for adding to quotes
 		$products = Product::model()->findAll(array('select'=>'id, name'));
@@ -281,30 +226,7 @@ class InlineQuotes extends X2Widget {
 			// $productNames[$product->id] = $product->name;
 		// }	
 		
-		//$quotes = Quote::model()->findAll("associatedContacts=:associatedContacts AND (type IS NULL OR type!='invoice')", array(':associatedContacts'=>$this->contactId));
-		/*$quotes = Quote::model()->findAll(
-            "associatedContacts=:associatedContacts AND (type IS NULL OR type!='invoice')", array(':associatedContacts'=>$this->contactId));*/
-
-        /*if ($this->contact instanceof Contacts) {
-            $associatedContactCondition = "x2_quotes.associatedContacts=".$this->contactId." AND ";
-        } else {
-            $associatedContactCondition = "";
-        }
-
-        $quotes = Yii::app()->db->createCommand ()
-            ->select ('*')
-            ->from ('x2_quotes')
-            ->join (
-                'x2_quotes.id=x2_relationships.firstId AND x2_relationships.firstType=qutoes OR '.
-                'x2_quotes.id=x2_relationships.secondId AND x2_relationships.secondType=qutoes')
-            ->where ($associatedContactCondition."(type IS NULL OR type!='invoice') AND ".
-                "((x2_relationships.firstType=quotes AND x2_relationships.secondId=:recordId) OR ".
-                 "(x2_relationships.secondType=quotes AND x2_relationships.firstId=:recordId))",
-                 array (':recordId' => $this->contactId))
-            ->queryAll ();*/
-
-        $quotes = $this->getRelatedQuotes ();
-        
+		$quotes = Quote::model()->findAll("associatedContacts=:associatedContacts AND (type IS NULL OR type!='invoice')", array(':associatedContacts'=>$this->contactId));
 		foreach($quotes as $quote) {
 			$products = Product::model()->findAll(array('select'=>'id, name, price'));
 			$quoteProducts = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$quote->id));
@@ -344,14 +266,12 @@ class InlineQuotes extends X2Widget {
 			$newProductId = "new_product_" . $quote->id;
 			$this->render('viewQuotes', array(
 				'quote'=>$quote,
-				'recordId'=>$this->recordId,
-				'modelName'=>$this->modelName,
+				'contactId'=>$this->contactId,
 				'dataProvider'=>$dataProvider,
 				'products'=>$products,
 				// 'productNames'=>$productNames,
 				'orders'=>$quoteProducts,
 				'total'=>$total,
-                'canDo' => $canDo
 			));
 		}
 		
@@ -360,8 +280,7 @@ class InlineQuotes extends X2Widget {
 		echo '<span style="font-weight:bold; font-size: 1.5em;">'. Yii::t('quotes','Invoices') .'</span>';
 		echo '<br /><br />';
 		
-		/*$quotes = Quote::model()->findAll("associatedContacts=:associatedContacts AND type='invoice'", array(':associatedContacts'=>$this->contactId));*/
-        $quotes = $this->getRelatedQuotes (true);
+		$quotes = Quote::model()->findAll("associatedContacts=:associatedContacts AND type='invoice'", array(':associatedContacts'=>$this->contactId));
 		
 		foreach($quotes as $quote) {
 			$products = Product::model()->findAll(array('select'=>'id, name, price'));
@@ -402,14 +321,12 @@ class InlineQuotes extends X2Widget {
 			$newProductId = "new_product_" . $quote->id;
 			$this->render('viewQuotes', array(
 				'quote'=>$quote,
-				'recordId'=>$this->recordId,
-				'modelName'=>$this->modelName,
+				'contactId'=>$this->contactId,
 				'dataProvider'=>$dataProvider,
 				'products'=>$products,
 				// 'productNames'=>$productNames,
 				'orders'=>$quoteProducts,
 				'total'=>$total,
-                'canDo' => $canDo,
 			));
 		}
 

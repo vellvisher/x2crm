@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,13 +38,7 @@
  * @package X2CRM.components.x2flow
  */
 abstract class X2FlowItem extends CComponent {
-
-    /**
-     * "Cache" of instantiated triggers, for reference purposes
-     */
-    protected static $_instances;
-
-    /**
+	/**
 	 * $var string the text label for this action
 	 */
 	public $label = '';
@@ -56,10 +50,6 @@ abstract class X2FlowItem extends CComponent {
 	 * $var array the config parameters for this action
 	 */
 	public $config = '';
-    /**
-     * $var bool Distinguishes whether cron is required for running the action properly.
-     */
-    public $requiresCron = false;
 	/**
 	 * @return array the param rules.
 	 */
@@ -67,13 +57,14 @@ abstract class X2FlowItem extends CComponent {
 	/**
 	 * Checks if all all the params are ship-shape
 	 */
-	abstract public function validate(&$params=array(), $flowId);
+	abstract public function validate(&$params=array());
 
 	/**
 	 * Checks if all the config variables and runtime params are ship-shape
 	 * Ignores param requirements if $params isn't provided
 	 */
 	public function validateOptions(&$paramRules,&$params=null) {
+
 		$configOptions = &$this->config['options'];
 		// die(var_dump($configOptions));
 		foreach($paramRules['options'] as &$optRule) {	// loop through options defined in paramRules() and make sure they're all set in $config
@@ -103,23 +94,17 @@ abstract class X2FlowItem extends CComponent {
 				$option['type'] = $optRule['type'];
 			// if there's an operator setting, it must be valid
 			if(isset($optRule['operator']) && !in_array($optRule['operators'],$configOptions['operator']))
-				return array (
-                    false,
-                    Yii::t('studio', 'Flow item validation error'));
+				return false;
 
 			// value must not be empty, unless it's an optional setting
 			if(!isset($option['value']) || $option['value'] === null || $option['value'] === '') {
-				if(isset($optRule['defaultVal'])) {		// try to use the default value
+				if(isset($optRule['defaultVal']))		// try to use the default value
 					$option[$optName] = $optRule['defaultVal'];
-				} elseif(!$option['optional']) {
-					// if not, fail if it was required
-				    return array (
-                        false,
-                        Yii::t('studio', 'Required flow item input missing'));
-                }
+				elseif(!$option['optional'])
+					return false;	// if not, fail if it was required
 			}
 		}
-		return array (true, '');
+		return true;
 	}
 
 	/**
@@ -129,28 +114,10 @@ abstract class X2FlowItem extends CComponent {
 	 */
 	public static function getParamRules($type) {
 		$item = self::create(array('type'=>$type));
-		if($item !== null) {
-			$paramRules = $item->paramRules();
-            $paramRules['class'] = get_class ($item);
-            return $paramRules;
-        }
+		if($item !== null)
+			return $item->paramRules();
 		return false;
 	}
-
-	/**
-	 * Gets the title property of the specified flow item
-	 * @param string $type name of action class
-	 * @return string the title property, or '' if the type is invalid of if the class
-     *  associated with the type doesn't have a title property
-     */
-    public static function getTitle ($type) {
-		$item = self::create(array('type'=>$type));
-        $title = '';
-		if ($item !== null && property_exists ($item, 'title')) {
-            $title = $item->title;
-        }
-        return $title;
-    }
 
 	/**
 	 * Creates a flow item with the provided config data
@@ -199,53 +166,4 @@ abstract class X2FlowItem extends CComponent {
 				return false;
 		}
 	}
-
-	/*
-	 *
-	 */
-	public function parseOption($name,&$params) {
-		$options = &$this->config['options'];
-		if(!isset($options[$name]['value']))
-			return null;
-
-		$type = isset($options[$name]['type'])? $options[$name]['type'] : '';
-        
-		return X2Flow::parseValue($options[$name]['value'],$type,$params);
-	}
-
-    /**
-     * Generalized mass-instantiation method.
-     *
-     * Loads and instantiates all X2Flow items of a given type (i.e. actions,
-     * triggers).
-     * 
-     * @param type $type
-     * @param type $excludeClasses
-     * @return type
-     */
-    public static function getInstances($type,$excludeClasses=array()) {
-        if(!isset(self::$_instances))
-            self::$_instances = array();
-        if(!isset(self::$_instances[$type])) {
-            $excludeFiles = array();
-            foreach($excludeClasses as $class) {
-                $excludedFiles[] = "$class.php";
-            }
-            $excludedFiles[] = '.';
-            $excludedFiles[] = '..';
-
-            self::$_instances[$type] = array();
-            foreach(scandir(Yii::getPathOfAlias('application.components.x2flow.'.$type)) as $file) {
-                if(!preg_match ('/\.php$/', $file) || in_array($file,$excludedFiles)) {
-                    continue;
-                }
-                $class = self::create(array('type'=>substr($file,0,-4)));
-                if($class !== null)
-                    self::$_instances[$type][] = $class;
-            }
-        }
-        return self::$_instances[$type];
-    }
-
-
 }

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 $menuItems = array(
-            array('label' => Yii::t('app', 'Main Menu'), 'url' => array('/mobile/site/home')),
+            array('label' => Yii::t('app', 'Main Menu'), 'url' => array('site/home/')),
         );
 
 $this->widget('MenuList', array(
@@ -46,40 +46,36 @@ $this->widget('MenuList', array(
 <br />
 <div class="view">
 
-    <b><?php echo CHtml::encode("Name"); ?>:</b>
-    <?php echo CHtml::encode($model->firstName." ".$model->lastName); ?>
-    <br />
-    
-    <b><?php echo CHtml::encode("Phone"); ?>:</b>
-    <?php echo "<a href='tel:".CHtml::encode($model->phone)."'>".$model->phone."</a>"; ?>
-    <br />
-    <b><?php echo CHtml::encode("E-Mail");?>:</b>
-    <?php echo "<a href='mailto:".CHtml::encode($model->email)."'>".$model->email."</a>"; ?><br />
-    
-    <b><?php echo CHtml::encode("Address");?>:</b>
-    <?php 
-    if (isset ($model->address) || isset ($model->city) || isset ($model->state) || 
-        isset ($model->zipcode)) 
-        echo "$model->address, $model->city, $model->state, $model->zipcode"; 
-    ?>
-    <br />
-    <?php if(isset($data->address))
-            echo "<a href='http://maps.google.com/maps?q=$data->address,+$data->city,+$data->state,+$data->zipcode,+$data->country'>Map it!</a>"; ?>
+	<b><?php echo CHtml::encode("Name"); ?>:</b>
+	<?php echo CHtml::encode($model->firstName." ".$model->lastName); ?>
+	<br />
+	
+	<b><?php echo CHtml::encode("Phone"); ?>:</b>
+	<?php echo "<a href='tel:".CHtml::encode($model->phone)."'>".$model->phone."</a>"; ?>
+	<br />
+	<b><?php echo CHtml::encode("E-Mail");?>:</b>
+	<?php echo "<a href='mailto:".CHtml::encode($model->email)."'>".$model->email."</a>"; ?><br />
+	
+	<b><?php echo CHtml::encode("Address");?>:</b>
+	<?php echo "$model->address, $model->city, $model->state, $model->zipcode"; ?><br />
+	<?php if(isset($data->address))
+			echo "<a href='http://maps.google.com/maps?q=$data->address,+$data->city,+$data->state,+$data->zipcode,+$data->country'>Map it!</a>"; ?>
 
-    <?php /*
-    <b><?php echo CHtml::encode($data->getAttributeLabel('IM')); ?>:</b>
-    <?php echo CHtml::encode($data->IM); ?>
-    <br />
+	<?php /*
+	<b><?php echo CHtml::encode($data->getAttributeLabel('IM')); ?>:</b>
+	<?php echo CHtml::encode($data->IM); ?>
+	<br />
 
-    <b><?php echo CHtml::encode($data->getAttributeLabel('website')); ?>:</b>
-    <?php echo CHtml::encode($data->website); ?>
-    <br />
+	<b><?php echo CHtml::encode($data->getAttributeLabel('website')); ?>:</b>
+	<?php echo CHtml::encode($data->website); ?>
+	<br />
 
-    <b><?php echo CHtml::encode($data->getAttributeLabel('visibility')); ?>:</b>
-    <?php echo CHtml::encode($data->visibility); ?>
-    <br />
+	<b><?php echo CHtml::encode($data->getAttributeLabel('visibility')); ?>:</b>
+	<?php echo CHtml::encode($data->visibility); ?>
+	<br />
 
-    */ ?> 
+	
+
+	*/ ?> 
 
 </div>
-

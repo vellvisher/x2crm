@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2CRM Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2013 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -126,52 +126,10 @@ class Session extends CActiveRecord {
 			// $temp[] = $session->user;
 		// return $temp;
 
-		$query = Yii::app()->db->createCommand()
-            ->selectDistinct('user')
-            ->from('x2_sessions')
-            ->where('status=1');
+		$query = Yii::app()->db->createCommand()->selectDistinct('user')->from('x2_sessions')->where('status=1');
 		if($useTimeout)
 			$query = $query->where('lastUpdated > "'.(time()-900).'"');
 
 		return $query->queryColumn();
 	}
-
-    /**
-     * @param string $username
-     * @return bool true if user has a recently updated session record, false otherwise
-     */
-	public static function isOnline ($username) {
-		$record = Yii::app()->db->createCommand()
-            ->select('*')
-            ->from('x2_sessions')
-            ->where('status=1 and user=:username and lastUpdated > "'.(time () - 900).
-                '"', array ('username' => $username))
-            ->queryAll ();
-
-		return (!empty ($record));
-    }
-
-    /**
-     * Clear session records which have timed out. Log the timeout.
-     */
-    public static function cleanUpSessions () {
-        // Only select users with active sessions to clear out, in case there are
-        // dozens of inactive users, to make things more efficient:
-        $users = Yii::app()->db->createCommand()
-                ->select('x2_users.id,x2_users.username')
-                ->from('x2_users')
-                ->rightJoin('x2_sessions', 'x2_sessions.user = x2_users.username')
-                ->where('x2_users.username IS NOT NULL AND x2_users.username != ""')
-                ->queryAll();
-        foreach($users as $user){
-            $timeout = Roles::getUserTimeout($user['id']);
-            $sessions = X2Model::model('Session')
-                    ->findAllByAttributes(
-                    array('user' => $user['username']), 'lastUpdated < :cutoff', array(':cutoff' => time() - $timeout));
-            foreach($sessions as $session){
-                SessionLog::logSession($session->user, $session->id, 'passiveTimeout');
-                $session->delete();
-            }
-        }
-    }
 }
