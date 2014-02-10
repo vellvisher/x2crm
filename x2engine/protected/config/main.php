@@ -64,7 +64,7 @@ $config = array(
 //            // If removed, Gii defaults to localhost only. Edit carefully to taste.
 //            'ipFilters'=>false,
 //        ),
-        'mobile',
+        'mobile','videoChat'
     ),
     'behaviors' => array('ApplicationConfigBehavior'),
     // application components
