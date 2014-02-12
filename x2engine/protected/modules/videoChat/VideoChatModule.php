@@ -11,6 +11,7 @@ class VideoChatModule extends CWebModule
 		$this->setImport(array(
 			'videoChat.models.*',
 			'videoChat.components.*',
+			'application.components.*',
 		));
 	}
 
