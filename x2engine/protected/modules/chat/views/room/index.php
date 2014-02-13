@@ -19,11 +19,7 @@ $users = Yii::app()->db->createCommand()
         ->queryAll();
 $user_names = array();
 foreach($users as $user) {
-    $user_names[]=$user['fullName'];
-    // get user id or whatever
-    // create box for invite input
-    // set text box autocomplete with names
-    // create invite button
+    $user_names[]=array('label'=>$user['fullName'], 'value'=>$user['username']);
 }
 // Yii::app()->clientScript->registerCoreScript('jquery.ui');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/jquery.form.min.js');
@@ -34,12 +30,14 @@ Yii::app()->clientScript->registerScript('chatLoad',
 	 'source':".json_encode($user_names).",
     });
 
-    $('#chat-invite-form').ajaxForm({url:'invite', type:'post', resetForm:true, success:function() {alert('Invited!');}});
+    $('#chat-invite-form').ajaxForm({url:'invite', type:'post', resetForm:true, success:function() {alert('Invited!');},
+    error:function() { alert('Sorry, could not post the invite...');}});
 ");
 ?>
 <form id="chat-invite-form">
-<input id="chat-invite-box" type="text"/>
+<input id="chat-invite-box" name="username" type="text"/>
 <input type="submit" value="Invite"/>
+<input type="hidden" id="chat-room-id" name="chatroom_id" value=""/>
 </form>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
 <meta http-equiv="Content-Language" content="en-us"> 
@@ -67,6 +65,7 @@ var connectedPeers = {};
 // Show this peer's ID.
 peer.on('open', function(id){
   $('#pid').text(id);
+  $('#chat-room-id').val(id);
 });
 
 // Await connections from others
