@@ -9,16 +9,25 @@ return array(
        ),
     ),
     'components' => array(
-    'db' => array(
-        'connectionString' => "mysql:host=$host;dbname=$dbname",
-        'emulatePrepare' => true,
-        'username' => 'x2crm',
-        'password' => $pass,
-        'charset' => 'utf8',
-        //'enableProfiling'=>true,
-        //'enableParamLogging' => true,
-        'schemaCachingDuration' => 84600
-    ),
-)
+        'db' => array(
+            'connectionString' => "mysql:host=$host;dbname=$dbname",
+            'emulatePrepare' => true,
+            'username' => 'x2crm',
+            'password' => $pass,
+            'charset' => 'utf8',
+            //'enableProfiling'=>true,
+            //'enableParamLogging' => true,
+            'schemaCachingDuration' => 84600
+        ),
+        'log' => array(
+            'routes' => array(
+                 array(
+                     'class'=>'CFileLogRoute',
+                     //'levels'=>'error, debug',
+                     'filter'=>'CLogFilter',
+                 ),
+            )
+        )
+     )
 );
 ?>
