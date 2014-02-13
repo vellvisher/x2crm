@@ -7,7 +7,7 @@ class RoomController extends Controller
 	}
 
 	public function actionInvite() {
-        $username = Yii::app()->params->profile->username;
+        $poster_username = Yii::app()->params->profile->username;
         // if (!Yii::app()->user->checkAccess('create chatroom_invite')) {
         //     // not allowed... .
         //     throw new CHttpException(401);
@@ -27,8 +27,20 @@ class RoomController extends Controller
                 throw new CHttpException(400);
             }
             $user_id = $user_id_array['id'];
+
+            // Get Poster ID
+            $user_id_array = Yii::app()->db->createCommand()
+                    ->select('id')
+                    ->from('x2_users')
+                    ->where('username=:username', array(':username'=>$poster_username))
+                    ->queryRow();
+            if (count($user_id_array) != 1 || !isset($user_id_array['id'])) {
+                throw new CHttpException(400);
+            }
+            $poster_user_id = $user_id_array['id'];
             $invite->chatroom_id=$chatroom_id;
             $invite->user_id=$user_id;
+            $invite->poster_id=$poster_user_id;
 
             $trans = Yii::app()->db->beginTransaction();
 

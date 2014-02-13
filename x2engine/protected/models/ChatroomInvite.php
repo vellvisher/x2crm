@@ -6,8 +6,10 @@
  * The followings are the available columns in table 'chatroom_invite':
  * @property string $chatroom_id
  * @property string $user_id
+ * @property string $poster_id
  *
  * The followings are the available model relations:
+ * @property X2Users $poster
  * @property X2Users $user
  */
 class ChatroomInvite extends CActiveRecord
@@ -38,12 +40,12 @@ class ChatroomInvite extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('chatroom_id, user_id', 'required'),
+			array('chatroom_id, user_id, poster_id', 'required'),
 			array('chatroom_id', 'length', 'max'=>30),
-			array('user_id', 'length', 'max'=>10),
+			array('user_id, poster_id', 'length', 'max'=>10),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('chatroom_id, user_id', 'safe', 'on'=>'search'),
+			array('chatroom_id, user_id, poster_id', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -55,6 +57,7 @@ class ChatroomInvite extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+			'poster' => array(self::BELONGS_TO, 'X2Users', 'poster_id'),
 			'user' => array(self::BELONGS_TO, 'X2Users', 'user_id'),
 		);
 	}
@@ -67,6 +70,7 @@ class ChatroomInvite extends CActiveRecord
 		return array(
 			'chatroom_id' => 'Chatroom',
 			'user_id' => 'User',
+			'poster_id' => 'Poster',
 		);
 	}
 
@@ -83,6 +87,7 @@ class ChatroomInvite extends CActiveRecord
 
 		$criteria->compare('chatroom_id',$this->chatroom_id,true);
 		$criteria->compare('user_id',$this->user_id,true);
+		$criteria->compare('poster_id',$this->poster_id,true);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
