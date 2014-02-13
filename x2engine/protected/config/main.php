@@ -341,7 +341,8 @@ $config = array(
             'MediaBox' => 'Files',
             'DocViewer' => 'Doc Viewer',
             'TopSites' => 'Top Sites',
-            'HelpfulTips' => 'Helpful Tips'
+            'HelpfulTips' => 'Helpful Tips',
+            'Chat' => 'Chat'
         ),
         'currency' => '',
         'version' => $version,
