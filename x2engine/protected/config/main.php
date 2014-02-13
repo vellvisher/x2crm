@@ -363,4 +363,14 @@ if(file_exists('protected/config/proConfig.php')){
         }
     }
 }
+if (isset($_SERVER['APPLICATION_ENV'])) {
+    $environment = $_SERVER['APPLICATION_ENV'];
+    if ($environment == 'development') {
+        if(file_exists('protected/config/debugConfig.php')){
+            // $debugConfig=dirname(__FILE__).'/protected/config/debugConfig.php';
+            $debugConfig=require_once 'debugConfig.php';
+            $config = CMap::mergeArray( $config, $debugConfig );
+        }
+    }
+}
 return $config;
