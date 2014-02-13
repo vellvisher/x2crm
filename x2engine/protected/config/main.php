@@ -64,7 +64,7 @@ $config = array(
 //            // If removed, Gii defaults to localhost only. Edit carefully to taste.
 //            'ipFilters'=>false,
 //        ),
-        'mobile'
+        'mobile', 'chat'
     ),
     'behaviors' => array('ApplicationConfigBehavior'),
     // application components
@@ -341,7 +341,8 @@ $config = array(
             'MediaBox' => 'Files',
             'DocViewer' => 'Doc Viewer',
             'TopSites' => 'Top Sites',
-            'HelpfulTips' => 'Helpful Tips'
+            'HelpfulTips' => 'Helpful Tips',
+            'Chat' => 'Chat'
         ),
         'currency' => '',
         'version' => $version,
