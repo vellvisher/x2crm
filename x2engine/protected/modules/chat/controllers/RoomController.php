@@ -6,6 +6,13 @@ class RoomController extends Controller
 		$this->render('index');
 	}
 
+    public function actionJoin() {
+        // $room = _POST['chatroom_id'];
+        // TODO: Sanitize input
+
+		$this->render('join');
+    }
+
 	public function actionInvite() {
         $poster_username = Yii::app()->params->profile->username;
         // if (!Yii::app()->user->checkAccess('create chatroom_invite')) {
