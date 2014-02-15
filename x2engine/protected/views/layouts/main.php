@@ -463,6 +463,7 @@ $userMenu = array(
 <meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge">
 <link rel="icon" href="<?php echo $baseUrl; ?>/images/favicon.ico" type="image/x-icon">
 <link rel="shortcut-icon" href="<?php echo $baseUrl; ?>/images/favicon.ico" type="image/x-icon">
+<link rel="alternate" type="application/rss+xml" title="X2CRM RSS" href="<?php echo $baseUrl; ?>/index.php/notifications/rss">
 <!--[if lt IE 8]>
 <link rel="stylesheet" type="text/css" href="<?php echo $themeUrl; ?>/css/ie.css" media="screen, projection">
 <![endif]-->

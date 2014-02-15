@@ -44,13 +44,45 @@ class NotificationsController extends CController {
 	public function accessRules() {
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('get','delete','deleteAll','newMessage','getMessages','checkNotifications','saveGridviewSettings','saveFormSettings', 'fullScreen', 'pageOpacity', 'widgetState','widgetOrder'),
+				'actions'=>array('get','delete','deleteAll','newMessage','getMessages','checkNotifications','saveGridviewSettings','saveFormSettings', 'fullScreen', 'pageOpacity', 'widgetState','widgetOrder','rss'),
 				'users'=>array('@'),
 			),
 			array('deny',
 				'users'=>array('*')
 			)
 		);
+	}
+	
+	public function actionRss() {
+		//$this->actionGet();
+		
+		$chatMessages = array();
+		Yii::import('application.extensions.efeed.*');
+		Yii::import('application.models.Events');
+        Yii::import('application.components.Formatter');
+        Yii::import('application.controllers.x2base');
+        Yii::import('application.controllers.X2Controller');
+        $result=Events::getEvents(0, 0, null, null, null);
+        $events=$result['events'];
+		
+		// specify feed type
+		$feed = new EFeed();
+		$feed->title = 'X2CRM RSS Feed';
+		$feed->link = Yii::app()->getBaseUrl(true);
+		$feed->description = 'Notification feed of X2CRM';
+		$feed->addChannelTag('language', 'en-us');
+		$feed->addChannelTag('pubDate', date(DATE_RSS, time()));
+		
+		foreach($events as $event) {
+            $item = $feed->createNewItem();
+            $item->title = str_replace('&raquo;', 'to', preg_replace('/<[^>]*>/', '', $event->getText(array ('truncated' =>true))));
+            $item->link = Yii::app()->getBaseUrl(true) . '#' . $event->id;
+            $item->date = date(DATE_RSS, $event->timestamp);
+            $item->description = $event->getText(array ('truncated' =>true));
+            $feed->addItem($item);
+        }
+		
+		$feed->generateFeed();
 	}
 
 	/**
