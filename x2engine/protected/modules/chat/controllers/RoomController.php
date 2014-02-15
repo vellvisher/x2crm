@@ -7,10 +7,10 @@ class RoomController extends Controller
 	}
 
     public function actionJoin() {
-        // $room = _POST['chatroom_id'];
+        $chatroom_id = $_POST['chatroom_id'];
         // TODO: Sanitize input
 
-		$this->render('join');
+		$this->render('join', array('chatroom_id' => $chatroom_id));
     }
 
 	public function actionInvite() {
@@ -31,6 +31,7 @@ class RoomController extends Controller
                     ->where('username=:username', array(':username'=>$username))
                     ->queryRow();
             if (count($user_id_array) != 1 || !isset($user_id_array['id'])) {
+                Yii::log('Could not get user id', 'error');
                 throw new CHttpException(400);
             }
             $user_id = $user_id_array['id'];
@@ -42,6 +43,7 @@ class RoomController extends Controller
                     ->where('username=:username', array(':username'=>$poster_username))
                     ->queryRow();
             if (count($user_id_array) != 1 || !isset($user_id_array['id'])) {
+                Yii::log('Could not get poster id', 'error');
                 throw new CHttpException(400);
             }
             $poster_user_id = $user_id_array['id'];
@@ -57,6 +59,7 @@ class RoomController extends Controller
                 echo 'Done';
             } catch (Exception $e) {
                 $trans->rollback();
+                Yii::log(e, 'error');
                 throw new CHttpException(400);
             }
         }

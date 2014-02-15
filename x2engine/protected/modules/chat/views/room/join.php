@@ -107,8 +107,8 @@ $(document).ready(function() {
   }
 
   // Connect to a peer
-  $('#connect').click(function() {
-    requestedPeer = $('#rid').val();
+  var connectNow = function() {
+    requestedPeer = "<?php echo $chatroom_id ?>";
     if (!connectedPeers[requestedPeer]) {
       // Create 2 connections, one labelled chat and another labelled file.
       var c = peer.connect(requestedPeer, {
@@ -127,7 +127,7 @@ $(document).ready(function() {
       f.on('error', function(err) { alert(err); });
     }
     connectedPeers[requestedPeer] = 1;
-  });
+  };
 
   // Close a connection.
   $('#close').click(function() {
@@ -173,6 +173,7 @@ $(document).ready(function() {
 
   // Show browser version
   $('#browsers').text(navigator.userAgent);
+  connectNow();
 });
 
 // Make sure things clean up properly.
