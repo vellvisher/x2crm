@@ -19,6 +19,7 @@ if (count($user_id_array) != 1 || !isset($user_id_array['id'])) {
 }
 $user_id = $user_id_array['id'];
 ?>
+<a href="/index.php/chat/room/index">Invite</a>
 
 <div id="media-library-widget-wrapper" style="width:99%">
     <div id="media-library-widget-container">
@@ -121,7 +122,9 @@ $user_id = $user_id_array['id'];
                     <?php
                     foreach ($chatInvites as $chatInvite) {
                       echo '<span class="chat-invite">';
-                      echo CHtml::link('Join!', Yii::app()->baseUrl.'/index.php/chat/room/index?room='.$chatInvite['chatroom_id'], array('target'=>'_blank'));
+                      echo '<form action="'.Yii::app()->baseUrl.'/index.php/chat/room/join'.'" method="post" target="_blank"><input type="hidden" name="chatroom_id" value="'.$chatInvite['chatroom_id'].'">';
+                      echo '<input type="submit" value="Join"></input>';
+                      echo '</form>';
                       echo CHtml::closeTag('span');
                     }
                     ?>
