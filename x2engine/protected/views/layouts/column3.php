@@ -707,6 +707,9 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 			'currentAction'=>$this->getAction()->getId(),
 			'id'=>'recent-items'
 		));
+		$this->widget('VirtualAssistant', array(
+			'id' => 'virtual-assistant'
+		));
 
 		?>
 	</div>

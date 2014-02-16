@@ -1,27 +1,24 @@
 (function() {
 	//more button
 	function step_1() {
-		if (endsWith(window.location.pathname, "index.php/site/whatsNew")) {
-			console.log("trying step 1");
-			$("#more-menu").popover({
-				placement: "bottom",
-				trigger: "manual",
-				title: "Step 1",
-				content: "Click here to change your calendar permssions"
-			});
 
-			//hide popover
-			$($("#more-menu").children()[0]).click(function() {
-				$('#more-menu').popover("hide");
-				step_2();
-			});
+		console.log("trying step 1");
+		$("#more-menu").popover({
+			placement: "bottom",
+			trigger: "manual",
+			title: "Step 1",
+			content: "Click here to change your calendar permssions"
+		});
 
-			//check if calendar is visible..then show immediately
-			//using setTimeout for now..later onclick
-			setTimeout(function() {
-				$('#more-menu').popover("show");
-			}, 1000);
-		}
+		//hide popover
+		$($("#more-menu").children()[0]).click(function() {
+			$('#more-menu').popover("hide");
+			step_2();
+		});
+
+		//check if calendar is visible..then show immediately
+		//using setTimeout for now..later onclick
+		$('#more-menu').popover("show");
 	}
 	//calendar button
 	function step_2() {
@@ -42,20 +39,18 @@
 	}
 
 	function step_3() {
-		if (endsWith(window.location.pathname, "index.php/calendar/index")) {
-			if (getParameterByName("tour") == "true") {
-				console.log("trying step 3");
-				var $elem = $('#actions').find('a[href$="index.php/calendar/myCalendarPermissions"]');
-				var linkName = $elem.attr("href");
-				$elem.attr("href", linkName + "?tour=true");
-				$elem.popover({
-					placement: "right",
-					trigger: "manual",
-					title: "Step 3",
-					content: "Click here to change your calendar permssions"
-				});
-				$elem.popover("show");
-			}
+		if (getParameterByName("tour") == "true") {
+			console.log("trying step 3");
+			var $elem = $('#actions').find('a[href$="index.php/calendar/myCalendarPermissions"]');
+			var linkName = $elem.attr("href");
+			$elem.attr("href", linkName + "?tour=true");
+			$elem.popover({
+				placement: "right",
+				trigger: "manual",
+				title: "Step 3",
+				content: "Click here to change your calendar permssions"
+			});
+			$elem.popover("show");
 		}
 	}
 
@@ -76,8 +71,12 @@
 		}
 	}
 	$(document).ready(function() {
-		step_1();
-		step_3();
+		if (endsWith(window.location.pathname, "index.php/site/whatsNew")) {
+			$('#start-tour').click(step_1);
+		}
+		if (endsWith(window.location.pathname, "index.php/calendar/index")) {
+			step_3();
+		}
 		setTimeout(step_4, 100);
 	});
 
