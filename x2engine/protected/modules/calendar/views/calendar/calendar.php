@@ -41,6 +41,8 @@
 Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl() .'/js/fullcalendar-1.6.1/fullcalendar/fullcalendar.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/fullcalendar-1.6.1/fullcalendar/fullcalendar.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/fullcalendar-1.6.1/fullcalendar/gcal.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/bootstrap.js', CClientScript::POS_END);
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/calenderAssistant.js', CClientScript::POS_END);
 
 Yii::app()->clientScript->registerCss ('calendarCss', "
 	.calendarViewEventDialog .ui-dialog-buttonpane button {

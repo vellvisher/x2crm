@@ -86,6 +86,13 @@ $(function() {
 		else
 			menuItemCutoffs[i] = $($menuItems[i]).outerWidth() + menuItemCutoffs[i-1];
 	}
+	//adding a class
+	var elem, linkName;
+	for (i = 0; i < menuItemCutoffs.length; i++) {
+		elem = $($menuItems[i]);
+		linkName = $(elem.children()[0]).attr("href").split("/");
+		elem.attr("data-title", linkName[linkName.length - 2]);
+	}
 
 	// the screen just got resized - decide what to do about it
 	$(window).resize(function() {

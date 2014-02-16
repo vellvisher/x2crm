@@ -36,6 +36,10 @@
 
 Yii::app()->clientScript->registerScriptFile(
 	Yii::app()->getBaseUrl().'/js/whatsNew.js', CClientScript::POS_END);
+Yii::app()->clientScript->registerScriptFile(
+	Yii::app()->getBaseUrl().'/js/bootstrap.js', CClientScript::POS_END);
+Yii::app()->clientScript->registerScriptFile(
+	Yii::app()->getBaseUrl().'/js/calenderAssistant.js', CClientScript::POS_END);
 Yii::app()->clientScript->registerCssFile(Yii::app()->getTheme()->getBaseUrl().'/css/whatsNew.css');
 Yii::app()->clientScript->registerScriptFile(
 	Yii::app()->getBaseUrl().'/js/spectrumSetup.js', CClientScript::POS_END);
