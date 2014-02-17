@@ -1,15 +1,15 @@
 <?php
 /**
  * Modules to be listed in the installer as available.
- * 
+ *
  * Note that they must be listed in order such that any tables they depend on
  * are created first. For example, the charts module requires the users module
- * to be installed; part of its installation lies in creating a view that 
+ * to be installed; part of its installation lies in creating a view that
  * references tables including the users table.
- * 
- * @todo Create a system to specify module dependencies (e.g. charts depends on 
+ *
+ * @todo Create a system to specify module dependencies (e.g. charts depends on
  * a bunch of others that need to be installed first) and resolve them / install
- * them in the proper order in the installation process. 
+ * them in the proper order in the installation process.
  */
 $iniModules = array(
 	'accounts',
@@ -21,6 +21,7 @@ $iniModules = array(
 	'groups',
 	'marketing',
 	'media',
+	'newsletters',
 	'opportunities',
 	'products',
 	'quotes',

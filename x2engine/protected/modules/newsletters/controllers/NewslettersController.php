@@ -4,7 +4,7 @@
  */
 class NewslettersController extends x2base {
 
-    public $modelClass='Newsletter';
+    public $modelClass='Newsletters';
 
     /**
      * Specifies the access control rules.
@@ -87,53 +87,52 @@ class NewslettersController extends x2base {
     }
 
     /**
-     * CHANGE TO NEWSLETTER
      * Creates a new doc.
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
-    // public function actionCreate($duplicate = false) {
-    //     $users = User::getNames();
-    //     unset($users['Anyone']);
-    //     unset($users['admin']);
-    //     unset($users[Yii::app()->user->getName()]);
-    //     $model = new Docs;
+    public function actionCreate($duplicate = false) {
+        $users = User::getNames();
+        unset($users['Anyone']);
+        unset($users['admin']);
+        unset($users[Yii::app()->user->getName()]);
+        $model = new Newsletters;
 
-    //     if($duplicate) {
-    //         $copiedModel = Docs::model()->findByPk($duplicate);
-    //         if(!empty($copiedModel)) {
-    //             foreach($copiedModel->attributes as $name=>$value)
-    //                 if($name != 'id')
-    //                     $model->$name = $value;
-    //         }
-    //         $model->name .= ' ('.Yii::t('docs','copy').')';
-    //     }
+        if($duplicate) {
+            $copiedModel = Newsletters::model()->findByPk($duplicate);
+            if(!empty($copiedModel)) {
+                foreach($copiedModel->attributes as $name=>$value)
+                    if($name != 'id')
+                        $model->$name = $value;
+            }
+            $model->name .= ' ('.Yii::t('newsletters','copy').')';
+        }
 
-    //     // Uncomment the following line if AJAX validation is needed
-    //     // $this->performAjaxValidation($model);
+        // Uncomment the following line if AJAX validation is needed
+        // $this->performAjaxValidation($model);
 
-    //     if (isset($_POST['Docs'])) {
-    //         $temp = $model->attributes;
-    //         $model->attributes=$_POST['Docs'];
-    //         $model->visibility=$_POST['Docs']['visibility'];
+        if (isset($_POST['Newsletters'])) {
+            $temp = $model->attributes;
+            $model->attributes=$_POST['Newsletters'];
+            $model->visibility=$_POST['Newsletters']['visibility'];
 
-    //         $arr = $model->editPermissions;
-    //         if(isset($arr))
-    //             if(is_array($arr))
-    //                 $model->editPermissions = Accounts::parseUsers($arr);
+            $arr = $model->editPermissions;
+            if(isset($arr))
+                if(is_array($arr))
+                    $model->editPermissions = Accounts::parseUsers($arr);
 
-    //         $model->createdBy = Yii::app()->user->getName();
-    //         $model->createDate = time();
-    //         // $changes=$this->calculateChanges($temp,$model->attributes);
-    //         // $model=$this->updateChangeLog($model,'Create');
-    //         if($model->save())
-    //             $this->redirect(array('view','id'=>$model->id));
-    //     }
+            $model->createdBy = Yii::app()->user->getName();
+            $model->createDate = time();
+            // $changes=$this->calculateChanges($temp,$model->attributes);
+            // $model=$this->updateChangeLog($model,'Create');
+            if($model->save())
+                $this->redirect(array('view','id'=>$model->id));
+        }
 
-    //     $this->render('create',array(
-    //         'model'=>$model,
-    //         'users'=>$users,
-    //     ));
-    // }
+        $this->render('create',array(
+            'model'=>$model,
+            'users'=>$users,
+        ));
+    }
 
     /**
      * CHANGE TO NEWSLETTER
