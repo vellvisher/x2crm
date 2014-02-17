@@ -40,6 +40,9 @@ CREATE TABLE IF NOT EXISTS `chatroom_invite` (
 --
 ALTER TABLE `x2_users` ENGINE = InnoDB;
 
+INSERT INTO `x2_modules`
+			(`name`,			title,			visible, 	menuPosition,	searchable,	editable,	adminOnly,	custom,	toggleable)
+	VALUES	("chat",	"Chat",		1,			18,				1,			1,			0,			0,		0);
 --
 -- Constraints for table `chatroom_invite`
 --
