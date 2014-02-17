@@ -77,16 +77,6 @@ $form = $this->beginWidget('CActiveForm', array(
             echo $form->dropDownList($model,'editPermissions',$users,array('multiple'=>'multiple','size'=>'5'));
             echo $form->error($model,'editPermissions');
         }
-        if($model->type == 'email'){
-?>
-        <div class="row">
-    <?php echo Yii::t('newsletters', '<b>Note:</b> You can use dynamic variables such as {firstName}, {lastName} or {phone} in your template. When you email a contact, these will be replaced by the appropriate value.'); ?>
-        </div><?php }elseif($model->type == 'quote'){ ?>
-        <div class="row">
-    <?php echo Yii::t('newsletters', '<strong>Note:</strong> You can use dynamic variables such as {Contact.firstName}, {Quote.dateCreated}, {Account.name} etc. in your template. When you email or print the quote, these will be replaced with the appropriate values from the quote or its associated contact/account.'); ?>
-        </div>
-<?php
-}
         echo $form->error($model,'text');
         echo $form->textArea($model,'text',array('id'=>'input'));
         ?>

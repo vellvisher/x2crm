@@ -1,14 +1,15 @@
 <?php
 $menuItems = array(
-    array('label'=>Yii::t('newsletters','List Newsletters'),'url'=>array('index')),
-    array('label'=>Yii::t('newsletters','Create Newsletter'),'url'=>array('create')),
+    array('label'=>Yii::t('newsletters', 'List Newsletters'), 'url'=>array('index')),
+    array('label'=>Yii::t('newsletters', 'Create Newsletter'))
 );
 
 ?>
-<div class="page-title icon newsletters"><h2><?php
-    unset($menuItems[1]['url']);
+<div class="page-title icon newsletters"><h2>
+<?php
     echo Yii::t('newsletters','Create Newsletter');
-    ?></h2>
+?>
+</h2>
 </div>
 
 <?php

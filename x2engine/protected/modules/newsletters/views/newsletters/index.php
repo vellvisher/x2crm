@@ -4,8 +4,8 @@ $this->breadcrumbs=array(
     'Newsletters',
 );
 $this->actionMenu = $this->formatMenu(array(
-    array('label'=>Yii::t('newsletters','List Newsletters')),
-    array('label'=>Yii::t('newsletters','Create Newsletter'), 'url'=>array('create')),
+    array('label'=>Yii::t('newsletters', 'List Newsletters')),
+    array('label'=>Yii::t('newsletters', 'Create Newsletter'), 'url'=>array('create')),
 ));
 
 Yii::app()->clientScript->registerScript('search', "
@@ -92,32 +92,3 @@ $this->widget('application.components.X2GridView', array(
     'enableControls'=>false,
     'fullscreen'=>true,
 ));
-?>
-<br />
-<?php
-    $this->widget('zii.widgets.grid.CGridView', array(
-    'id'=>'attachments-grid',
-    'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-    'template'=> '<div class="page-title icon newsletters"><h2>'.Yii::t('newsletters','Uploaded Newsletters').'</h2>{summary}</div>{items}{pager}',
-    'dataProvider'=>$attachments,
-    'columns'=>array(
-        array(
-            'name'=>'fileName',
-            'value'=>'$data->getMediaLink()',
-            'type'=>'raw',
-            'htmlOptions'=>array('width'=>'30%'),
-        ),
-        array(
-            'name'=>'uploadedBy',
-            'value'=>'User::getUserLinks($data->uploadedBy)',
-            'type'=>'raw',
-        ),
-        array(
-            'name'=>'createDate',
-            'type'=>'raw',
-            'value'=>'Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data->createDate)',
-        ),
-    ),
-));
-
-$this->widget('Attachments',array('associationType'=>'newsletters','associationId'=>$model->id)); ?>

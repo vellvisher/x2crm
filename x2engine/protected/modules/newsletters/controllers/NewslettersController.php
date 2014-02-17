@@ -122,8 +122,6 @@ class NewslettersController extends x2base {
 
             $model->createdBy = Yii::app()->user->getName();
             $model->createDate = time();
-            // $changes=$this->calculateChanges($temp,$model->attributes);
-            // $model=$this->updateChangeLog($model,'Create');
             if($model->save())
                 $this->redirect(array('view','id'=>$model->id));
         }
@@ -135,58 +133,55 @@ class NewslettersController extends x2base {
     }
 
     /**
-     * CHANGE TO NEWSLETTER
      * Updates a particular model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id the ID of the model to be updated
      */
-    // public function actionUpdate($id) {
-    //     $model = $this->loadModel($id);
-    //     $perm = $model->editPermissions;
-    //     $pieces = explode(', ',$perm);
-    //     if(Yii::app()->user->checkAccess('DocsAdmin') || Yii::app()->user->getName()==$model->createdBy || array_search(Yii::app()->user->getName(),$pieces)!==false || Yii::app()->user->getName()==$perm) {
-    //         if(isset($_POST['Docs'])) {
-    //             $model->attributes = $_POST['Docs'];
-    //             $model->visibility = $_POST['Docs']['visibility'];
-    //             // $model=$this->updateChangeLog($model,'Edited');
-    //             if($model->save()) {
-    //                 $event = new Events;
-    //                 $event->associationType='Docs';
-    //                 $event->associationId=$model->id;
-    //                 $event->type='doc_update';
-    //                 $event->user=Yii::app()->user->getName();
-    //                 $event->visibility=$model->visibility;
-    //                 $event->save();
-    //                 $this->redirect(array('update','id'=>$model->id,'saved'=>true, 'time'=>time()));
-    //             }
-    //         }
+    public function actionEdit($id) {
+        $model = $this->loadModel($id);
+        $perm = $model->editPermissions;
+        $pieces = explode(', ',$perm);
+        if(Yii::app()->user->checkAccess('NewslettersAdmin') || Yii::app()->user->getName()==$model->createdBy || array_search(Yii::app()->user->getName(),$pieces)!==false || Yii::app()->user->getName()==$perm) {
+            if(isset($_POST['Newsletters'])) {
+                $model->attributes = $_POST['Newsletters'];
+                $model->visibility = $_POST['Newsletters']['visibility'];
+                if($model->save()) {
+                    $event = new Events;
+                    $event->associationType='Newsletters';
+                    $event->associationId=$model->id;
+                    $event->type='newsletter_edit';
+                    $event->user=Yii::app()->user->getName();
+                    $event->visibility=$model->visibility;
+                    $event->save();
+                    $this->redirect(array('edit','id'=>$model->id,'saved'=>true, 'time'=>time()));
+                }
+            }
 
-    //         $this->render('update',array(
-    //             'model'=>$model,
-    //         ));
-    //     } else {
-    //         $this->redirect(array('view','id'=>$id));
-    //     }
-    // }
+            $this->render('edit',array(
+                'model'=>$model,
+            ));
+        } else {
+            $this->redirect(array('view','id'=>$id));
+        }
+    }
 
     /**
-     * CHANGE TO NEWSLETTER
      * Deletes a particular model.
      * If deletion is successful, the browser will be redirected to the 'admin' page.
      * @param integer $id the ID of the model to be deleted
      */
-    // public function actionDelete($id) {
-    //     if(Yii::app()->request->isPostRequest) {
-    //         // we only allow deletion via POST request
-    //         $model = $this->loadModel($id);
-    //         $this->cleanUpTags($model);
-    //         $model->delete();
+    public function actionDelete($id) {
+        if(Yii::app()->request->isPostRequest) {
+            // we only allow deletion via POST request
+            $model = $this->loadModel($id);
+            $this->cleanUpTags($model);
+            $model->delete();
 
-    //         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-    //         if(!isset($_GET['ajax']))
-    //             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
-    //     } else throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
-    // }
+            // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+            if(!isset($_GET['ajax']))
+                $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+        } else throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
+    }
 
     /**
      * Lists all models.
