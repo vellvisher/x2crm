@@ -82,6 +82,8 @@ $(function() {
     $('.user-permission').multiselect();
 });
 ",CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/bootstrap.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/calenderAssistant.js');
 
 $names = array();
 foreach($users as $user)
@@ -120,3 +122,4 @@ $editPermission = X2CalendarPermissions::getUserIdsWithEditPermission(Yii::app()
 </div>
 <?php
 $this->endWidget();
+

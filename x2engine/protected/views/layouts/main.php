@@ -123,6 +123,7 @@ $cs->registerCoreScript('jquery');
 
 // blueprint CSS framework
 $cs ->registerCssFile($baseUrl.'/css/normalize.css','all')
+    ->registerCssFile($baseUrl.'/css/bootstrap.css','all')
 	->registerCssFile($themeUrl.'/css/screen.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/jquery-ui.css'.$jsVersion,'screen, projection')
 	->registerCssFile($themeUrl.'/css/dragtable.css'.$jsVersion,'screen, projection')
