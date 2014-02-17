@@ -2,9 +2,9 @@
 <script>
     CONSTANTS = {}
     CONSTANTS.FULL_NAME = "<?php echo $fullName; ?>";
-    CONSTANTS.ALL_USERS = <?php echo $all_users; ?>;
+    CONSTANTS.CHATROOM_ID = "<?php echo $chatroom_id ?>";
     function serverConnected() {
-        $('#chat-room-invite').enable();
+        connectToPeer(CONSTANTS.CHATROOM_ID);
     }
 </script>
 <?php
@@ -15,33 +15,11 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/jquery.for
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/peer-custom.js');
 ?>
 
-<script>
-
-    $(function() {
-        $('#chat-invite-box').autocomplete({
-            'minLength':'1',
-            'source':CONSTANTS.ALL_USERS
-        });
-
-        $('#chat-invite-form').ajaxForm({url:'invite', type:'post', resetForm:true, success:function() {alert('Invited!');},
-            error:function() { alert('Sorry, could not post the invite...');}});
-    });
-
-</script>
 </head>
 
 <body>
     <h1>Chat</h1>
     <h2 id='chat-user-hi'></h2>
-    <span> <p>
-    Invite users to the chat from the box below:
-    </p></span>
-
-    <form id="chat-invite-form">
-        <input id="chat-invite-box" name="username" type="text"/>
-        <input type="hidden" id="chat-room-id" name="chatroom_id" value=""/>
-        <input type="submit" value="Invite" id="chat-room-invite" disabled="disabled"/>
-    </form>
 
   <div id="actions">
     Your PeerJS ID is <span id="pid"></span><br>
