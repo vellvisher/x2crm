@@ -22,16 +22,25 @@ class ChatController extends x2base
     
     public function actionJoin() {
         $fullName = Yii::app()->params->profile->fullName; 
+        $user_id = Yii::app()->params->profile->id; 
 
         $chatroom_id = $_POST['chatroom_id'];
         // TODO: Sanitize input
+        $users = Yii::app()->db->createCommand()
+            ->select('fullName, username')
+            ->where('username!=:username', array(':username' => Yii::app()->user->name))
+            ->from('x2_profile')
+            ->queryAll();
+
+        ChatroomInvite::model()->deleteAllByAttributes(array('chatroom_id' => $chatroom_id,
+            'user_id' => $user_id));
 
         $this->render('join', array('chatroom_id' => $chatroom_id,
             'fullName' => $fullName));
     }
 
 	public function actionInvite() {
-        $poster_username = Yii::app()->params->profile->username;
+        $poster_user_id = Yii::app()->params->profile->id;
         // if (!Yii::app()->user->checkAccess('create chatroom_invite')) {
         //     // not allowed... .
         //     throw new CHttpException(401);
@@ -55,17 +64,6 @@ class ChatController extends x2base
             }
             $user_id = $user_id_array['id'];
 
-            // Get Poster ID
-            $user_id_array = Yii::app()->db->createCommand()
-                    ->select('id')
-                    ->from('x2_users')
-                    ->where('username=:username', array(':username'=>$poster_username))
-                    ->queryRow();
-            if (count($user_id_array) != 1 || !isset($user_id_array['id'])) {
-                Yii::log('Could not get poster id', 'error');
-                throw new CHttpException(400);
-            }
-            $poster_user_id = $user_id_array['id'];
             $invite->chatroom_id=$chatroom_id;
             $invite->user_id=$user_id;
             $invite->poster_id=$poster_user_id;
