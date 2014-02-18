@@ -33,6 +33,8 @@ $(function() {
 
 	// Get things started
 	step1();
+	$('#step3').hide();
+	$('#step1-error').hide();
 });
 
 function step1() {

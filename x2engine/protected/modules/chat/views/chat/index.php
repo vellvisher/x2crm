@@ -60,10 +60,6 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
   </div>
 
   <!-- video call -->
-  <form id="video">
-    <input class="button" type="submit" value="Video Call"></input>
-  </form>
-
   <div class="pure-u-2-3" id="video-container">
     <video id="their-video" autoplay></video>
     <video id="my-video" muted="true" autoplay></video>
@@ -79,21 +75,10 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
     </div>
   </div>
 
-  <!-- Make calls to others -->
-  <div id="step2">
-    <div class="pure-form">
-      <input type="text" placeholder="Call user id..." id="callto-id">
-      <a href="#" class="pure-button pure-button-success" id="make-call">Call</a>
-    </div>
-  </div>
-
   <!-- Call in progress -->
   <div id="step3">
-    <p>Currently in call with <span id="their-id">...</span></p>
     <p><a href="#" class="pure-button pure-button-error" id="end-call">End call</a></p>
   </div>
-
-
 
 
   <div class="warning browser">
