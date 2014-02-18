@@ -13,6 +13,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/peer.min.j
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/chat-view.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/jquery.form.min.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/peer-custom.js', CClientScript::POS_END);
+Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat.js', CClientScript::POS_END);
 ?>
 
 <script>
@@ -57,6 +58,44 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/peer-custo
   <div id="box" style="background: #fff; font-size: 18px;padding:40px 30px; text-align: center;">
     Drag file here to send to active connections.
   </div>
+
+  <!-- video call -->
+  <form id="video">
+    <input class="button" type="submit" value="Video Call"></input>
+  </form>
+
+  <div class="pure-u-2-3" id="video-container">
+    <video id="their-video" autoplay></video>
+    <video id="my-video" muted="true" autoplay></video>
+  </div>
+
+
+  <!-- Get local audio/video stream -->
+  <div id="step1">
+    <p>Please click `allow` on the top of the screen so we can access your webcam and microphone for calls.</p>
+    <div id="step1-error">
+      <p>Failed to access the webcam and microphone. Make sure to run this demo on an http server and click allow when asked for permission by the browser.</p>
+      <a href="#" class="pure-button pure-button-error" id="step1-retry">Try again</a>
+    </div>
+  </div>
+
+  <!-- Make calls to others -->
+  <div id="step2">
+    <div class="pure-form">
+      <input type="text" placeholder="Call user id..." id="callto-id">
+      <a href="#" class="pure-button pure-button-success" id="make-call">Call</a>
+    </div>
+  </div>
+
+  <!-- Call in progress -->
+  <div id="step3">
+    <p>Currently in call with <span id="their-id">...</span></p>
+    <p><a href="#" class="pure-button pure-button-error" id="end-call">End call</a></p>
+  </div>
+
+
+
+
   <div class="warning browser">
     <div class="important">Your browser version: <span id="browsers"></span><br>
   Currently <strong>Firefox 22+ and Google Chrome 26.0.1403.0 or above</strong> is required.</strong></div>For more up to date compatibility

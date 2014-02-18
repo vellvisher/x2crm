@@ -12,7 +12,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/peer.min.j
 // Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/peer.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/chat-view.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/jquery.form.min.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/peer-custom.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/peer-custom.js', CClientScript::POS_END);
+Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat.js', CClientScript::POS_END);
 ?>
 
 </head>
@@ -27,6 +28,45 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/peer-custo
       <input type="text" id="text" placeholder="Enter message"><input class="button" type="submit" value="Send to peers" id="send-button" disabled="disabled">
     </form>
   </div>
+
+  <!-- video call -->
+  <form id="video">
+    <input class="button" type="submit" value="Video Call"></input>
+  </form>
+
+  <div class="pure-u-2-3" id="video-container">
+    <video id="their-video" autoplay></video>
+    <video id="my-video" muted="true" autoplay></video>
+  </div>
+
+
+  <!-- Get local audio/video stream -->
+  <div id="step1">
+    <p>Please click `allow` on the top of the screen so we can access your webcam and microphone for calls.</p>
+    <div id="step1-error">
+      <p>Failed to access the webcam and microphone. Make sure to run this demo on an http server and click allow when asked for permission by the browser.</p>
+      <a href="#" class="pure-button pure-button-error" id="step1-retry">Try again</a>
+    </div>
+  </div>
+
+  <!-- Make calls to others -->
+  <div id="step2">
+    <p>Your id: <span id="my-id">1</span></p>
+    <p>Share this id with others so they can call you.</p>
+    <h3>Make a call</h3>
+    <div class="pure-form">
+      <input type="text" placeholder="Call user id..." id="callto-id">
+      <a href="#" class="pure-button pure-button-success" id="make-call">Call</a>
+    </div>
+  </div>
+
+  <!-- Call in progress -->
+  <div id="step3">
+    <p>Currently in call with <span id="their-id">...</span></p>
+    <p><a href="#" class="pure-button pure-button-error" id="end-call">End call</a></p>
+  </div>
+
+
 
   <div id="wrap"><div id="connections"><span class="filler">You have not yet
         made any connections.</span><div id="chatbox"><h1 id="chat-participants"></h1><div class="messages" id="message-box"></div></div></div>
