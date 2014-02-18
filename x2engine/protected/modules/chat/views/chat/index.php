@@ -12,7 +12,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/peer.min.j
 // Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/peer.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/chat-view.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/jquery.form.min.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/peer-custom.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/peer-custom.js', CClientScript::POS_END);
 ?>
 
 <script>
