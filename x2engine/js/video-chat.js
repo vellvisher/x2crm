@@ -15,7 +15,7 @@ peer.on('error', function(err) {
 $(function() {
 	$('#make-call').click(function() {
 		// Initiate a call!
-		var call = peer.call(CONSTANTS.CHATROOM_ID, window.localStream);
+		var call = peer.call(CONSTANTS.OTHER_ID, window.localStream);
 
 		step3(call);
 	});

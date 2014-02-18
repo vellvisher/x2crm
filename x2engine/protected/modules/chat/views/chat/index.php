@@ -75,6 +75,12 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
     </div>
   </div>
 
+  <div id="step2">
+    <form id="video-call">
+      <input type="button" value="Video Call" id="make-call" disabled="disabled">
+    </div>
+  </div>
+
   <!-- Call in progress -->
   <div id="step3">
     <p><a href="#" class="pure-button pure-button-error" id="end-call">End call</a></p>
