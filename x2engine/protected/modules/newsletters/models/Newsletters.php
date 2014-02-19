@@ -27,13 +27,13 @@ class Newsletters extends X2Model {
      */
     public function all() {
         return new SmartDataProvider('Newsletters', array(
-                    'pagination' => array(
-                        'pageSize' => ProfileChild::getResultsPerPage(),
-                    ),
-                    'sort' => array(
-                        'defaultOrder' => 'dateUpdated DESC, id DESC',
-                    )
-                ));
+            'pagination' => array(
+                'pageSize' => ProfileChild::getResultsPerPage(),
+            ),
+            'sort' => array(
+                'defaultOrder' => 'dateUpdated DESC, id DESC',
+            )
+        ));
     }
 
     /**
