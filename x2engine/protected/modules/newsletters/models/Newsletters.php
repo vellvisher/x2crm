@@ -37,11 +37,13 @@ class Newsletters extends X2Model {
     }
 
     /**
-     * Flips the constants array from the NewsletterType class to retrieve the type
+     * Flips the constants array from the NewsletterType class to retrieve the types
      */
+    public function types() {
+        return array_flip((new ReflectionClass('NewsletterType'))->getConstants());
+    }
+
     public function parseType() {
-        return array_flip(
-            (new ReflectionClass('NewsletterType'))->getConstants()
-        )[$this->type];
+        return $this->types()[$this->type];
     }
 }

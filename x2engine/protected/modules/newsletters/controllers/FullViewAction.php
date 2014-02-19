@@ -6,10 +6,7 @@
  */
 class FullViewAction extends CAction {
 
-    public function run($id,$json=0) {
-
-        $model = $this->getController()->loadModel($id);
-
-        echo $json ? CJSON::encode(array('body'=>$model->body,'subject'=>$model->subject)) : $model->body;
+    public function run($id) {
+        echo $this->getController()->loadModel($id)->body;
     }
 }

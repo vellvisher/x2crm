@@ -10,32 +10,20 @@ class EditAction extends CAction {
     public function run($id) {
         $controller = $this->getController();
         $model = $controller->loadModel($id);
-        $perm = $model->editPermissions;
-        $pieces = explode(', ',$perm);
-        if(Yii::app()->user->checkAccess('NewslettersAdmin') ||
-            Yii::app()->user->getName()==$model->createdBy ||
-            array_search(Yii::app()->user->getName(),$pieces) !== false ||
-            Yii::app()->user->getName()==$perm) {
-            if(isset($_POST['Newsletters'])) {
-                $model->attributes = $_POST['Newsletters'];
-                $model->visibility = $_POST['Newsletters']['visibility'];
-                if($model->save()) {
-                    $event = new Events;
-                    $event->associationType='Newsletters';
-                    $event->associationId=$model->id;
-                    $event->type='newsletter_edit';
-                    $event->user=Yii::app()->user->getName();
-                    $event->visibility=$model->visibility;
-                    $event->save();
-                    $controller->redirect(array('edit','id'=>$model->id,'saved'=>true, 'time'=>time()));
-                }
-            }
 
-            $controller->render('edit',array(
-                'model'=>$model,
-            ));
-        } else {
-            $controller->redirect(array('view','id'=>$id));
+        $controller->performAjaxValidation($model);
+
+        if (isset($_POST['Newsletters'])) {
+            $model->attributes  = $_POST['Newsletters'];
+            $model->published   = 0;
+            $model->updatedBy   = Yii::app()->user->getName();
+            $model->dateUpdated  = time();
+            if($model->save())
+                $controller->redirect(array('view','id'=>$model->id));
         }
+
+        $controller->render('edit',array(
+            'model'=>$model,
+        ));
     }
 }

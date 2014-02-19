@@ -20,13 +20,13 @@ class CreateAction extends CAction {
             $model->name .= ' (copy)';
         }
 
-        $this->performAjaxValidation($model);
+        $controller->performAjaxValidation($model);
 
         if (isset($_POST['Newsletters'])) {
-            $model->attributes=$_POST['Newsletters'];
-            $model->published=$_POST['Newsletters']['published'];
-            $model->updatedBy = Yii::app()->user->getName();
-            $model->updateDate = time();
+            $model->attributes  = $_POST['Newsletters'];
+            $model->published   = 0;
+            $model->updatedBy   = Yii::app()->user->getName();
+            $model->dateUpdated  = time();
             if($model->save())
                 $controller->redirect(array('view','id'=>$model->id));
         }
@@ -35,16 +35,4 @@ class CreateAction extends CAction {
             'model'=>$model,
         ));
     }
-
-    /**
-     * Performs the AJAX validation.
-     * @param CModel the model to be validated
-     */
-    protected function performAjaxValidation($model) {
-        if(isset($_POST['ajax']) && $_POST['ajax']==='newsletters-form') {
-            echo CActiveForm::validate($model);
-            Yii::app()->end();
-        }
-    }
-
 }

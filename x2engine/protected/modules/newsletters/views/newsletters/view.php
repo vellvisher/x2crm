@@ -12,7 +12,6 @@ $this->actionMenu = $this->formatMenu(array(
             'submit'=>array('delete','id'=>$model->id),
             'confirm'=> 'Are you sure you want to delete this item?')),
 ));
-// $this->actionMenu[] = array('label'=> 'Delete Newsletter', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=> 'Are you sure you want to delete this item?'));
 
 Yii::app()->getClientScript()->registerScript('newsletterIframeAutoExpand','
 $("#newsletterIframe").load(function() {

@@ -25,6 +25,17 @@ class NewslettersController extends x2base {
     }
 
     /**
+     * Performs the AJAX validation.
+     * @param CModel the model to be validated
+     */
+    public function performAjaxValidation($model) {
+        if(isset($_POST['ajax']) && $_POST['ajax']==='newsletters-form') {
+            echo CActiveForm::validate($model);
+            Yii::app()->end();
+        }
+    }
+
+    /**
      * Specifies the access control rules.
      * This method is used by the 'accessControl' filter.
      * @return array access control rules
@@ -46,17 +57,6 @@ class NewslettersController extends x2base {
     //             'users'=>array('*'),
     //         ),
     //     );
-    // }
-
-    // public function actionAutosave($id) {
-    //     $model = $this->loadModel($id);
-    //     if(isset($_POST['Docs'])) {
-    //         $model->attributes = $_POST['Docs'];
-    //         // $model = $this->updateChangeLog($model,'Edited');
-    //         if($model->save()) {
-    //             echo Yii::t('docs', 'Saved at') . ' ' . Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('medium'), time());
-    //         };
-    //     }
     // }
 
 }

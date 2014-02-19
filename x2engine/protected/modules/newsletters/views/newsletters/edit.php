@@ -1,9 +1,5 @@
 <?php
 $title =  'Edit Newsletter:';
-
-$pieces = explode(", ",$model->editPermissions);
-$user = Yii::app()->user->getName();
-
 $this->actionMenu = $this->formatMenu(array(
     array('label'=> 'List Newsletters', 'url'=>array('index')),
     array('label'=> 'Create Newsletter', 'url'=>array('create')),
