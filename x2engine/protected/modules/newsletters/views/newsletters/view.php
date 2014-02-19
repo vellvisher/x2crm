@@ -5,12 +5,6 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 $this->actionMenu = $this->formatMenu(array(
     array('label'=> 'List Newsletters', 'url'=>array('index')),
     array('label'=> 'Create Newsletter', 'url'=>array('create')),
-    array(
-        'label'=> 'Delete Newsletter',
-        'url'=>'#',
-        'linkOptions'=>array(
-            'submit'=>array('delete','id'=>$model->id),
-            'confirm'=> 'Are you sure you want to delete this item?')),
 ));
 
 Yii::app()->getClientScript()->registerScript('newsletterIframeAutoExpand','
@@ -30,6 +24,11 @@ $(window).resize(function() {
     </h2>
 
 <?php
+    echo CHtml::link('<span></span>',"#", array(
+        'submit'=>array('delete', 'id'=>$model->id),
+        'confirm'=> 'Are you sure you want to delete this item?',
+        'class'=>'x2-button x2-hint icon delete right',
+        'title'=> 'Delete'));
     echo CHtml::link('<span></span>',array('/newsletters/newsletters/edit','id'=>$model->id),array('class'=>'x2-button x2-hint icon edit right','title'=> 'Edit'));
     echo CHtml::link('<span></span>',array('/newsletters/newsletters/create','duplicate'=>$model->id),array('class'=>'x2-button icon copy right x2-hint','title'=> 'Make a copy'));
 ?>
