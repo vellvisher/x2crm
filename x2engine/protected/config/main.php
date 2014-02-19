@@ -64,7 +64,7 @@ $config = array(
 //            // If removed, Gii defaults to localhost only. Edit carefully to taste.
 //            'ipFilters'=>false,
 //        ),
-        'mobile', 'chat'
+        'mobile'
     ),
     'behaviors' => array('ApplicationConfigBehavior'),
     // application components
@@ -98,13 +98,13 @@ $config = array(
                 '<controller:(site|admin|profile|api|search|notifications|studio|gallery)>/<id:\d+>' => '<controller>/view',
                 '<controller:(site|admin|profile|api|search|notifications|studio|gallery)>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
                 '<controller:(site|admin|profile|api|search|notifications|studio|gallery)>/<action:\w+>' => '<controller>/<action>',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports|videoChat|newsletters)>' => '<module>/<module>/index',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports|videoChat|newsletters)>/<id:\d+>' => '<module>/<module>/view',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports|videoChat|newsletters)>/<action:\w+>' => '<module>/<module>/<action>',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports|videoChat|newsletters)>/<action:\w+>/<id:\d+>' => '<module>/<module>/<action>',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports|videoChat|newsletters)>/<controller:\w+>/<id:\d+>' => '<module>/<module>/view',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports|videoChat|newsletters)>/<controller:\w+>/<action:\w+>' => '<module>/<controller>/<action>',
-                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports|videoChat|newsletters)>/<controller:\w+>/<action:\w+>/<id:\d+>' => '<module>/<controller>/<action>',
+                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports|videoChat|chat|newsletters)>' => '<module>/<module>/index',
+                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports|videoChat|chat|newsletters)>/<id:\d+>' => '<module>/<module>/view',
+                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports|videoChat|chat|newsletters)>/<action:\w+>' => '<module>/<module>/<action>',
+                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports|videoChat|chat|newsletters)>/<action:\w+>/<id:\d+>' => '<module>/<module>/<action>',
+                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports|videoChat|chat|newsletters)>/<controller:\w+>/<id:\d+>' => '<module>/<module>/view',
+                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports|videoChat|chat|newsletters)>/<controller:\w+>/<action:\w+>' => '<module>/<controller>/<action>',
+                '<module:(accounts|actions|calendar|charts|contacts|dashboard|docs|groups|marketing|media|opportunities|products|quotes|reports|users|workflow|services|bugReports|videoChat|chat|newsletters)>/<controller:\w+>/<action:\w+>/<id:\d+>' => '<module>/<controller>/<action>',
                 '<module:\w+>/<id:\d+>' => '<module>/default/view',
                 '<module:\w+>/<action:\w+>' => '<module>/default/<action>',
                 '<module:\w+>/<action:\w+>/<id:\d+>' => '<module>/default/<action>',

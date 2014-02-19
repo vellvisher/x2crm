@@ -11,6 +11,7 @@ class ChatModule extends CWebModule
 		$this->setImport(array(
 			'chat.models.*',
 			'chat.components.*',
+			'application.components.*',
 		));
 	}
 
