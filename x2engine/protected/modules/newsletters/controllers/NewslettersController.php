@@ -17,6 +17,13 @@ class NewslettersController extends x2base {
         );
     }
 
+    public function loadModel($id) {
+      $model = Newsletters::model()->findByPk((int)$id);
+      if($model === null)
+        return null;
+      return $model;
+    }
+
     /**
      * Specifies the access control rules.
      * This method is used by the 'accessControl' filter.
@@ -39,18 +46,6 @@ class NewslettersController extends x2base {
     //             'users'=>array('*'),
     //         ),
     //     );
-    // }
-
-    /**
-     * WHAT IS THIS???
-     * Performs the AJAX validation.
-     * @param CModel the model to be validated
-     */
-    // protected function performAjaxValidation($model) {
-    //     if(isset($_POST['ajax']) && $_POST['ajax']==='docs-form') {
-    //         echo CActiveForm::validate($model);
-    //         Yii::app()->end();
-    //     }
     // }
 
     // public function actionAutosave($id) {

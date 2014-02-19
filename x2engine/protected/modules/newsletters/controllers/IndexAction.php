@@ -7,12 +7,13 @@ class IndexAction extends CAction {
 
     public function run() {
         $model = new Newsletters('search');
-
-        $attachments=new CActiveDataProvider('Media',array(
+        // Yii::app()->cache->flush();
+        $attachments = new CActiveDataProvider('Newsletters', array(
             'criteria'=>array(
-            'order'=>'createDate DESC',
-            'condition'=>'associationType="newsletters"'
-        )));
+                'order'=>'createDate DESC',
+                'condition'=>'associationType="newsletters"'
+            )
+        ));
 
         $this->getController()->render('index', array(
             'model' => $model,

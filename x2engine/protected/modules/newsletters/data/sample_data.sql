@@ -1,4 +1,4 @@
 INSERT INTO `x2_newsletters`
-    (`id`,  `name`, `subject`,  `type`, `text`,             `createdBy`,    `createDate`,   `editPermissions`,  `updatedBy`,    `lastUpdated`,  `visibility`)
+    (`id`,  `name`, `subject`,  `type`, `body`,                 `updatedBy`,    `dateUpdated`,  `published`)
 VALUES
-    (101,   'test', 'Test',     'test', 'This is a test',   'Anyone',       1367966539,     'Anyone',       'Anyone',       1367966539,     1);
+    (101,   'test', 'Test',     0,      'This is a test body',  'Anyone',       1392734920,     0);

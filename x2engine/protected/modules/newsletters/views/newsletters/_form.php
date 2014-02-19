@@ -43,7 +43,7 @@ Yii::app()->clientScript->registerScript('newsletter-editor',$js,CClientScript::
 
 $form = $this->beginWidget('CActiveForm', array(
     'id'=>'newsletters-form',
-    'enableAjaxValidation'=>false,
+    'enableAjaxValidation'=>true,
 )); ?>
 <div class="form no-border">
     <div class="row">
@@ -66,17 +66,12 @@ $form = $this->beginWidget('CActiveForm', array(
         <span id="savetime">
             <?php if(isset($_GET['saved'])){
                 $date=date("g:i:s A",$_GET['time']);
-                echo Yii::t('newsletters', 'Saved at') ." $date";
+                echo "Saved at $date";
             } ?>
         </span>
     </div><?php  ?>
     <div class="row" style="margin-top:5px;">
         <?php
-        if($model->isNewRecord && isset($users)){
-            echo $form->label($model,'editPermissions');
-            echo $form->dropDownList($model,'editPermissions',$users,array('multiple'=>'multiple','size'=>'5'));
-            echo $form->error($model,'editPermissions');
-        }
         echo $form->error($model,'text');
         echo $form->textArea($model,'text',array('id'=>'input'));
         ?>

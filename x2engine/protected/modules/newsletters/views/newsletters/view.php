@@ -3,11 +3,11 @@ $this->setPageTitle($model->name);
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
 $this->actionMenu = $this->formatMenu(array(
-    array('label'=>Yii::t('newsletters','List Newsletters'), 'url'=>array('index')),
-    array('label'=>Yii::t('newsletters','Create Newsletter'), 'url'=>array('create')),
+    array('label'=> 'List Newsletters', 'url'=>array('index')),
+    array('label'=> 'Create Newsletter', 'url'=>array('create')),
 ));
 if(Yii::app()->params->isAdmin || $user==$model->createdBy)
-    $this->actionMenu[] = array('label'=>Yii::t('newsletters','Delete Newsletter'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('newsletters','Are you sure you want to delete this item?')));
+    $this->actionMenu[] = array('label'=> 'Delete Newsletter', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=> 'Are you sure you want to delete this item?'));
 
 Yii::app()->getClientScript()->registerScript('newsletterIframeAutoExpand','
 $("#newsletterIframe").load(function() {
@@ -20,7 +20,7 @@ $(window).resize(function() {
 ?>
 <div class="page-title icon newsletters">
     <h2>
-        <span class="no-bold"><?php echo Yii::t('newsletters','Newsletter:'); ?></span>
+        <span class="no-bold"><?php echo  'Newsletter:'; ?></span>
         <?php echo $model->name; ?>
     </h2>
 
@@ -28,11 +28,11 @@ $(window).resize(function() {
     $perm=$model->editPermissions;
     $pieces=explode(", ",$perm);
     // if(Yii::app()->params->isAdmin || $user==$model->createdBy)
-    //     $this->actionMenu[] = array('label'=>Yii::t('newsletters','Delete Newsletter'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('newsletters','Are you sure you want to delete this item?')));
+    //     $this->actionMenu[] = array('label'=> 'Delete Newsletter', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=> 'Are you sure you want to delete this item?'));
 
     if((Yii::app()->user->checkAccess('NewslettersAdmin') || Yii::app()->user->getName()==$model->createdBy || array_search(Yii::app()->user->getName(),$pieces)!==false || Yii::app()->user->getName()==$perm))
-        echo CHtml::link('<span></span>',array('/newsletters/newsletters/edit','id'=>$model->id),array('class'=>'x2-button x2-hint icon edit right','title'=>Yii::t('newsletters','Edit')));
-        echo CHtml::link('<span></span>',array('/newsletters/newsletters/create','duplicate'=>$model->id),array('class'=>'x2-button icon copy right x2-hint','title'=>Yii::t('newsletters','Make a copy')));
+        echo CHtml::link('<span></span>',array('/newsletters/newsletters/edit','id'=>$model->id),array('class'=>'x2-button x2-hint icon edit right','title'=> 'Edit'));
+        echo CHtml::link('<span></span>',array('/newsletters/newsletters/create','duplicate'=>$model->id),array('class'=>'x2-button icon copy right x2-hint','title'=> 'Make a copy'));
     echo "<br>\n";
     ?>
 </div>
