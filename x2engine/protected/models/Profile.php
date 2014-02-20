@@ -433,14 +433,14 @@ class Profile extends CActiveRecord {
     public static function getAvailablePlugins(){
     	$availablePlugins = array();
     	
-	    $filesInPluginsFolder = scandir(dirname(Yii::app()->request->scriptFile).'/js/plugins/');
+	    $filesInPluginsFolder = scandir(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id);
 	    
 	    foreach($filesInPluginsFolder as $file) {
 			if ($file != "." && $file != ".." && strtolower(substr($file, strrpos($file, '.') + 1)) == 'manifest') {
 				$plugin = substr($file, 0, strrpos($file, '.'));
 				
-				if(is_file(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.$plugin.'.js')) {
-					$availablePlugins[] = json_decode(file_get_contents(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.$plugin.'.manifest'));
+				if(is_file(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$plugin.'.js')) {
+					$availablePlugins[] = json_decode(file_get_contents(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$plugin.'.manifest'));
 				}
 			}
 	    }
@@ -470,7 +470,7 @@ class Profile extends CActiveRecord {
 	        $plugins_clean = array();
 			
             foreach($plugins as $plugin) {
-	            if(is_file(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.$plugin.'.js')) {
+	            if(is_file(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$plugin.'.js')) {
 		            $plugins_clean[] = $plugin;
 	            }
             }
@@ -480,13 +480,15 @@ class Profile extends CActiveRecord {
     }
     
     public static function activatePlugin ($pluginName){
+    	$pluginName = preg_replace("/[^a-zA-Z0-9]+/", "", $pluginName);
+		
     	$activatedPlugins;
     	
     	if(!$activatedPlugins = json_decode(Yii::app()->params->profile->plugins)) {
 	    	$activatedPlugins = array();
     	}
     	
-        if(is_file(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.$pluginName.'.js') && !in_array($pluginName, $activatedPlugins)) {
+        if(is_file(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$pluginName.'.js') && !in_array($pluginName, $activatedPlugins)) {
         	$activatedPlugins[] = $pluginName;
         	
         	Yii::app()->params->profile->plugins = json_encode($activatedPlugins);
@@ -509,6 +511,26 @@ class Profile extends CActiveRecord {
         } else {
 	        return false;
         }
+    }
+    
+    public static function deletePlugin ($pluginName){
+	    $pluginName = preg_replace("/[^a-zA-Z0-9]+/", "", $pluginName);
+	    
+	    self::deactivatePlugin($pluginName);
+	    
+	    if(is_file(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$pluginName.'.js')) {
+		    unlink(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$pluginName.'.js');
+	    } else {
+		    return false;
+	    }
+	    
+	    if(is_file(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$pluginName.'.manifest')) {
+		    unlink(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$pluginName.'.manifest');
+	    } else {
+		    return false;
+	    }
+	    
+	    return true;
     }
 
     public function getLink(){

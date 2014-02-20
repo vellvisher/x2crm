@@ -104,7 +104,7 @@ $cs ->registerScriptFile($baseUrl.'/js/json2.js')
 
 $plugins = Profile::getActivatedPlugins();
 foreach($plugins as $plugin) {
-	$cs ->registerScriptFile($baseUrl.'/js/plugins/'.$plugin.'.js');
+	$cs ->registerScriptFile($baseUrl.'/js/plugins/'.Yii::app()->user->id.'/'.$plugin.'.js');
 }
 
 if (IS_IPAD) {

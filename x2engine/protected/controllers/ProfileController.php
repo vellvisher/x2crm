@@ -80,18 +80,46 @@ class ProfileController extends x2base {
     }
     
     public function actionPlugins($action = null, $id = null){
+    	$messages = array();
+    	
 	    if($action == 'deactivate' && isset($id)) {
-		    Profile::deactivatePlugin($id);
-		    
-		    $this->redirect(array('profile/plugins'));
+		    if(Profile::deactivatePlugin($id)) {
+			    $messages['success'] = "Plugin deactivated successfully";
+		    } else {
+			    $messages['error'] = "Failed to deactivate plugin";
+		    }
 	    } elseif($action == 'activate' && isset($id)) {
-		    Profile::activatePlugin($id);
-		    
-		    $this->redirect(array('profile/plugins'));
+		    if(Profile::activatePlugin($id)) {
+			    $messages['success'] = "Plugin activated successfully";
+		    } else {
+			    $messages['error'] = "Failed to activate plugin";
+		    }
+	    } elseif($action == 'delete' && isset($id)) {
+		    if(Profile::deletePlugin($id)) {
+			    $messages['success'] = "Plugin deleted successfully";
+		    } else {
+			    $messages['error'] = "Failed to delete plugin";
+		    }
+	    } elseif($action == 'upload') {
+		    if ($_FILES["file"]["error"] > 0) {
+				$messages['error'] = "Plugin upload failed";
+			} else {
+				$plugin = json_decode(file_get_contents($_FILES["file"]["tmp_name"]));
+				
+				if($plugin == null || preg_replace("/[^a-zA-Z0-9]+/", "", $plugin->manifest->id) != $plugin->manifest->id) {
+					$messages['error'] = "Corrupt plugin";
+				} elseif(is_file(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$plugin->manifest->id.'.manifest') || is_file(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$plugin->manifest->id.'.js')) {
+					$messages['error'] = "Plugin already exist";
+				} elseif(file_put_contents(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$plugin->manifest->id.'.manifest', json_encode($plugin->manifest)) && file_put_contents(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$plugin->manifest->id.'.js', $plugin->script)) {
+					$messages['success'] = $plugin->manifest->name . " installed successfully";
+				} else {
+					$messages['error'] = "Failed to install plugin";
+				}
+			}
 	    }
 	    
 	    $plugins = Profile::getAvailablePlugins();
-	    $this->render('plugins', array('plugins' => $plugins));
+	    $this->render('plugins', array('plugins' => $plugins, 'messages' => $messages));
     }
 
     public function actionHideTag($tag){
