@@ -707,9 +707,11 @@ $showSidebars = Yii::app()->controller->id!='admin' && Yii::app()->controller->i
 			'currentAction'=>$this->getAction()->getId(),
 			'id'=>'recent-items'
 		));
-		$this->widget('VirtualAssistant', array(
-			'id' => 'virtual-assistant'
-		));
+		if($_SERVER["REQUEST_URI"] == Yii::app()->getBaseUrl().'/index.php/site/whatsNew') {
+			$this->widget('VirtualAssistant', array(
+				'id' => 'virtual-assistant'
+			));
+		}
 
 		?>
 	</div>
