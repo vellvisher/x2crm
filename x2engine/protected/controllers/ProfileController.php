@@ -59,7 +59,7 @@ class ProfileController extends x2base {
                     'index', 'view', 'update', 'search', 'addPost', 'deletePost', 'uploadPhoto', 'profiles',
                     'settings', 'addComment', 'deleteSound', 'deleteBackground',
                     'changePassword', 'setResultsPerPage', 'hideTag', 'unhideTag', 'resetWidgets', 'updatePost',
-                    'loadTheme', 'createTheme', 'saveTheme', 'createUpdateCredentials','manageCredentials','deleteCredentials','setDefaultCredentials'),
+                    'loadTheme', 'createTheme', 'saveTheme', 'createUpdateCredentials','manageCredentials','deleteCredentials','setDefaultCredentials', 'plugins'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -77,6 +77,21 @@ class ProfileController extends x2base {
             'accessControl',
             'setPortlets',
         );
+    }
+    
+    public function actionPlugins($action = null, $id = null){
+	    if($action == 'deactivate' && isset($id)) {
+		    Profile::deactivatePlugin($id);
+		    
+		    $this->redirect(array('profile/plugins'));
+	    } elseif($action == 'activate' && isset($id)) {
+		    Profile::activatePlugin($id);
+		    
+		    $this->redirect(array('profile/plugins'));
+	    }
+	    
+	    $plugins = Profile::getAvailablePlugins();
+	    $this->render('plugins', array('plugins' => $plugins));
     }
 
     public function actionHideTag($tag){
