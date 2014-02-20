@@ -24,13 +24,22 @@ $(window).resize(function() {
     </h2>
 
 <?php
-    echo CHtml::link('<span></span>',"#", array(
-        'submit'=>array('delete', 'id'=>$model->id),
-        'confirm'=> 'Are you sure you want to delete this item?',
-        'class'=>'x2-button x2-hint icon delete right',
-        'title'=> 'Delete'));
-    echo CHtml::link('<span></span>',array('/newsletters/newsletters/edit','id'=>$model->id),array('class'=>'x2-button x2-hint icon edit right','title'=> 'Edit'));
-    echo CHtml::link('<span></span>',array('/newsletters/newsletters/create','duplicate'=>$model->id),array('class'=>'x2-button icon copy right x2-hint','title'=> 'Make a copy'));
+    echo CHtml::link(
+        '<span></span>',
+        "#",
+        array(
+            'submit'=>array('delete','id'=>$model->id),
+            'confirm'=> 'Are you sure you want to delete this item?',
+            'class'=>'x2-button x2-hint icon delete right',
+            'title'=> 'Delete'));
+    echo CHtml::link(
+        '<span></span>',
+        array('/newsletters/newsletters/edit','id'=>$model->id),
+        array('class'=>'x2-button x2-hint icon edit right','title'=> 'Edit'));
+    echo CHtml::link(
+        '<span></span>',
+        array('/newsletters/newsletters/create','duplicate'=>$model->id),
+        array('class'=>'x2-button icon copy right x2-hint','title'=> 'Make a copy'));
 ?>
 </div>
 <iframe src="<?php echo $this->createUrl('/newsletters/newsletters/fullView/'.$model->id); ?>" id="newsletterIframe" frameBorder="0" scrolling="no" height="650" width="100%" style="background:#fff;overflow:hidden;"></iframe>

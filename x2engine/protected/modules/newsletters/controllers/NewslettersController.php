@@ -36,27 +36,29 @@ class NewslettersController extends x2base {
     }
 
     /**
+     * Install the access control filter to every action
+     */
+    public function filters() {
+        return array(
+            'accessControl',
+        );
+    }
+
+    /**
      * Specifies the access control rules.
      * This method is used by the 'accessControl' filter.
      * @return array access control rules
      */
-    // public function accessRules() {
-    //     return array(
-    //         array('allow',
-    //             'users'=>array('*'),
-    //         ),
-    //         array('allow', // allow authenticated user to perform 'create' and 'update' actions
-    //             'actions'=>array('index','view','create','createEmail','update','exportToHtml','changePermissions', 'delete', 'getItems', 'getItem'),
-    //             'users'=>array('@'),
-    //         ),
-    //         array('allow', // allow admin user to perform 'admin' and 'delete' actions
-    //             'actions'=>array('admin'),
-    //             'users'=>array('admin'),
-    //         ),
-    //         array('deny',  // deny all users
-    //             'users'=>array('*'),
-    //         ),
-    //     );
-    // }
+    public function accessRules() {
+        return array(
+            array('allow', // allow authenticated user to perform any action
+                'actions'=>array('index','view','create','delete','edit','fullView'),
+                'users'=>array('@'),
+            ),
+            array('deny',  // deny the rest
+                'users'=>array('*'),
+            ),
+        );
+    }
 
 }

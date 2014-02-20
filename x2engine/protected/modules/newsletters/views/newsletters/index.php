@@ -17,6 +17,13 @@ $this->widget('application.components.X2GridView', array(
     'enableSorting'=>true,
     'modelName'=>'Newsletters',
     'viewName'=>'newsletters',
+    'defaultGvSettings'=>array(
+        'name' => 100,
+        'subject' => 150,
+        'updatedBy' => 100,
+        'dateUpdated' => 100,
+        'published' => 100,
+    ),
     'specialColumns'=>array(
         'name' => array(
             'header'=> 'Title',

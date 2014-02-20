@@ -9,7 +9,8 @@ CREATE TABLE `x2_newsletters` (
     updatedBy       VARCHAR(50)     NOT NULL,
     dateUpdated     BIGINT          NOT NULL,
     published       TINYINT         NOT NULL,
-    datePublished   BIGINT
+    startDate       BIGINT,
+    endDate         BIGINT
 ) COLLATE = utf8_general_ci;
 
 INSERT INTO `x2_modules`
@@ -26,4 +27,5 @@ VALUES
 ('Newsletters','updatedBy','Updated By',0,0,'link',0,0,'User',0,NULL,0),
 ('Newsletters','dateUpdated','Updated Date',0,0,'date',0,0,NULL,0,NULL,0),
 ('Newsletters','published','Published',0,0,'boolean',0,0,NULL,0,NULL,0),
-('Newsletters','datePublished','Published Date',0,0,'date',0,0,NULL,0,NULL,0);
+('Newsletters','startDate','Start Date',0,0,'date',0,0,NULL,0,NULL,0),
+('Newsletters','endDate','End Date',0,0,'date',0,0,NULL,0,NULL,0);

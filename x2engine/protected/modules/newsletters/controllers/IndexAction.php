@@ -10,8 +10,7 @@ class IndexAction extends CAction {
         // Yii::app()->cache->flush();
         $attachments = new CActiveDataProvider('Newsletters', array(
             'criteria'=>array(
-                'order'=>'createDate DESC',
-                'condition'=>'associationType="newsletters"'
+                'order'=>'updateDate DESC',
             )
         ));
 
