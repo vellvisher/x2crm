@@ -1,19 +1,16 @@
 <div id="ymal-widget-wrapper" style="width:99%">
-    <div id="ymal-widget-container">
+    <div id="ymal-widget-content" style="background:#fcfcfc; border: 1px solid #ddd;padding:0 4px">
 
-        <p>
-        <a href="<?php echo $invite_url;?>">Invite</a>
-        </p>
-
-        <?php foreach($users as $user) { ?>
-            <span><strong><?php echo $user['fullName'];?></strong>
-            <?php foreach ($user['invites'] as $chatInvite) { ?>
-            <form action="<?php echo $join_url;?>" method="post" target="_blank">
-            <input type="hidden" name="chatroom_id" value="<?php echo $chatInvite['chatroom_id']; ?>"></input>
-                <input type="submit" value="Join"></input>
-                </form>
-            <?php } ?>
-            </span>
-        <?php } ?>
+    <?php foreach($topPostsText as $post) { ?>
+        <div class="ymal-message" style="font-size:9pt">
+        <span style="text-wrap:normal">
+            <br/>
+            <?php
+                echo Formatter::convertLineBreaks($post);
+            ?>
+            <br/>
+        </span>
+        </div>
+    <?php } ?>
     </div>
 </div>

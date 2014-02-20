@@ -7,54 +7,79 @@
 class Ymal extends X2Widget {
 
     public $visibility;
-    public $drive = 0;
 
     public function init(){
-        $this->drive = Yii::app()->params->profile->mediaWidgetDrive;
-        // Yii::app()->clientScript->registerCoreScript('jquery.ui');
         parent::init();
     }
 
     public function run(){
         $username = Yii::app()->params->profile->username;
         $fullName = Yii::app()->params->profile->fullName;
-
-        // Get current user's id
-        $user_id_array = Yii::app()->db->createCommand()
-            ->select('id')
-            ->from('x2_users')
-            ->where('username=:username', array(':username'=>$username))
-            ->queryRow();
-        if (count($user_id_array) != 1 || !isset($user_id_array['id'])) {
-            throw new CHttpException(400);
-        }
-
-        $invite_url = Yii::app()->baseUrl.'/index.php/chat/chat/index';
-        $join_url = Yii::app()->baseUrl.'/index.php/chat/chat/join';
-
-        $user_id = $user_id_array['id'];
+        $user_id = Yii::app()->params->profile->id;
 
         $allUsers = Yii::app()->db->createCommand()
             ->select('fullName, username, id')
             ->where('username!=:username', array(':username' => Yii::app()->user->name))
             ->from('x2_profile')
             ->queryAll();
-        $users = array();
+
+        $allUsersIdF = array();
+        $usernameIdMap = array();
         foreach($allUsers as $user) {
-            $chatInvites = Yii::app()->db->createCommand()
-                ->select('chatroom_id')
-                ->where('poster_id=:poster_id AND user_id=:user_id', array(':user_id' => $user_id, ':poster_id'=>$user['id']))
-                ->from('chatroom_invite')
-                ->queryAll();
-            if ($chatInvites) {
-                $users[] = array('fullName' => $user['fullName'],
-                                'invites' => $chatInvites);
+            $allUsersIdF[$user['id']] = 0;
+            $usernameIdMap[$user['username']] = $user['id'];
+        }
+
+
+        $allPosts = Yii::app()->db->createCommand()
+            ->select('associationId, user')
+            ->where('user=:username OR associationId=:user_id', array(':username' => $username, ':user_id' => $user_id))
+            ->from('x2_events')
+            ->queryAll();
+
+        foreach($allPosts as $post) {
+            if ($post['associationId'] != $user_id) {
+                $allUsersIdF[$post['associationId']]++;
+            }
+            if ($post['user'] != $username) {
+                $allUsersIdF[$usernameIdMap[$post['user']]]++;
             }
         }
 
-        $this->render('chat', array('fullName' => $fullName,
-            'username' => $username, 'invite_url' => $invite_url,
-            'users' => $users, 'join_url' => $join_url));
+        arsort($allUsersIdF);
+        $topUsersIdF = array_slice($allUsersIdF, 0, 5, true);
+
+        $topPosts = array();
+        $topPostsText = array();
+        foreach($topUsersIdF as $topUserId => $topUserIdVal) {
+            $topUsername = Yii::app()->db->createCommand()
+                ->select('username, id')
+                ->where('id=:id', array(':id'=>$topUserId))
+                ->from('x2_profile')
+                ->queryAll();
+
+            $user = $topUsername[0];
+
+            $allPosts = Yii::app()->db->createCommand()
+                ->select('associationId, user, text, id')
+                ->where('user=:username2 OR associationId=:userid2 AND (user!=:username AND associationId!=:user_id) AND visibility=1',
+                    array(':username' => $username, ':user_id' => $user_id, ':username2' => $user['username'], ':userid2' => $user['id']))
+                ->from('x2_events')
+                ->order('timestamp desc')
+                ->queryAll();
+            $allPosts = array_slice($allPosts, 0, 3, true);
+            foreach ($allPosts as $post) {
+                $topPosts[] = $post['id'];
+            }
+        }
+        array_unique($topPosts);
+        $events = X2Model::model('Events')->findAllByPk($topPosts, array('order' => 'timestamp desc'));
+        foreach ($events as $event) {
+            $topPostsText[] = $event->getText();
+        }
+        $this->render('ymal', array('fullName' => $fullName,
+            'username' => $username,
+            'topPostsText' => $topPostsText));
     }
 
 }
