@@ -343,7 +343,8 @@ $config = array(
             'DocViewer' => 'Doc Viewer',
             'TopSites' => 'Top Sites',
             'HelpfulTips' => 'Helpful Tips',
-            'Chat' => 'Chat'
+            'Chat' => 'Chat',
+            'Ymal' => 'You Might Also Like...'
         ),
         'currency' => '',
         'version' => $version,
