@@ -102,6 +102,11 @@ $cs ->registerScriptFile($baseUrl.'/js/json2.js')
     ->registerScriptFile($baseUrl.'/js/actionFrames.js'.$jsVersion)
 	->registerScriptFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.js');
 
+$plugins = Profile::getActivatedPlugins();
+foreach($plugins as $plugin) {
+	$cs ->registerScriptFile($baseUrl.'/js/plugins/'.Yii::app()->user->id.'/'.$plugin.'.js');
+}
+
 if (IS_IPAD) {
     $cs->registerScriptFile($baseUrl.'/js/jquery.mobile.custom.js');
 }
@@ -416,6 +421,7 @@ $userMenu = array(
             array('label' => Yii::t('app', 'Profile'), 'url' => array('/profile/view', 'id' => Yii::app()->user->getId())),
             array('label' => Yii::t('app', 'Notifications'), 'url' => array('/site/viewNotifications')),
             array('label' => Yii::t('app', 'Preferences'), 'url' => array('/profile/settings')),
+            array('label' => Yii::t('app', 'Plugins'), 'url' => array('/profile/plugins')),
 			array('label' => Yii::t('profile', 'Manage Apps'), 'url' => array('/profile/manageCredentials')),
             array('label' => Yii::t('help', 'Icon Reference'), 'url' => array('/site/page/', 'view' => 'iconreference')),
             array('label' => Yii::t('help', 'Help'), 'url' => 'http://www.x2engine.com/reference_guide','linkOptions'=>array('target'=>'_blank')),

@@ -15,7 +15,7 @@ peer.on('error', function(err) {
 $(function() {
 	$('#make-call').click(function() {
 		// Initiate a call!
-		var call = peer.call(CONSTANTS.CHATROOM_ID, window.localStream);
+		var call = peer.call(CONSTANTS.OTHER_ID, window.localStream);
 
 		step3(call);
 	});
@@ -33,6 +33,8 @@ $(function() {
 
 	// Get things started
 	step1();
+	$('#step3').hide();
+	$('#step1-error').hide();
 });
 
 function step1() {

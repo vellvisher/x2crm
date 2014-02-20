@@ -18,6 +18,7 @@ function updatedPeers() {
 
 function peerConnected() {
     $('#send-button').enable();
+    $('#make-call').enable();
 }
 
 $(function() {

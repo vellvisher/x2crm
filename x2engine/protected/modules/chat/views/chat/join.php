@@ -3,6 +3,7 @@
     CONSTANTS = {}
     CONSTANTS.FULL_NAME = "<?php echo $fullName; ?>";
     CONSTANTS.CHATROOM_ID = "<?php echo $chatroom_id ?>";
+    CONSTANTS.OTHER_ID = CONSTANTS.CHATROOM_ID;
     function serverConnected() {
         connectToPeer(CONSTANTS.CHATROOM_ID);
     }
@@ -30,9 +31,6 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
   </div>
 
   <!-- video call -->
-  <form id="video">
-    <input class="button" type="submit" value="Video Call"></input>
-  </form>
 
   <div class="pure-u-2-3" id="video-container">
     <video id="their-video" autoplay></video>
@@ -51,12 +49,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
 
   <!-- Make calls to others -->
   <div id="step2">
-    <p>Your id: <span id="my-id">1</span></p>
-    <p>Share this id with others so they can call you.</p>
-    <h3>Make a call</h3>
-    <div class="pure-form">
-      <input type="text" placeholder="Call user id..." id="callto-id">
-      <a href="#" class="pure-button pure-button-success" id="make-call">Call</a>
+    <form id="video-call">
+      <input type="button" value="Video Call" id="make-call" disabled="disabled">
     </div>
   </div>
 

@@ -1,13 +1,19 @@
 (function() {
 	//more button
+	var total_step = 0;
+
 	function step_1() {
 
+		var content = "Click on the More button";
+		content += "<br><br>";
+		content += "<progress value='1' max='4'></progress>";
 		console.log("trying step 1");
 		$("#more-menu").popover({
 			placement: "bottom",
 			trigger: "manual",
-			title: "Step 1",
-			content: "Click here to change your calendar permssions"
+			title: "Changing your calendar permssions",
+			html: true,
+			content: content
 		});
 
 		//hide popover
@@ -24,16 +30,28 @@
 	function step_2() {
 		if (endsWith(window.location.pathname, "index.php/site/whatsNew")) {
 			console.log("trying step 2");
-			var $item = $("#more-menu").find("[data-title='calendar']");
-			var $link = $($item.children()[0]);
+			var $item, $link;
+			if (total_step == 4) {
+				$item = $("#more-menu").find("[data-title='calendar']");
+				$link = $($item.children()[0]);
+			} else {
+				$link = $("[data-title='calendar']");
+			}
 			var linkName = $link.attr("href");
-			$link.attr("href", linkName + "?tour=true");
-			$item.popover({
-				placement: "right",
-				trigger: "manual",
-				title: "Step 2",
-				content: "Click here to change your calendar permssions"
-			});
+			console.log(linkName);
+			if (!endsWith(linkName, "tour=true")) {
+				$link.attr("href", linkName + "?tour=true");
+				var content = "Click on the Calendar button";
+				content += "<br><br>";
+				content += "<progress value='2' max='4'></progress>";
+				$item.popover({
+					html: true,
+					placement: "right",
+					trigger: "manual",
+					title: "Changing your calendar permssions",
+					content: content
+				});
+			}
 			$item.popover("show");
 		}
 	}
@@ -43,13 +61,19 @@
 			console.log("trying step 3");
 			var $elem = $('#actions').find('a[href$="index.php/calendar/myCalendarPermissions"]');
 			var linkName = $elem.attr("href");
-			$elem.attr("href", linkName + "?tour=true");
-			$elem.popover({
-				placement: "right",
-				trigger: "manual",
-				title: "Step 3",
-				content: "Click here to change your calendar permssions"
-			});
+			if (!endsWith(linkName, "tour=true")) {
+				$elem.attr("href", linkName + "?tour=true");
+				var content = "Click on the My Calendar Permissions button";
+				content += "<br><br>";
+				content += "<progress value='3' max='4'></progress>";
+				$elem.popover({
+					html: true,
+					placement: "right",
+					trigger: "manual",
+					title: "Changing your calendar permssions",
+					content: content
+				});
+			}
 			$elem.popover("show");
 		}
 	}
@@ -60,11 +84,15 @@
 				console.log("trying step 4");
 				var $elem = $("#save-button");
 				console.log($elem);
+				var content = "Click on the Save button once you are done!";
+				content += "<br><br>";
+				content += "<progress value='4' max='4'></progress>";
 				$elem.popover({
+					html: true,
 					placement: "right",
 					trigger: "manual",
-					title: "Step 4",
-					content: "Click here to save your calendar permssions"
+					title: "Changing your calendar permssions",
+					content: content
 				});
 				$elem.popover("show");
 			}
@@ -72,7 +100,13 @@
 	}
 	$(document).ready(function() {
 		if (endsWith(window.location.pathname, "index.php/site/whatsNew")) {
-			$('#start-tour').click(step_1);
+			if (true) {
+				total_step = 4;
+				$('#start-tour').click(step_1);
+			} else {
+				total_step = 3;
+				$('#start-tour').click(step_2);
+			}
 		}
 		if (endsWith(window.location.pathname, "index.php/calendar/index")) {
 			step_3();
