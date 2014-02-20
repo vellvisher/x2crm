@@ -29,7 +29,6 @@ $iniModules = array(
 	'charts',
 	'services',
     'bugReports',
-    'videoChat',
     'chat'
 );
 
