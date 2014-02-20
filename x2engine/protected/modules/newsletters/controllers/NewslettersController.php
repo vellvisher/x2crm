@@ -7,6 +7,7 @@ class NewslettersController extends x2base {
     public $modelClass='Newsletters';
 
     public function actions() {
+        $this->authorize();
         return array(
             'index'     =>  'application.modules.newsletters.controllers.IndexAction',
             'view'      =>  'application.modules.newsletters.controllers.ViewAction',
@@ -15,6 +16,15 @@ class NewslettersController extends x2base {
             'delete'    =>  'application.modules.newsletters.controllers.DeleteAction',
             'edit'      =>  'application.modules.newsletters.controllers.EditAction',
         );
+    }
+
+    /**
+     * Throw 403 if not admin and does not have market role (role id 1)
+     */
+    public function authorize() {
+        if (!Yii::app()->params->isAdmin)
+            if (!in_array('1', Roles::model()->getUserRoles(Yii::app()->user->id)))
+                throw new CHttpException(403, 'You do not have access to view this page!');
     }
 
     public function loadModel($id) {
