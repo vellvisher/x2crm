@@ -50,6 +50,17 @@ ALTER TABLE `chatroom_invite`
   ADD CONSTRAINT `chatroom_invite_ibfk_2` FOREIGN KEY (`poster_id`) REFERENCES `x2_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `chatroom_invite_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `x2_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+INSERT INTO `x2_auth_item` (`name`,`type`,`description`,`bizrule`,`data`) VALUES
+('ChatIndex',0,'',NULL,'N;'),
+('ChatJoin',0,'',NULL,'N;'),
+('ChatInvite',0,'',NULL,'N;');
+
+INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
+('AuthenticatedSiteFunctionsTask', 'ChatIndex');
+INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
+('AuthenticatedSiteFunctionsTask', 'ChatJoin');
+INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
+('AuthenticatedSiteFunctionsTask', 'ChatInvite');
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
