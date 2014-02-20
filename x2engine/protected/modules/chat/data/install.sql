@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `chatroom_invite` (
   `user_id` int(10) unsigned NOT NULL,
   `poster_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`chatroom_id`,`user_id`),
-  UNIQUE KEY `poster_id` (`poster_id`),
+  KEY `poster_id` (`poster_id`),
   KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
