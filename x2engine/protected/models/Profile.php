@@ -44,6 +44,8 @@ Yii::import('application.components.JSONFieldsBehavior');
  */
 class Profile extends CActiveRecord {
 
+	public $plugins;
+
     /**
      * Returns the static model of the specified AR class.
      * @return Profile the static model class
@@ -104,7 +106,7 @@ class Profile extends CActiveRecord {
             array('widgets, tagLine, emailAddress', 'length', 'max' => 255),
             array('widgetOrder', 'length', 'max' => 512),
             array('emailSignature', 'safe'),
-            array('notes, avatar, gridviewSettings, formSettings, widgetSettings', 'safe'),
+            array('notes, avatar, gridviewSettings, formSettings, widgetSettings, plugins', 'safe'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array('id, fullName, username, officePhone, cellPhone, emailAddress, lastUpdated, language', 'safe', 'on' => 'search')
@@ -144,6 +146,7 @@ class Profile extends CActiveRecord {
             // 'groupChat'=>Yii::t('profile','Enable group chat?'),
             'widgetOrder' => Yii::t('profile', 'Widget Order'),
             'widgetSettings' => Yii::t('profile', 'Widget Settings'),
+            'plugins' => Yii::t('profile', 'Plugins'),
             'resultsPerPage' => Yii::t('profile', 'Results Per Page'),
             /* 'menuTextColor' => Yii::t('profile', 'Menu Text Color'),
               'menuBgColor' => Yii::t('profile', 'Menu Color'),
@@ -425,6 +428,109 @@ class Profile extends CActiveRecord {
         }
 
         return json_decode(Yii::app()->params->profile->widgetSettings);
+    }
+    
+    public static function getAvailablePlugins(){
+    	$availablePlugins = array();
+    	
+	    $filesInPluginsFolder = scandir(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id);
+	    
+	    foreach($filesInPluginsFolder as $file) {
+			if ($file != "." && $file != ".." && strtolower(substr($file, strrpos($file, '.') + 1)) == 'manifest') {
+				$plugin = substr($file, 0, strrpos($file, '.'));
+				
+				if(is_file(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$plugin.'.js')) {
+					$availablePlugins[] = json_decode(file_get_contents(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$plugin.'.manifest'));
+				}
+			}
+	    }
+	    
+	    $activatedPlugins = self::getActivatedPlugins();
+	    
+	    foreach($availablePlugins as $plugin) {
+		    if(in_array($plugin->id, $activatedPlugins)) {
+			    $plugin->activated = true;
+		    } else {
+			    $plugin->activated = false;
+		    }
+	    }
+	    
+	    return $availablePlugins;
+    }
+
+	public static function getActivatedPlugins(){
+	    if(Yii::app()->user->isGuest) // no widgets if the user isn't logged in
+            return array();
+        
+        // if plugin settings haven't been set, give them default values
+        if(Yii::app()->params->profile->plugins == null){
+        	return array();
+        } else {
+	        $plugins = json_decode(Yii::app()->params->profile->plugins);
+	        $plugins_clean = array();
+			
+            foreach($plugins as $plugin) {
+	            if(is_file(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$plugin.'.js')) {
+		            $plugins_clean[] = $plugin;
+	            }
+            }
+            
+            return $plugins_clean;
+        }
+    }
+    
+    public static function activatePlugin ($pluginName){
+    	$pluginName = preg_replace("/[^a-zA-Z0-9]+/", "", $pluginName);
+		
+    	$activatedPlugins;
+    	
+    	if(!$activatedPlugins = json_decode(Yii::app()->params->profile->plugins)) {
+	    	$activatedPlugins = array();
+    	}
+    	
+        if(is_file(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$pluginName.'.js') && !in_array($pluginName, $activatedPlugins)) {
+        	$activatedPlugins[] = $pluginName;
+        	
+        	Yii::app()->params->profile->plugins = json_encode($activatedPlugins);
+            Yii::app()->params->profile->update(array('plugins'));
+            
+            return true;
+        } else {
+	        return false;
+        }
+    }
+    
+    public static function deactivatePlugin ($pluginName){
+	    if(in_array($pluginName, json_decode(Yii::app()->params->profile->plugins))) {
+        	$plugins = json_decode(Yii::app()->params->profile->plugins);
+        	unset($plugins[array_search($pluginName,$plugins)]);
+        	Yii::app()->params->profile->plugins = json_encode($plugins);
+            Yii::app()->params->profile->update(array('plugins'));
+            
+            return true;
+        } else {
+	        return false;
+        }
+    }
+    
+    public static function deletePlugin ($pluginName){
+	    $pluginName = preg_replace("/[^a-zA-Z0-9]+/", "", $pluginName);
+	    
+	    self::deactivatePlugin($pluginName);
+	    
+	    if(is_file(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$pluginName.'.js')) {
+		    unlink(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$pluginName.'.js');
+	    } else {
+		    return false;
+	    }
+	    
+	    if(is_file(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$pluginName.'.manifest')) {
+		    unlink(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id.'/'.$pluginName.'.manifest');
+	    } else {
+		    return false;
+	    }
+	    
+	    return true;
     }
 
     public function getLink(){

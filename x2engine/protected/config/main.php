@@ -259,7 +259,8 @@ $config = array(
             'charset' => 'utf8',
             //'enableProfiling'=>true,
             //'enableParamLogging' => true,
-            'schemaCachingDuration' => 84600
+            //'schemaCachingDuration' => 84600
+            'schemaCachingDuration' => 0
         ),
         'authManager' => array(
             'class' => 'CDbAuthManager',
