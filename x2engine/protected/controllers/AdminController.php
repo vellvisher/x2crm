@@ -185,6 +185,7 @@ class AdminController extends Controller {
             'UsersController' => 'application.modules.users.controllers.UsersController',
             'WorkflowController' => 'application.modules.workflow.controllers.WorkflowController',
             'BugReportsController' => 'application.modules.bugReports.controllers.BugReportsController',
+            'ChatController' => 'application.modules.chat.controllers.ChatController',
         );
         $missingPermissions = array();
         $auth = Yii::app()->authManager;
