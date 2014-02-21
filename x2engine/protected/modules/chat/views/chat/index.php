@@ -25,7 +25,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
         });
 
         $('#chat-invite-form').ajaxForm({url:'invite', type:'post', resetForm:true, success:function() {alert('Invited!');},
-            error:function() { alert('Sorry, could not post the invite...');}});
+            error:function(data) {if(data.responseText == "duplicate") alert('This user has already been invited'); else alert('Sorry, could not post the invite...');}});
     });
 
 </script>
@@ -46,6 +46,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
 
   <div id="actions">
     Your PeerJS ID is <span id="pid"></span><br>
+    <b>Chat message: </b>
     <form id="send">
       <input type="text" id="text" placeholder="Enter message"><input class="button" type="submit" value="Send to peers" id="send-button" disabled="disabled">
     </form>
@@ -59,11 +60,25 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
     Drag file here to send to active connections.
   </div>
 
-  <!-- video call -->
-  <div class="pure-u-2-3" id="video-container">
-    <video id="their-video" autoplay></video>
-    <video id="my-video" muted="true" autoplay></video>
+  <b>Video Call: </b>
+  <div id="step2">
+    <form id="video-call">
+      <input type="button" value="Video Call" id="make-call" disabled="disabled">
+    </div>
   </div>
+
+  <!-- video call -->
+  <div id="videos">
+    <div class="pure-u-2-3" id="video-container">
+      My Video: <br>
+      <video id="my-video" muted="true" autoplay></video>
+      <br>
+      <div id="their-video-container">
+        Other Video: <br>
+        <video id="their-video" autoplay></video>
+      </div>
+    </div>
+</div>
 
 
   <!-- Get local audio/video stream -->
@@ -75,15 +90,11 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
     </div>
   </div>
 
-  <div id="step2">
-    <form id="video-call">
-      <input type="button" value="Video Call" id="make-call" disabled="disabled">
-    </div>
-  </div>
-
   <!-- Call in progress -->
   <div id="step3">
-    <p><a href="#" class="pure-button pure-button-error" id="end-call">End call</a></p>
+    <form>
+      <input type="button" value="End Call" id="end-call">
+    </form>
   </div>
 
 
@@ -97,3 +108,4 @@ NATs.
 
 <div class="log" style="color:#FF7500;text-shadow:none;padding:15px;background:#eee"><strong>Connection status</strong>:<br></div>
 </div>
+</body>

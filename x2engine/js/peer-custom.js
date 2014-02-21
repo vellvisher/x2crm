@@ -37,6 +37,8 @@ function connect(c) {
     // Handle a chat connection.
     if (c.label === 'chat') {
         console.log('handling chat connection');
+        CONSTANTS.OTHER_ID = c.peer;
+        console.log("other id " + CONSTANTS.OTHER_ID);
         def = c;
         c.on('open', function() {
             peerConnected();

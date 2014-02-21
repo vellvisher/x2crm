@@ -3,6 +3,7 @@
 class ChatController extends x2base
 {
 	public function actionIndex() {
+        Yii::app()->cache->flush();
         $fullName = Yii::app()->params->profile->fullName; 
 
         $users = Yii::app()->db->createCommand()
@@ -76,8 +77,8 @@ class ChatController extends x2base
                 echo 'Done';
             } catch (Exception $e) {
                 $trans->rollback();
-                Yii::log(e, 'error');
-                throw new CHttpException(400);
+                Yii::log($e, 'error');
+                throw new CHttpException(400, "duplicate");
             }
         }
 	}
