@@ -4,7 +4,7 @@ CREATE TABLE `x2_newsletters` (
     id              INT             NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name            VARCHAR(100)    NOT NULL,
     subject         VARCHAR(255)    NOT NULL,
-    type            TINYINT         NOT NULL,
+    type            TINYINT,
     body            LONGTEXT        NOT NULL,
     updatedBy       VARCHAR(50)     NOT NULL,
     dateUpdated     BIGINT          NOT NULL,

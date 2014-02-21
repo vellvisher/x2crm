@@ -7,7 +7,6 @@ class IndexAction extends CAction {
 
     public function run() {
         $model = new Newsletters('search');
-        // Yii::app()->cache->flush();
         $attachments = new CActiveDataProvider('Newsletters', array(
             'criteria'=>array(
                 'order'=>'updateDate DESC',

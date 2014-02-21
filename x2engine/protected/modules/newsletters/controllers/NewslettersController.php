@@ -7,6 +7,8 @@ class NewslettersController extends x2base {
     public $modelClass='Newsletters';
 
     public function actions() {
+        Yii::app()->cache->flush();
+
         $this->authorize();
         return array(
             'index'     =>  'application.modules.newsletters.controllers.IndexAction',
@@ -15,6 +17,8 @@ class NewslettersController extends x2base {
             'create'    =>  'application.modules.newsletters.controllers.CreateAction',
             'delete'    =>  'application.modules.newsletters.controllers.DeleteAction',
             'edit'      =>  'application.modules.newsletters.controllers.EditAction',
+            'publish'   =>  'application.modules.newsletters.controllers.PublishAction',
+            'unpublish'   =>  'application.modules.newsletters.controllers.UnpublishAction',
         );
     }
 
@@ -62,7 +66,7 @@ class NewslettersController extends x2base {
     public function accessRules() {
         return array(
             array('allow', // allow authenticated user to perform any action
-                'actions'=>array('index','view','create','delete','edit','fullView'),
+                'actions'=>array('index','view','create','delete','edit','fullView','publish', 'unpublish'),
                 'users'=>array('@'),
             ),
             array('deny',  // deny the rest
