@@ -1,4 +1,7 @@
 <?php
+
+Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
+
 $this->setPageTitle($model->name);
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
@@ -15,15 +18,49 @@ $(window).resize(function() {
     $("#newsletterIframe").height($("#newsletterIframe").height(650).contents().height());
 });
 ',CClientScript::POS_READY);
+
+Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/jquery-ui-timepicker-addon.js',CClientScript::POS_END);
+Yii::app()->getClientScript()->registerScript('datepicker','
+    $(function() {
+        $("#startDate,#endDate").datetimepicker({
+            dateFormat: "yy-mm-dd",
+            altFormat: "@",
+        });
+    });
+    ',CClientScript::POS_READY);
 ?>
 
 <div class="page-title icon newsletters">
     <h2>
-        <span class="no-bold"><?php echo  'Newsletter:'; ?></span>
+        <span class="no-bold">Newsletter</span>
         <?php echo $model->name; ?>
     </h2>
+    <?php if (!$model->published) {
+        echo $this->renderPartial('_publish', array(
+            'model'=>$model,
+            'action' => Yii::app()->getBaseUrl(true)."/index.php/newsletters/publish/".$model->id
+    ));
+    } else { ?>
+    <?php } ?>
 
 <?php
+    if (!$model->published) {
+        echo CHtml::button(
+            "Publish",
+            array('title'=>"Publish",
+                'class'=>'x2-button x2-hint icon delete right',
+                'onclick'=>'$("#publish-dialog").dialog()'));
+    } else {
+        echo CHtml::link(
+        'Unpublish',
+        "#",
+        array(
+            'submit'=>array('unpublish','id'=>$model->id),
+            'confirm'=> 'Are you sure you want to delete this item?',
+            'class'=>'x2-button x2-hint right',
+            'title'=> 'Unpublish'));
+    }
+
     echo CHtml::link(
         '<span></span>',
         "#",

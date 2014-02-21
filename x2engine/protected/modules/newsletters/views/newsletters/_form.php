@@ -30,13 +30,6 @@ $form = $this->beginWidget('CActiveForm', array(
             echo $form->error($model,'name');
         ?>
         </div>
-        <div>
-        <?php
-            echo $form->label($model,'type');
-            echo $form->dropDownList($model,'type',$model->types());
-            echo $form->error($model,'type');
-        ?>
-        </div>
         <div class="cell">
         <?php
             echo $form->errorSummary($model);
