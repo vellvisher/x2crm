@@ -56,7 +56,7 @@ Yii::app()->getClientScript()->registerScript('datepicker','
         "#",
         array(
             'submit'=>array('unpublish','id'=>$model->id),
-            'confirm'=> 'Are you sure you want to delete this item?',
+            'confirm'=> 'Are you sure you want to unpublish this newsletter?',
             'class'=>'x2-button x2-hint right',
             'title'=> 'Unpublish'));
     }
