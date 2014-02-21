@@ -1,4 +1,4 @@
-DROP TABLE `editor_files`;
+-- DROP TABLE `editor_files`;
 DELETE FROM `x2_modules` WHERE `name`='editor';
 DELETE FROM `x2engine`.`x2_auth_item` WHERE `x2_auth_item`.`name` = 'EditorIndex';
 DELETE FROM `x2engine`.`x2_auth_item` WHERE `x2_auth_item`.`name` = 'EditorInvite';
