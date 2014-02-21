@@ -138,7 +138,7 @@ class Notification extends CActiveRecord {
 
 
 	public function getMessage() {
-
+		Yii::import('application.models.ChatroomInvite');
 		if(empty($this->modelId) || empty($this->modelType))	// skip if there is no association
 			$record = null;
 		else {
@@ -271,6 +271,10 @@ class Notification extends CActiveRecord {
 				));
 			case 'custom':
 				return $this->text;
+			case 'chat_invite':
+				return Yii::t('app', 'Click {here} to join chat', array(
+					'{here}'=>$record->getJoinHTML()
+				));
 			default:
 				return 'Error: unknown type <b>'.$this->type.'</b>';
 

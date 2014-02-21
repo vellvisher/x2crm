@@ -30,6 +30,15 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
       <input type="text" id="text" placeholder="Enter message"><input class="button" type="submit" value="Send to peers" id="send-button" disabled="disabled">
     </form>
   </div>
+
+  <div id="wrap"><div id="connections"><span class="filler">You have not yet
+        made any connections.</span><div id="chatbox"><h1 id="chat-participants"></h1><div class="messages" id="message-box"></div></div></div>
+    <div class="clear"></div></div>
+
+  <div id="box" style="background: #fff; font-size: 18px;padding:40px 30px; text-align: center;">
+    Drag file here to send to active connections.
+  </div>
+
 <!-- Make calls to others -->
   <b>Video Call: </b>
   <div id="step2">
@@ -69,15 +78,6 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
     </form>
   </div>
 
-
-
-  <div id="wrap"><div id="connections"><span class="filler">You have not yet
-        made any connections.</span><div id="chatbox"><h1 id="chat-participants"></h1><div class="messages" id="message-box"></div></div></div>
-    <div class="clear"></div></div>
-
-  <div id="box" style="background: #fff; font-size: 18px;padding:40px 30px; text-align: center;">
-    Drag file here to send to active connections.
-  </div>
   <div class="warning browser">
     <div class="important">Your browser version: <span id="browsers"></span><br>
   Currently <strong>Firefox 22+ and Google Chrome 26.0.1403.0 or above</strong> is required.</strong></div>For more up to date compatibility
