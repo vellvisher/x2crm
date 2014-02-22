@@ -3,7 +3,7 @@
 
     <?php foreach($topPostsText as $post) { ?>
         <div class="ymal-message" style="font-size:9pt">
-        <span style="text-wrap:normal">
+        <span style="word-wrap:break-word">
             <br/>
             <?php
                 echo Formatter::convertLineBreaks($post);
