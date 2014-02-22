@@ -1,6 +1,7 @@
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 // Receiving a call
 peer.on('call', function(call) {
+	step2();
 	// Answer the call automatically (instead of prompting user) for demo purposes
 	call.answer(window.localStream);
 	step3(call);
@@ -14,6 +15,7 @@ peer.on('error', function(err) {
 // Click handlers setup
 $(function() {
 	$('#make-call').click(function() {
+		step2();
 		// Initiate a call!
 		var call = peer.call(CONSTANTS.OTHER_ID, window.localStream);
 
@@ -22,7 +24,7 @@ $(function() {
 
 	$('#end-call').click(function() {
 		window.existingCall.close();
-		step2();
+		step21();
 	});
 
 	// Retry if getUserMedia fails
@@ -35,6 +37,7 @@ $(function() {
 	step1();
 	$('#step3').hide();
 	$('#step1-error').hide();
+	$('#actions').hide();
 });
 
 function step1() {
@@ -57,6 +60,12 @@ function step2() {
 	console.log("step2");
 	$('#step1, #step3').hide();
 	$('#step2').show();
+	$('#their-video-container').show();
+}
+
+function step21() {
+	step2();
+	$('#their-video-container').hide();
 }
 
 function step3(call) {
@@ -73,7 +82,7 @@ function step3(call) {
 	// UI stuff
 	window.existingCall = call;
 	$('#their-id').text(call.peer);
-	call.on('close', step2);
+	call.on('close', step21);
 	$('#step1, #step2').hide();
 	$('#step3').show();
 }

@@ -3,6 +3,7 @@
 class ChatController extends x2base
 {
 	public function actionIndex() {
+        Yii::app()->cache->flush();
         $fullName = Yii::app()->params->profile->fullName; 
 
         $users = Yii::app()->db->createCommand()
@@ -70,14 +71,34 @@ class ChatController extends x2base
 
             $trans = Yii::app()->db->beginTransaction();
 
+            $success = false;
             try {
                 $invite->save();
                 $trans->commit();
                 echo 'Done';
+                $success = true;
             } catch (Exception $e) {
                 $trans->rollback();
-                Yii::log(e, 'error');
-                throw new CHttpException(400);
+                Yii::log($e, 'error');
+                throw new CHttpException(400, "duplicate");
+            }
+
+            try{
+                if($success) {
+                $postNotif = new Notification;
+                $postNotif->type = 'chat_invite';
+                $postNotif->createdBy = Yii::app()->params->profile->username;
+                $postNotif->modelType = 'ChatroomInvite';
+                $postNotif->modelId = $invite->id;
+
+                // look up the username of the owner of the feed
+                $postNotif->user = $username;
+
+                $postNotif->createDate = time();
+                $postNotif->save();
+               }
+            } catch(Exception $e) {
+                throw new CHttpException(400, $e->getTraceAsString());
             }
         }
 	}

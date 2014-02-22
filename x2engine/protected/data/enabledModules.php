@@ -29,7 +29,8 @@ $iniModules = array(
 	'charts',
 	'services',
     'bugReports',
-    'chat'
+    'chat',
+    'editor'
 );
 
 // Search for module availability; criteria = existence of register.php
