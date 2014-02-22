@@ -23,6 +23,7 @@ For the different modules,
 
 * Run modules/chat/data/install.sql
 * Run modules/editor/data/install.sql
+* Run modules/newsletters/data/install.sql
 
 Development Mode
 ----------------
@@ -33,7 +34,7 @@ Add the following line, to your virtual hosts in Apache:
 
 `SetEnv APPLICATION_ENV development`
 
-If there is a database error, change the database password in 
+If there is a database error, change the database password in
 `protected/config/debugConfig.php`.
 
 You should now have better error messages and logging using `Yii::log` saved in
