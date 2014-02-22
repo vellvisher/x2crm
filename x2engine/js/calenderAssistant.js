@@ -1,12 +1,10 @@
 (function() {
-	//more button
-	var total_step = 0;
 
 	function step_1() {
 
 		var content = "Click on the More button";
 		content += "<br><br>";
-		content += "<progress value='1' max='4'></progress>";
+		content += "<progress value='1' max='" + getTotalSteps() + "'></progress>";
 		console.log("trying step 1");
 		$("#more-menu").popover({
 			placement: "bottom",
@@ -30,12 +28,13 @@
 	function step_2() {
 		if (endsWith(window.location.pathname, "index.php/site/whatsNew")) {
 			console.log("trying step 2");
-			var $item, $link;
-			if (total_step == 4) {
+			var $item, $link, placement;
+			if (getTotalSteps() == 4) {
 				$item = $("#more-menu").find("[data-title='calendar']");
 				$link = $($item.children()[0]);
 			} else {
-				$link = $("[data-title='calendar']");
+				$item = $("[data-title='calendar']");
+				$link = $($("[data-title='calendar']").children()[0]);
 			}
 			var linkName = $link.attr("href");
 			console.log(linkName);
@@ -43,7 +42,7 @@
 				$link.attr("href", linkName + "?tour=true");
 				var content = "Click on the Calendar button";
 				content += "<br><br>";
-				content += "<progress value='2' max='4'></progress>";
+				content += "<progress value=" + (getTotalSteps() - 2) + " max=" + getTotalSteps() + "></progress>";
 				$item.popover({
 					html: true,
 					placement: "right",
@@ -65,7 +64,7 @@
 				$elem.attr("href", linkName + "?tour=true");
 				var content = "Click on the My Calendar Permissions button";
 				content += "<br><br>";
-				content += "<progress value='3' max='4'></progress>";
+				content += "<progress value='" + (getTotalSteps() -1) + "' max='" + getTotalSteps() + "'></progress>";
 				$elem.popover({
 					html: true,
 					placement: "right",
@@ -86,7 +85,7 @@
 				console.log($elem);
 				var content = "Click on the Save button once you are done!";
 				content += "<br><br>";
-				content += "<progress value='4' max='4'></progress>";
+				content += "<progress value='" + getTotalSteps() + "' max='" + getTotalSteps() + "'></progress>";
 				$elem.popover({
 					html: true,
 					placement: "right",
@@ -100,11 +99,9 @@
 	}
 	$(document).ready(function() {
 		if (endsWith(window.location.pathname, "index.php/site/whatsNew")) {
-			if (true) {
-				total_step = 4;
+			if (getTotalSteps() == 4) {
 				$('#start-tour').click(step_1);
 			} else {
-				total_step = 3;
 				$('#start-tour').click(step_2);
 			}
 		}
@@ -114,7 +111,12 @@
 		setTimeout(step_4, 100);
 	});
 
-
+	function getTotalSteps() {
+		if ($("#more-menu").find("[data-title='calendar']").length > 0)
+			return 4;
+		else
+			return 3;
+	}
 
 	//utility functions
 	function getParameterByName(name) {

@@ -433,6 +433,13 @@ class Profile extends CActiveRecord {
     public static function getAvailablePlugins(){
     	$availablePlugins = array();
     	
+    	if(!is_dir(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id)) {
+	    	if(!mkdir(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id)) {
+		    	echo "Failed to create user plugin directory; check permissions";
+		    	die();
+	    	}
+    	}
+    	
 	    $filesInPluginsFolder = scandir(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id);
 	    
 	    foreach($filesInPluginsFolder as $file) {
