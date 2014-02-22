@@ -90,6 +90,8 @@ function connect(c) {
         });
     }
     connectedPeers[c.peer] = 1;
+    $('#actions').show();
+    $('#invite').hide();
 }
 
 function connectToPeer(peerId) {
