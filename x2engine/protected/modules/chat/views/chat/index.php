@@ -32,6 +32,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
 </head>
 
 <body>
+    <div class="page-title">
+        <h2>Chat</h2>
+    </div>
     <h2 id='chat-user-hi'></h2>
     <div id="invite">
     <span> <p>
