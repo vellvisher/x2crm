@@ -90,12 +90,7 @@ class DocsController extends x2base {
         }
 	}
 
-	/**
-	 * Displays a particular model.
-	 * @param integer $id the ID of the model to be displayed
-	 */
-	public function actionView($id) {
-		$model = CActiveRecord::model('Docs')->findByPk($id);
+    private function checkViewPermissions($model) {
 		if(isset($model)){
 			$permissions=explode(", ",$model->editPermissions);
 			if(in_array(Yii::app()->user->getName(),$permissions))
@@ -108,7 +103,19 @@ class DocsController extends x2base {
 			   !(($model->visibility==1 ||
 				($model->visibility==0 && $model->createdBy==Yii::app()->user->getName())) ||
 				Yii::app()->params->isAdmin|| $editFlag))
+                return false;
+        return true;
+    }
+
+	/**
+	 * Displays a particular model.
+	 * @param integer $id the ID of the model to be displayed
+	 */
+	public function actionView($id) {
+		$model = CActiveRecord::model('Docs')->findByPk($id);
+        if (!$this->checkViewPermissions($model)) {
 			$this->redirect(array('docs/index'));
+        }
 
 		$this->render('view', array(
 			'model' => $model,
@@ -120,8 +127,11 @@ class DocsController extends x2base {
 	 * @param integer $id the ID of the model to be displayed
 	 */
 	public function actionFullView($id,$json=0) {
-
 		$model = $this->loadModel($id);
+
+        if (!$this->checkViewPermissions($model)) {
+			$this->redirect(array('docs/index'));
+        }
 
 		echo $json ? CJSON::encode(array('body'=>$model->text,'subject'=>$model->subject)) : $model->text;
 	}
