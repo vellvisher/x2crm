@@ -33,7 +33,8 @@ class Ymal extends X2Widget {
 
         $allPosts = Yii::app()->db->createCommand()
             ->select('associationId, user')
-            ->where('user=:username OR associationId=:user_id', array(':username' => $username, ':user_id' => $user_id))
+            ->where('(type = "comment" OR type = "feed") AND (user=:username OR associationId=:user_id)',
+                array(':username' => $username, ':user_id' => $user_id))
             ->from('x2_events')
             ->queryAll();
 
