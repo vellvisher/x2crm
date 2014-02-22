@@ -511,6 +511,7 @@ class Profile extends CActiveRecord {
 	    if(in_array($pluginName, json_decode(Yii::app()->params->profile->plugins))) {
         	$plugins = json_decode(Yii::app()->params->profile->plugins);
         	unset($plugins[array_search($pluginName,$plugins)]);
+        	$plugins = array_values($plugins);
         	Yii::app()->params->profile->plugins = json_encode($plugins);
             Yii::app()->params->profile->update(array('plugins'));
             
