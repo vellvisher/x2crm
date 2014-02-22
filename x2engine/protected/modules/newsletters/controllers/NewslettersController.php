@@ -7,6 +7,7 @@ class NewslettersController extends x2base {
     public $modelClass='Newsletters';
 
     public function actions() {
+        Yii::app()->timezone = 'Asia/Singapore';
         Yii::app()->cache->flush();
 
         $this->authorize();

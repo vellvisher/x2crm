@@ -11,12 +11,10 @@ class PublishAction extends CAction {
         if(!empty($_POST['startDate']) && !empty($_POST['endDate'])) {
             $controller = $this->getController();
             $model = $controller->loadModel($id);
-            var_dump($model);
             $model->startDate = strtotime($_POST['startDate']);
             $model->endDate = strtotime($_POST['endDate']);
             $model->type = $_POST['type'];
             $model->published = '1';
-            die(var_dump($model));
             if ($model->save())
                 $this->notifyUsers($model);
             $controller->redirect(array('view','id'=>$model->id));
@@ -24,16 +22,12 @@ class PublishAction extends CAction {
     }
 
     private function notifyUsers($model) {
-        $users = new CActiveDataProvider('User', array(
-            'criteria' => array(
-                'condition' => 'status=1',
-            )
-        ));
-        foreach ($users->data as $user) {
+        $users = Yii::app()->db->createCommand('select * from x2_users where status=1')->queryAll();
+        foreach ($users as $user) {
             $notification = new Notification;
             $notification->modelType = 'Newsletters';
             $notification->createdBy = Yii::app()->user->getName();
-            $notification->user = $user->username;
+            $notification->user = $user['username'];
             $notification->modelId = $model->id;
             $notification->createDate = $model->startDate;
             $notification->type = 'newsletter_publish';
