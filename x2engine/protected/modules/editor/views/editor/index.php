@@ -3,6 +3,7 @@
     CONSTANTS = {}
     CONSTANTS.FULL_NAME = "<?php echo $fullName; ?>";
     CONSTANTS.ALL_USERS = <?php echo $all_users; ?>;
+    CONSTANTS.FILE_ID = "<?php echo $file_id; ?>";
 </script>
 <?php
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/jquery.form.min.js');
@@ -26,11 +27,38 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->baseUrl.'/css/firepad.css'
   </style>
 </head>
 
-  <div id="firepad"></div>
+<script>
+
+    $(function() {
+        $('#editor-invite-box').autocomplete({
+            'minLength':'1',
+            'source':CONSTANTS.ALL_USERS
+        });
+
+        $('#editor-invite-form').ajaxForm({url:'invite', type:'post', resetForm:true, success:function() {alert('Invited!');},
+            error:function(data) {if(data.responseText == "duplicate") alert('This user has already been invited'); else alert('Sorry, could not post the invite...');}});
+    });
+
+</script>
+
+    <div id="editor-invite">
+    <span> <p>
+    Invite users to the editor from the box below:
+    </p></span>
+
+    <form id="editor-invite-form">
+        <input id="editor-invite-box" name="username" type="text"/>
+        <input type="hidden" id="editor-room-id" name="file_id" value=""/>
+        <input type="submit" value="Invite" id="editor-room-invite" disabled="disabled"/>
+    </form>
+  </div>
+
+  <div id="editor-invite"></div>
+  <div id="firepad" style="display:none"></div>
 
   <script>
     //// Initialize Firebase.
-    var firepadRef = new Firebase('https://sweltering-fire-9736.firebaseio.com');
+    var firepadRef = new Firebase('https://sweltering-fire-9736.firebaseio.com/firepads/' + CONSTANTS.FILE_ID);
     // TODO: Replace above line with:
     // var firepadRef = new Firebase('<YOUR FIREBASE URL>');
 
@@ -43,34 +71,11 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->baseUrl.'/css/firepad.css'
 
     //// Initialize contents.
     firepad.on('ready', function() {
-      if (firepad.isHistoryEmpty()) {
-        firepad.setHtml(
-            '<span style="font-size: 24px;">Rich-text editing with <span style="color: red">Firepad!</span></span><br/>\n' +
-            '<br/>' +
-            '<div style="font-size: 18px">' +
-            'Supports:<br/>' +
-            '<ul>' +
-              '<li>Different ' +
-                '<span style="font-family: impact">fonts,</span>' +
-                '<span style="font-size: 24px;"> sizes, </span>' +
-                '<span style="color: blue">and colors.</span>' +
-              '</li>' +
-              '<li>' +
-                '<b>Bold, </b>' +
-                '<i>italic, </i>' +
-                '<u>and underline.</u>' +
-              '</li>' +
-              '<li>Lists' +
-                '<ol>' +
-                  '<li>One</li>' +
-                  '<li>Two</li>' +
-                '</ol>' +
-              '</li>' +
-              '<li>Undo / redo</li>' +
-              '<li>Cursor / selection synchronization.</li>' +
-              '<li>And it\'s all fully collaborative!</li>' +
-            '</ul>' +
-            '</div>');
+        $("#firepad").show();
+        if (firepad.isHistoryEmpty()) {
+            firepad.setHtml(
+                "Your document should be here"
+            );
       }
     });
   </script>

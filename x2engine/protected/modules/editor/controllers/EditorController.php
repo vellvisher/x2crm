@@ -15,8 +15,15 @@ class EditorController extends x2base
             $all_users[] =array('label'=>$user['fullName'], 'value'=>$user['username']);
         }
 
+        echo md5(rand());
+        return;
+        $file_id = Yii::app()->getSecurityManager()->generateRandomString();
+
+        // $file_id = Yii::CSecurityManager->generateRandomString();
+
         $this->render('index', array('fullName' => $fullName,
-            'all_users' => json_encode($all_users)));
+            'all_users' => json_encode($all_users),
+            'file_id' => $file_id));
 
 	}
 
