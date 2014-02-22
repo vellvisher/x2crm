@@ -3,7 +3,7 @@
 class EditorController extends x2base
 {
 	public function actionIndex() {
-        $fullName = Yii::app()->params->profile->fullName; 
+        $fullName = Yii::app()->params->profile->fullName;
 
         $users = Yii::app()->db->createCommand()
             ->select('fullName, username')
@@ -19,5 +19,11 @@ class EditorController extends x2base
             'all_users' => json_encode($all_users)));
 
 	}
+
+    public function actionJoin() {
+    }
+
+    public function actionInvite() {
+    }
 }
 ?>

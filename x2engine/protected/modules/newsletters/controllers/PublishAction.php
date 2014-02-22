@@ -11,10 +11,12 @@ class PublishAction extends CAction {
         if(!empty($_POST['startDate']) && !empty($_POST['endDate'])) {
             $controller = $this->getController();
             $model = $controller->loadModel($id);
+            var_dump($model);
             $model->startDate = strtotime($_POST['startDate']);
             $model->endDate = strtotime($_POST['endDate']);
             $model->type = $_POST['type'];
             $model->published = '1';
+            die(var_dump($model));
             if ($model->save())
                 $this->notifyUsers($model);
             $controller->redirect(array('view','id'=>$model->id));

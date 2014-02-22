@@ -14,4 +14,27 @@ After cloning, for a vanilla install you need to:
 * Upload the sqldump from Google Drive
 * Execute the following DB Change for Plugin Feature
 ALTER TABLE  `x2_profile` ADD  `plugins` TEXT NULL AFTER  `widgetSettings` ;
+* Grant web server write permissions to `x2engine/js/plugin`
 
+Module Installation
+-------------------
+
+For the different modules,
+
+* Run modules/chat/data/install.sql
+* Run modules/editor/data/install.sql
+
+Development Mode
+----------------
+
+DO NOT SET THIS IN PRODUCTION MODE!
+
+Add the following line, to your virtual hosts in Apache:
+
+`SetEnv APPLICATION_ENV development`
+
+If there is a database error, change the database password in 
+`protected/config/debugConfig.php`.
+
+You should now have better error messages and logging using `Yii::log` saved in
+`protected/runtime/application.log`.

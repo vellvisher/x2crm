@@ -433,6 +433,13 @@ class Profile extends CActiveRecord {
     public static function getAvailablePlugins(){
     	$availablePlugins = array();
     	
+    	if(!is_dir(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id)) {
+	    	if(!mkdir(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id)) {
+		    	echo "Failed to create user plugin directory; check permissions";
+		    	die();
+	    	}
+    	}
+    	
 	    $filesInPluginsFolder = scandir(dirname(Yii::app()->request->scriptFile).'/js/plugins/'.Yii::app()->user->id);
 	    
 	    foreach($filesInPluginsFolder as $file) {
@@ -504,6 +511,7 @@ class Profile extends CActiveRecord {
 	    if(in_array($pluginName, json_decode(Yii::app()->params->profile->plugins))) {
         	$plugins = json_decode(Yii::app()->params->profile->plugins);
         	unset($plugins[array_search($pluginName,$plugins)]);
+        	$plugins = array_values($plugins);
         	Yii::app()->params->profile->plugins = json_encode($plugins);
             Yii::app()->params->profile->update(array('plugins'));
             
