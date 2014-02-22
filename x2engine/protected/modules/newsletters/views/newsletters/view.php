@@ -81,4 +81,4 @@ Yii::app()->getClientScript()->registerScript('datepicker','
         array('class'=>'x2-button icon copy right x2-hint','title'=> 'Make a copy'));
 ?>
 </div>
-<iframe src="<?php echo $this->createUrl('/newsletters/newsletters/fullView/'.$model->id); ?>" id="newsletterIframe" frameBorder="0" scrolling="no" height="650" width="100%" style="background:#fff;overflow:hidden;"></iframe>
+<?php echo $this->renderPartial('_iframe', array('model'=>$model)); ?>

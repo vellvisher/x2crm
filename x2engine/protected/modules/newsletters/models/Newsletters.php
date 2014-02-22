@@ -49,4 +49,17 @@ class Newsletters extends X2Model {
         }
         else return null;
     }
+
+    /**
+     * Overrides the default getLink to open an inpage modal
+     */
+    public function getLink($length=30,$frame=true) {
+        $text = $this->subject;
+        if($length && mb_strlen($text, 'UTF-8') > $length)
+            $text = CHtml::encode(mb_substr($text, 0, $length, 'UTF-8').'...');
+
+        $url = Yii::app()->createUrl('/newsletters/newsletters/fullView/'.$this->id);
+        $iframe = str_replace("'", "&#39;","<iframe src='$url' id='newsletterIframeModal' style='background:#fff;'></iframe>");
+        return "<a onclick='$(&quot;$iframe&quot;).dialog()' href='#'>$text</a>";
+    }
 }

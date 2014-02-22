@@ -7,10 +7,6 @@ class NewslettersController extends x2base {
     public $modelClass='Newsletters';
 
     public function actions() {
-        Yii::app()->timezone = 'Asia/Singapore';
-        Yii::app()->cache->flush();
-
-        $this->authorize();
         return array(
             'index'     =>  'application.modules.newsletters.controllers.IndexAction',
             'view'      =>  'application.modules.newsletters.controllers.ViewAction',
@@ -24,6 +20,19 @@ class NewslettersController extends x2base {
     }
 
     /**
+     * Authorize actions
+     */
+    public function beforeAction($action=null) {
+        Yii::app()->timezone = 'Asia/Singapore';
+        // Yii::app()->cache->flush();
+        $id = Yii::app()->getRequest()->getQuery('id');
+        if ($action->id != 'fullView' || !$this->loadModel($id)->published) {
+            $this->authorize();
+        }
+        return $this->PermissionsBehavior->beforeAction($action);
+    }
+
+    /**
      * Throw 403 if not admin and does not have market role (role id 1)
      */
     public function authorize() {
@@ -33,10 +42,7 @@ class NewslettersController extends x2base {
     }
 
     public function loadModel($id) {
-      $model = Newsletters::model()->findByPk((int)$id);
-      if($model === null)
-        return null;
-      return $model;
+      return Newsletters::model()->findByPk((int)$id);
     }
 
     /**
@@ -54,9 +60,7 @@ class NewslettersController extends x2base {
      * Install the access control filter to every action
      */
     public function filters() {
-        return array(
-            'accessControl',
-        );
+        return array('accessControl');
     }
 
     /**
@@ -67,7 +71,7 @@ class NewslettersController extends x2base {
     public function accessRules() {
         return array(
             array('allow', // allow authenticated user to perform any action
-                'actions'=>array('index','view','create','delete','edit','fullView','publish', 'unpublish'),
+                'actions'=>array('index','view','create','delete','edit','publish','fullView','unpublish'),
                 'users'=>array('@'),
             ),
             array('deny',  // deny the rest
