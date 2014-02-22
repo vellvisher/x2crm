@@ -992,6 +992,8 @@ div.page-title .x2-button {
 }
 div.page-title .x2-button.icon span {width:26px;}
 div.page-title .x2-button.icon.delete span {background:url(../images/icons/Delete1.png) center center no-repeat;}
+div.page-title .x2-button.icon.publish span {background:url(../images/icons/Complete.png) center center no-repeat;}
+div.page-title .x2-button.icon.unpublish span {background:url(../images/icons/Close_Widget.png) center center no-repeat;}
 div.page-title .x2-button.icon.edit span {background:url(../images/icons/Edit.png) center center no-repeat;}
 div.page-title .x2-button.icon.sync span {background:url(../images/icons/Sync.png) center center no-repeat;}
 div.page-title .x2-button.icon.copy span {background:url(../images/icons/Copy.png) center center no-repeat;}

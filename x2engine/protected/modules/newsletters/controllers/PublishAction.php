@@ -13,6 +13,9 @@ class PublishAction extends CAction {
             $model = $controller->loadModel($id);
             $model->startDate = strtotime($_POST['startDate']);
             $model->endDate = strtotime($_POST['endDate']);
+            if ($model->startDate > $model->endDate) {
+                throw new CHttpException(400,'Invalid request. Start date should be before the end date.');
+            }
             $model->type = $_POST['type'];
             $model->published = '1';
             if ($model->save())
@@ -24,14 +27,31 @@ class PublishAction extends CAction {
     private function notifyUsers($model) {
         $users = Yii::app()->db->createCommand('select * from x2_users where status=1')->queryAll();
         foreach ($users as $user) {
-            $notification = new Notification;
-            $notification->modelType = 'Newsletters';
-            $notification->createdBy = Yii::app()->user->getName();
-            $notification->user = $user['username'];
-            $notification->modelId = $model->id;
-            $notification->createDate = $model->startDate;
-            $notification->type = 'newsletter_publish';
-            $notification->save();
+            for ($time = $model->startDate; $time <= $model->endDate;) {
+                $notification = new Notification;
+                $notification->modelType = 'Newsletters';
+                $notification->createdBy = Yii::app()->user->getName();
+                $notification->user = $user['username'];
+                $notification->modelId = $model->id;
+                $notification->createDate = $time;
+                $notification->type = 'newsletter_publish';
+                $notification->save();
+                switch ($model->type) {
+                    case NewsletterType::Daily:
+                        $time = strtotime('+1 days', $time);
+                        break;
+                    case NewsletterType::Weekly:
+                        $time = strtotime('+1 weeks', $time);
+                        break;
+                    case NewsletterType::Monthly:
+                        $time = strtotime('+1 months', $time);
+                        break;
+                    default:
+                        //Should not reach here
+                        throw new CHttpException(400, 'Invalid type');
+                        break;
+                }
+            }
         }
     }
 }

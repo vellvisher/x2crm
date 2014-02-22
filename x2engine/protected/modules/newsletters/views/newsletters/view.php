@@ -45,19 +45,21 @@ Yii::app()->getClientScript()->registerScript('datepicker','
 
 <?php
     if (!$model->published) {
-        echo CHtml::button(
-            "Publish",
-            array('title'=>"Publish",
-                'class'=>'x2-button x2-hint icon delete right',
+        echo CHtml::link(
+            '<span></span>',
+            '#',
+            array(
+                'title'=>"Publish",
+                'class'=>'x2-button x2-hint icon publish right',
                 'onclick'=>'$("#publish-dialog").dialog()'));
     } else {
         echo CHtml::link(
-        'Unpublish',
+        '<span></span>',
         "#",
         array(
             'submit'=>array('unpublish','id'=>$model->id),
             'confirm'=> 'Are you sure you want to unpublish this newsletter?',
-            'class'=>'x2-button x2-hint right',
+            'class'=>'x2-button x2-hint icon unpublish right',
             'title'=> 'Unpublish'));
     }
 
