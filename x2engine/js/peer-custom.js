@@ -7,15 +7,6 @@ var peer = new Peer({
     // own.
     host: HOST_NAME,
     port:PEER_SERVER_PORT,
-
-    // Set highest debug level (log everything!).
-    debug: 3,
-
-    // Set a logging function:
-    logFunction: function() {
-        var copy = Array.prototype.slice.call(arguments).join(' ');
-        $('.log').append(copy + '<br>');
-    }
 });
 
 var connectedPeers = {};
@@ -45,7 +36,7 @@ function connect(c) {
             c.send(JSON.stringify({name: CONSTANTS.FULL_NAME}));
         });
         var chatbox = $('#chatbox').addClass('active').attr('id', c.peer);
-        var messages = $('#message-box').html('<div><em>Peer connected.</em></div>');
+        // var messages = $('#message-box').html('<div><em>Peer connected.</em></div>');
 
         // Select connection handler.
         chatbox.on('click', function() {

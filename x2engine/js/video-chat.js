@@ -37,6 +37,7 @@ $(function() {
 	step1();
 	$('#step3').hide();
 	$('#step1-error').hide();
+	$('#actions').hide();
 });
 
 function step1() {
