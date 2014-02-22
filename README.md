@@ -14,4 +14,4 @@ After cloning, for a vanilla install you need to:
 * Upload the sqldump from Google Drive
 * Execute the following DB Change for Plugin Feature
 ALTER TABLE  `x2_profile` ADD  `plugins` TEXT NULL AFTER  `widgetSettings` ;
-
+* Grant web server write permissions to `x2engine/js/plugin`
