@@ -10,6 +10,9 @@ class AdvertiseController extends x2base {
         $model = new Advertise;
         if (isset($_POST['Advertise'])) {
             $model->attributes = $_POST['Advertise'];
+            if (empty($model->name) || empty($model->phone) || empty($model->address)
+                || empty($model->email) || empty($model->url))
+                throw new CHttpException('400','Please fill in all the fields');
             $model->user = Yii::app()->user->getName();
             $model->save();
             $this->redirect(array('/'));
