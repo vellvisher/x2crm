@@ -38,8 +38,8 @@
 			}
 			var linkName = $link.attr("href");
 			console.log(linkName);
-			if (!endsWith(linkName, "tour=true")) {
-				$link.attr("href", linkName + "?tour=true");
+			if (!endsWith(linkName, "tour")) {
+				$link.attr("href", linkName + "#tour");
 				var content = "Click on the Calendar button";
 				content += "<br><br>";
 				content += "<progress value=" + (getTotalSteps() - 2) + " max=" + getTotalSteps() + "></progress>";
@@ -56,12 +56,12 @@
 	}
 
 	function step_3() {
-		if (getParameterByName("tour") == "true") {
+		if (location.hash == "#tour") {
 			console.log("trying step 3");
 			var $elem = $('#actions').find('a[href$="index.php/calendar/myCalendarPermissions"]');
 			var linkName = $elem.attr("href");
-			if (!endsWith(linkName, "tour=true")) {
-				$elem.attr("href", linkName + "?tour=true");
+			if (!endsWith(linkName, "tour")) {
+				$elem.attr("href", linkName + "#tour");
 				var content = "Click on the My Calendar Permissions button";
 				content += "<br><br>";
 				content += "<progress value='" + (getTotalSteps() -1) + "' max='" + getTotalSteps() + "'></progress>";
@@ -79,7 +79,7 @@
 
 	function step_4() {
 		if (endsWith(window.location.pathname, "index.php/calendar/myCalendarPermissions")) {
-			if (getParameterByName("tour") == "true") {
+			if (location.hash == "#tour") {
 				console.log("trying step 4");
 				var $elem = $("#save-button");
 				console.log($elem);
@@ -94,6 +94,7 @@
 					content: content
 				});
 				$elem.popover("show");
+				$('#save-button').click(function() {location.hash="";});
 			}
 		}
 	}
