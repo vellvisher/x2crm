@@ -61,6 +61,6 @@ class Newsletters extends X2Model {
 
         $url = Yii::app()->createUrl('/newsletters/newsletters/fullView/'.$this->id);
         $iframe = str_replace("'", "&#39;","<iframe src='$url' id='newsletterIframeModal' style='background:#fff;'></iframe>");
-        return "<a onclick='$(&quot;$iframe&quot;).dialog()' href='#'>$text</a>";
+        return "<a onclick='$(&quot;$iframe&quot;).dialog({height: 500,width:700,title:&quot;".$this->subject."&quot;})' href='#'>$text</a>";
     }
 }

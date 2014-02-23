@@ -65,7 +65,7 @@ $form = $this->beginWidget('CActiveForm', array(
                 echo CHtml::link('Preview','#',
                     array(
                         'class'=>'x2-button',
-                        'onclick'=>'$("#preview-dialog iframe").attr("src", $("#source-url").val());$("#preview-dialog").dialog();'));
+                        'onclick'=>'$("#preview-dialog iframe").empty();$("#preview-dialog iframe").attr("src", $("#source-url").val());$("#preview-dialog").dialog({height:500,width:700,title:"Preview"});'));
             ?>
         </div>
 
