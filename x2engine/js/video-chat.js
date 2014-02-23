@@ -39,7 +39,7 @@ $(function() {
 	$('#end-call').click(function() {
 		eachActiveConnection(function(c) {
 			if (c.label === 'chat') {
-				c.send(JSON.stringify({message:"bfa99df33b137bc8fb5f5407d7e58da8nalin"}));
+				c.send(JSON.stringify({message:"bfa99df33b137bc8fb5f5407d7e58da8"}));
 			}
 		});
 		window.existingCall.close();
