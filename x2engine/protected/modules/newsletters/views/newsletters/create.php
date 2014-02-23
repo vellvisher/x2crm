@@ -6,11 +6,7 @@ $this->actionMenu = $this->formatMenu(array(
 
 ?>
 <div class="page-title icon newsletters">
-    <h2>
-    <?php
-        echo 'Create Newsletter';
-    ?>
-    </h2>
+    <h2>echo 'Create Newsletter';</h2>
 </div>
 
 <?php
