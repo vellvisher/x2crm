@@ -37,16 +37,21 @@ $(function() {
 	});
 
 	$('#end-call').click(function() {
-		eachActiveConnection(function(c) {
-			if (c.label === 'chat') {
-				c.send(JSON.stringify({message:"bfa99df33b137bc8fb5f5407d7e58da8"}));
-			}
-		});
+		sendBye();
 		window.existingCall.close();
 		hideOtherVideo();
 	});
 
 });
+
+function sendBye() {
+	eachActiveConnection(function(c) {
+		if (c.label === 'chat') {
+			c.send(JSON.stringify({message:"bfa99df33b137bc8fb5f5407d7e58da8"}));
+		}
+	});
+}
+
 
 function manualEnd() {
 	window.existingCall.close();
@@ -95,7 +100,10 @@ function endCallButton(call) {
 	// UI stuff
 	window.existingCall = call;
 	$('#their-id').text(call.peer);
-	call.on('close', hideOtherVideo);
+	call.on('close', function() {
+		sendBye();
+		hideOtherVideo()
+	});
 	$('#getMedia, #videoCallButton').hide();
 	$('#endCallButton').show();
 }

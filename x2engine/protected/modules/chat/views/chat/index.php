@@ -33,9 +33,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
 
 <body>
     <div class="page-title">
-        <h2>Chat</h2>
+        <h2 id="chat-participants">Chat</h2>
     </div>
-    <h2 id='chat-user-hi'></h2>
     <div id="invite">
     <span> <p>
     Invite users to the chat from the box below:
@@ -59,39 +58,38 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
   </div>
 
 <div id="actions">
-  <div>
-    <b>Chat message: </b>
+  <table><tr>
     <form id="send">
-      <input type="text" id="text" placeholder="Enter message"><input class="button" type="submit" value="Send" id="send-button" disabled="disabled">
+        <td>
+            <input type="text" id="text" size="100" placeholder="Enter message">
+        </td></tr><tr><td>
+            <input class="button" type="submit" value="Send" id="send-button" disabled="disabled">
+        </td>
     </form>
-  </div>
+  </table>
 
   <div id="wrap"><div id="connections"><span class="filler">You have not yet
-        made any connections.</span><div id="chatbox"><h1 id="chat-participants"></h1><div class="messages" id="message-box"></div></div></div>
+        made any connections.</span><div id="chatbox"><div class="messages" id="message-box"></div></div></div>
     <div class="clear"></div></div>
 
-  <div id="box" style="background: #fff; font-size: 18px;padding:40px 30px; text-align: center;">
+  <div id="box" style="background: #eee; border:2px solid black; font-size: 18px;padding:40px 30px; text-align: center;">
     Drag file here to send to active connections.
   </div>
 
-  <b>Video Call: </b>
   <div id="videoCallButton">
     <form id="video-call">
-      <input type="button" value="Video Call" id="make-call" disabled="disabled">
+      <input type="button" value="Start Video Call" id="make-call" disabled="disabled">
     </div>
 
-  <!-- video call -->
-  <div id="videos">
-    <div class="pure-u-2-3" id="video-container">
-      My Video: <br>
-      <video id="my-video" muted="true" autoplay></video>
-      <br>
-      <div id="their-video-container">
-        Other Video: <br>
-        <video id="their-video" autoplay></video>
-      </div>
+    <!-- video call -->
+    <div id="videos">
+        <div id="video-container">
+           <video id="my-video" height="220px" width="300px" muted="true" autoplay></video>
+        </div>
+        <div id="their-video-container">
+           <video id="their-video" height="440px" width="600px" autoplay></video>
+        </div>
     </div>
-</div>
 
   <!-- Call in progress -->
   <div id="endCallButton">
