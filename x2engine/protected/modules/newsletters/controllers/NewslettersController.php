@@ -57,13 +57,6 @@ class NewslettersController extends x2base {
     }
 
     /**
-     * Install the access control filter to every action
-     */
-    public function filters() {
-        return array('accessControl');
-    }
-
-    /**
      * Specifies the access control rules.
      * This method is used by the 'accessControl' filter.
      * @return array access control rules
@@ -79,5 +72,4 @@ class NewslettersController extends x2base {
             ),
         );
     }
-
 }

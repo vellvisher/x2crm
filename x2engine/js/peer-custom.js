@@ -58,10 +58,10 @@ function connect(c) {
                 updatedPeers();
             }
             if ('message' in data) {
-                addMessage(PEER_NAMES[c.peer], data.message);
                 if(data.message == "bfa99df33b137bc8fb5f5407d7e58da8") {
-                    console.log("pseudo");
                     manualEnd();
+                } else {
+                    addMessage(PEER_NAMES[c.peer], data.message);
                 }
                 // messages.append('<div><span class="peer">' + PEER_NAMES[c.peer] + '</span>: ' + data.message +
                 //     '</div>');
