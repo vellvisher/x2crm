@@ -4,7 +4,7 @@ class ChatController extends x2base
 {
 	public function actionIndex() {
         Yii::app()->cache->flush();
-        $fullName = Yii::app()->params->profile->fullName; 
+        $fullName = Yii::app()->params->profile->fullName;
 
         $users = Yii::app()->db->createCommand()
             ->select('fullName, username')
@@ -20,10 +20,10 @@ class ChatController extends x2base
             'all_users' => json_encode($all_users)));
 
 	}
-    
+
     public function actionJoin() {
-        $fullName = Yii::app()->params->profile->fullName; 
-        $user_id = Yii::app()->params->profile->id; 
+        $fullName = Yii::app()->params->profile->fullName;
+        $user_id = Yii::app()->params->profile->id;
 
         $chatroom_id = $_POST['chatroom_id'];
         // TODO: Sanitize input

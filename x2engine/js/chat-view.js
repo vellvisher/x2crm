@@ -22,8 +22,6 @@ function peerConnected() {
 }
 
 $(function() {
-    $('#chat-user-hi').text('Hi ' + CONSTANTS.FULL_NAME + '!');
-
     // Prepare file drop box.
     var box = $('#box');
     box.on('dragenter', doNothing);
