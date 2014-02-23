@@ -11,6 +11,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->baseUrl.'/css/firepad.css'
 <script>
     CONSTANTS = {}
     CONSTANTS.IS_CREATE = false;
+    CONSTANTS.FIREPAD_INIT = false;
     <?php if ($model->isNewRecord) { ?>
         CONSTANTS.IS_CREATE = true;
     <?php } ?>
@@ -27,7 +28,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->baseUrl.'/css/firepad.css'
 
   <script>
     function UNDO_MANAGER_LISTENER () {
-        if (!CONSTANTS.IS_CREATE) {
+        if (!CONSTANTS.IS_CREATE && CONSTANTS.FIREPAD_INIT) {
             // $('#doc-rev-form-text').val(firepad.getHtml());
             $('#doc-rev-form-text').val(btoa(firepad.getText()));
             $('#doc-rev-form').ajaxSubmit({url:'saveRevision', type:'post', resetForm:true, success:function() {console.log('revision sent');},
@@ -35,6 +36,9 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->baseUrl.'/css/firepad.css'
         }
     }
     $(function() {
+        if (CONSTANTS.IS_CREATE) {
+            $("#revision-history").hide();
+        }
         //// Initialize Firebase.
         firepadRef = new Firebase('https://sweltering-fire-9736.firebaseio.com/firepads/' + CONSTANTS.FILE_ID);
 
@@ -50,9 +54,10 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->baseUrl.'/css/firepad.css'
             firepad.setHtml(
                 "<?php echo $model->text ?>");
             $("#firepad").show();
+            CONSTANTS.FIREPAD_INIT = true;
             firepad.codeMirror_.on('change', function() {
                 // $("#input").text(firepad.getHtml());
-                $("#input").text(firepad.getText());
+                $("#input").text(btoa(firepad.getText()));
             });
         });
 
@@ -104,6 +109,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->baseUrl.'/css/firepad.css'
         <div id="firepad" style="display:none"></div>
 </div>
 <?php echo $form->error($model,'text'); ?>
+<a id="revision-history" class="x2-button float" href="<?php echo $this->createUrl('/docs/diff/'.$model->id) ?>">Revision History</a>
 
 <?php $this->endWidget(); ?>
 <form style="display:none" id="doc-rev-form" action="saveRevision" method="post">

@@ -200,6 +200,10 @@ class DocsController extends x2base {
 
 			$model->createdBy = Yii::app()->user->getName();
 			$model->createDate = time();
+			$model->text = nl2br(base64_decode($model->text));
+            $model->text = str_replace("\r", "", $model->text);
+            $model->text = str_replace("\n", "", $model->text);
+
 			// $changes=$this->calculateChanges($temp,$model->attributes);
 			// $model=$this->updateChangeLog($model,'Create');
 			if($model->save())
@@ -351,6 +355,9 @@ class DocsController extends x2base {
 			if(isset($_POST['Docs'])) {
 				$model->attributes = $_POST['Docs'];
                 $model->visibility = $_POST['Docs']['visibility'];
+                $model->text = nl2br(base64_decode($model->text));
+                $model->text = str_replace("\r", "", $model->text);
+                $model->text = str_replace("\n", "", $model->text);
 				// $model=$this->updateChangeLog($model,'Edited');
 				if($model->save()) {
 					$event = new Events;
