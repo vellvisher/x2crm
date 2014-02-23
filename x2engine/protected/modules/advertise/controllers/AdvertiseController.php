@@ -17,6 +17,14 @@ class AdvertiseController extends x2base {
         $this->render('create', array('model'=>$model, 'budgets'=>$model->budgets));
     }
 
+    public function actionDeleteAll() {
+        if (Yii::app()->params->isAdmin) {
+            Advertise::model()->deleteAll();
+            $this->redirect(array('/'));
+        } else
+            throw new CHttpException('400', 'You are not authorized for this action.');
+    }
+
     public function loadModel($id) {
       return Advertise::model()->findByPk((int)$id);
     }
@@ -36,7 +44,7 @@ class AdvertiseController extends x2base {
     public function accessRules() {
         return array(
             array('allow',  // allow only authenticated users
-                'actions'=>array('index'),
+                'actions'=>array('index','deleteAll'),
                 'users'=>array('@'),
             ),
             array('deny',  // deny the rest
@@ -44,5 +52,4 @@ class AdvertiseController extends x2base {
             ),
         );
     }
-
 }

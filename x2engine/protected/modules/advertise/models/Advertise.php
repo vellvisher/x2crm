@@ -24,6 +24,10 @@ class Advertise extends X2Model {
         $temp = new ReflectionClass('BudgetType');
         return array_flip($temp->getConstants());
     }
+
+    public function getLink() {
+        return $this->name;
+    }
 }
 
 /*

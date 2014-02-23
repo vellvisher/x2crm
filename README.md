@@ -24,6 +24,7 @@ For the different modules,
 * Run modules/chat/data/install.sql
 * Run modules/editor/data/install.sql
 * Run modules/newsletters/data/install.sql
+* Run modules/advertise/data/install.sql
 
 Development Mode
 ----------------

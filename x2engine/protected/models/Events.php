@@ -107,6 +107,9 @@ class Events extends CActiveRecord {
             case 'Newsletters':
                 $model = 'newsletter';
                 break;
+            case 'Advertise':
+                $model = 'advertisement';
+                break;
             default:
                 $model = strtolower($model);
         }
