@@ -1967,10 +1967,39 @@ class SiteController extends x2base {
                         print_r($model->getErrors());
                     }
                 }else{
-                    $this->render('googleLogin', array(
-                        'failure' => 'email',
-                        'email' => $email,
-                    ));
+                    //create a new user
+                    $email = filter_var($user->email, FILTER_SANITIZE_EMAIL);
+                    $new_user = new User;
+                    $new_user->emailAddress = $email;
+                    $new_user->username = $user->given_name;
+                    $new_user->lastName = $user->family_name;
+                    $new_user->firstName = explode(" ", $user->name)[0];
+                    $new_user->status = 1;
+                    $new_user->password = md5("sdf"); //TODO fix
+                    $new_user->title = NULL;
+                    $new_user->department = NULL;
+                    $new_user->officePhone = NULL;
+                    $new_user->cellPhone = NULL;
+                    $new_user->address = NULL;
+                    $new_user->backgroundInfo = NULL;
+                    $new_user->userKey = NULL;
+
+                    $profile=new ProfileChild;
+                    $profile->fullName=$user->name;
+                    $profile->username=$new_user->username;
+                    $profile->allowPost=1;
+                    $profile->emailAddress=$new_user->emailAddress;
+                    $profile->status=$new_user->status;
+                    if($new_user->save()) {
+                        $profile->id = $new_user->id;
+                        $profile->save();
+                        $this->redirect('googleLogin');
+                    } else {
+                        $this->render('googleLogin', array(
+                            'failure' => 'email',
+                            'email' => $email,
+                            ));
+                    }
                 }
             }catch(Google_AuthException $e){
                 $auth->flushCredentials();
