@@ -99,9 +99,7 @@ CClientScript::POS_HEAD);
 	</div>
 	<div class="row" id="login-links" style="margin-top:10px;text-align:center;">
 		<?php echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/google_icon.png" id="google-icon" /> '.Yii::t('app','Login with Google'),
-				(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . 
-				((substr($_SERVER['HTTP_HOST'],0,4)=='www.')?substr($_SERVER['HTTP_HOST'],4):$_SERVER['HTTP_HOST']) . 
-				$this->createUrl('/site/googleLogin'),array('class'=>'x2touch-link')); ?>
+				"http://cs5331.no-ip.biz/index.php/site/googleLogin",array('class'=>'x2touch-link')); ?>
 		<?php echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/mobile.png" id="mobile-icon" /> X2Touch Mobile',Yii::app()->getBaseUrl() . '/index.php/x2touch',array('class'=>'x2touch-link')); ?>
 	</div>
 </div>
