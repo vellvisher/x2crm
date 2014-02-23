@@ -162,6 +162,34 @@ class DocsController extends x2base {
 		echo $json ? CJSON::encode(array('body'=>$model->text,'subject'=>$model->subject)) : $model->text;
 	}
 
+  private function notifyUsers($model) {
+        $arr = $model->editPermissions;
+        if(isset($arr)) {
+            if(is_array($arr)) {
+                $users = Accounts::parseUsers($arr);
+        foreach ($users as $user) {
+            $notification = new Notification;
+            $notification->modelType = 'Docs';
+            $notification->createdBy = Yii::app()->user->getName();
+            $notification->user = $user['username'];
+            $notification->modelId = $model->id;
+            $notification->createDate = $model->createDate;
+            $notification->type = 'docs_collab_invite';
+            $notification->save();
+            }
+        } else {
+            $notification = new Notification;
+            $notification->modelType = 'Docs';
+            $notification->createdBy = Yii::app()->user->getName();
+            $notification->user = $arr;
+            $notification->modelId = $model->id;
+            $notification->createDate = $model->createDate;
+            $notification->type = 'docs_collab_invite';
+            $notification->save();
+        }
+    }
+    }
+
 	/**
 	 * Creates a new doc.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
@@ -207,6 +235,7 @@ class DocsController extends x2base {
 			// $changes=$this->calculateChanges($temp,$model->attributes);
 			// $model=$this->updateChangeLog($model,'Create');
 			if($model->save())
+                $this->notifyUsers($model);
 				$this->redirect(array('view','id'=>$model->id));
 		}
 
@@ -426,10 +455,9 @@ class DocsController extends x2base {
 		}
 	}
 
-	public function actionDiff() {
+	public function actionDiff($id) {
         // TODO: Major rework, replace with models
         // TODO: Add permission check
-        $id = $_GET['id'];
 
         $dbRevList = Yii::app()->db->createCommand()
             ->select('id, doc_id, user_id, createDate')
@@ -439,6 +467,7 @@ class DocsController extends x2base {
             ->queryAll();
 
         $revIdArray = array();
+        $revList = array();
 
         foreach ($dbRevList as $dbRev) {
             $rev = array();

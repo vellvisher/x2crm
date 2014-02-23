@@ -278,6 +278,11 @@ class Notification extends CActiveRecord {
 					'{here}'=>$record->getJoinHTML(),
 					'{user}'=>User::getUserLinks($this->createdBy)
 				));
+			case 'docs_collab_invite':
+				return Yii::t('app', '{user} has invited you to edit this document. {here}', array(
+					'{here}'=>$record->getLink(),
+					'{user}'=>User::getUserLinks($this->createdBy)
+				));
 			default:
 				return 'Error: unknown type <b>'.$this->type.'</b>';
 
