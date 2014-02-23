@@ -1940,6 +1940,7 @@ firepad.UndoManager = (function () {
       this.dontCompose = false;
       this.redoStack = [];
     }
+    UNDO_MANAGER_LISTENER();
   };
 
   function transformStack (stack, operation) {

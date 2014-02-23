@@ -60,10 +60,9 @@ $menuItems = array(
 <?php
 $this->actionMenu = $this->formatMenu($menuItems);
 
-echo $this->renderPartial('_form', array('model'=>$model,'users'=>$users));
-
-
-
-
-
-
+if($model->type==='email' || $model->type ==='quote')
+    echo $this->renderPartial('_form_email', array('model'=>$model,'users'=>$users));
+else {
+    echo $this->renderPartial('_form', array('model'=>$model,'users'=>$users));
+}
+?>
