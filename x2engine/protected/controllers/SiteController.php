@@ -1973,7 +1973,8 @@ class SiteController extends x2base {
                     $new_user->emailAddress = $email;
                     $new_user->username = $user->given_name;
                     $new_user->lastName = $user->family_name;
-                    $new_user->firstName = explode(" ", $user->name)[0];
+                    $temp = explode(" ", $user->name);
+                    $new_user->firstName = $temp[0];
                     $new_user->status = 1;
                     $new_user->password = md5("sdf"); //TODO fix
                     $new_user->title = NULL;

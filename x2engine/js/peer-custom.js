@@ -36,7 +36,7 @@ function connect(c) {
             c.send(JSON.stringify({name: CONSTANTS.FULL_NAME}));
         });
         var chatbox = $('#chatbox').addClass('active').attr('id', c.peer);
-        // var messages = $('#message-box').html('<div><em>Peer connected.</em></div>');
+        var messages = $('#message-box').html('<div><em>Peer connected.</em></div>');
 
         // Select connection handler.
         chatbox.on('click', function() {
