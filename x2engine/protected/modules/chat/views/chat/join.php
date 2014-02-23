@@ -40,7 +40,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
 
 <!-- Make calls to others -->
   <b>Video Call: </b>
-  <div id="step2">
+  <div id="videoCallButton">
     <form id="video-call">
       <input type="button" value="Video Call" id="make-call" disabled="disabled">
     </div>
@@ -50,7 +50,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
   <div class="pure-u-2-3" id="video-container">
     My Video: <br>
     <video id="my-video" muted="true" autoplay></video>
-    
+
     <div id="their-video-container">
       Other Video: <br>
       <video id="their-video" autoplay></video>
@@ -60,17 +60,17 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
 
 
   <!-- Get local audio/video stream -->
-  <div id="step1">
+  <div id="getMedia">
     <p>Please click `allow` on the top of the screen so we can access your webcam and microphone for calls.</p>
-    <div id="step1-error">
+    <div id="getMedia-error">
       <p>Failed to access the webcam and microphone. Click allow when asked for permission by the browser.</p>
-      <a href="#" class="pure-button pure-button-error" id="step1-retry">Try again</a>
+      <a href="#" class="pure-button pure-button-error" id="getMedia-retry">Try again</a>
     </div>
   </div>
 
 
   <!-- Call in progress -->
-  <div id="step3">
+  <div id="endCallButton">
     <form>
       <input type="button" value="End Call" id="end-call">
     </form>

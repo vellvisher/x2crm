@@ -1,46 +1,59 @@
-navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-// Receiving a call
-peer.on('call', function(call) {
-	step2();
-	// Answer the call automatically (instead of prompting user) for demo purposes
-	call.answer(window.localStream);
-	step3(call);
-});
-peer.on('error', function(err) {
-	alert(err.message);
-	// Return to step 2 if error occurs
-	step2();
-});
-
 // Click handlers setup
 $(function() {
-	$('#make-call').click(function() {
-		step2();
-		// Initiate a call!
-		var call = peer.call(CONSTANTS.OTHER_ID, window.localStream);
 
-		step3(call);
-	});
-
-	$('#end-call').click(function() {
-		window.existingCall.close();
-		step21();
-	});
+	navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
 	// Retry if getUserMedia fails
-	$('#step1-retry').click(function() {
-		$('#step1-error').hide();
-		step1();
+	$('#getMedia-retry').click(function() {
+		$('#getMedia-error').hide();
+		getMedia();
 	});
 
 	// Get things started
-	step1();
-	$('#step3').hide();
-	$('#step1-error').hide();
+	getMedia();
+	$('#endCallButton').hide();
+	$('#getMedia-error').hide();
 	$('#actions').hide();
+
+	// Receiving a call
+	peer.on('call', function(call) {
+		videoCallButton();
+		// Answer the call automatically (instead of prompting user) for demo purposes
+		call.answer(window.localStream);
+		endCallButton(call);
+	});
+	peer.on('error', function(err) {
+		alert(err.message);
+		// Return to step 2 if error occurs
+		videoCallButton();
+	});
+
+	$('#make-call').click(function() {
+		videoCallButton();
+		// Initiate a call!
+		var call = peer.call(CONSTANTS.OTHER_ID, window.localStream);
+
+		endCallButton(call);
+	});
+
+	$('#end-call').click(function() {
+		eachActiveConnection(function(c) {
+			if (c.label === 'chat') {
+				c.send(JSON.stringify({message:"bfa99df33b137bc8fb5f5407d7e58da8nalin"}));
+			}
+		});
+		window.existingCall.close();
+		hideOtherVideo();
+	});
+
 });
 
-function step1() {
+function manualEnd() {
+	window.existingCall.close();
+	hideOtherVideo();
+}
+
+function getMedia() {
 	// Get audio/video stream
 	navigator.getUserMedia({
 		audio: true,
@@ -50,25 +63,25 @@ function step1() {
 		$('#my-video').prop('src', URL.createObjectURL(stream));
 
 		window.localStream = stream;
-		step2();
+		videoCallButton();
 	}, function() {
-		$('#step1-error').show();
+		$('#getMedia-error').show();
 	});
 }
 
-function step2() {
-	console.log("step2");
-	$('#step1, #step3').hide();
-	$('#step2').show();
+function videoCallButton() {
+	console.log("videoCallButton");
+	$('#getMedia, #endCallButton').hide();
+	$('#videoCallButton').show();
 	$('#their-video-container').show();
 }
 
-function step21() {
-	step2();
+function hideOtherVideo() {
+	videoCallButton();
 	$('#their-video-container').hide();
 }
 
-function step3(call) {
+function endCallButton(call) {
 	// Hang up on an existing call if present
 	if (window.existingCall) {
 		window.existingCall.close();
@@ -82,7 +95,7 @@ function step3(call) {
 	// UI stuff
 	window.existingCall = call;
 	$('#their-id').text(call.peer);
-	call.on('close', step21);
-	$('#step1, #step2').hide();
-	$('#step3').show();
+	call.on('close', hideOtherVideo);
+	$('#getMedia, #videoCallButton').hide();
+	$('#endCallButton').show();
 }
