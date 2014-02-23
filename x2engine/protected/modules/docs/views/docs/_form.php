@@ -1,104 +1,63 @@
-<?php
-
-$autosaveUrl = $this->createUrl('autosave').'?id='.$model->id; ?>
-
-
+<head>
 <?php
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/jquery.form.min.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/codemirror/lib/codemirror.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/firepad-min.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/codemirror.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/firepad.js', CClientScript::POS_END);
+// Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/firepad-min.js');
 Yii::app()->clientScript->registerCssFile(Yii::app()->baseUrl.'/css/codemirror.css');
 Yii::app()->clientScript->registerCssFile(Yii::app()->baseUrl.'/css/firepad.css');
 ?>
 
 <script>
     CONSTANTS = {}
-    CONSTANTS.FILE_ID = "something";
+    CONSTANTS.IS_CREATE = false;
+    <?php if ($model->isNewRecord) { ?>
+        CONSTANTS.IS_CREATE = true;
+    <?php } ?>
+    if (CONSTANTS.IS_CREATE) {
+        //TODO: Fix people getting the same id at the same time
+        CONSTANTS.FILE_ID = "newFile" + new Date().getTime();
+    }
 </script>
 
   <!-- Include Firebase -->
   <script src="https://cdn.firebase.com/v0/firebase.js"></script>
 
-  <style>
-    /* html { height: 100%; } */
-    /* body { margin: 0; height: 100%; position: relative; } */
-      /* Height / width / positioning can be customized for your use case.
-         For demo purposes, we make firepad fill the entire browser. */
-    /* .firepad { */
-    /*   position: absolute; left: 0; top: 0; bottom: 0; right: 0; height: auto; */
-    /* } */
-  </style>
 </head>
 
-<script>
-
+  <script>
+    function UNDO_MANAGER_LISTENER () {
+        if (!CONSTANTS.IS_CREATE) {
+            // $('#doc-rev-form-text').val(firepad.getHtml());
+            $('#doc-rev-form-text').val(btoa(firepad.getText()));
+            $('#doc-rev-form').ajaxSubmit({url:'saveRevision', type:'post', resetForm:true, success:function() {console.log('revision sent');},
+                error:function(data) {console.log(data, 'error');}});
+        }
+    }
     $(function() {
-        $('#editor-invite-box').autocomplete({
-            'minLength':'1',
-            'source':CONSTANTS.ALL_USERS
+        //// Initialize Firebase.
+        firepadRef = new Firebase('https://sweltering-fire-9736.firebaseio.com/firepads/' + CONSTANTS.FILE_ID);
+
+        //// Create CodeMirror (with lineWrapping on).
+        var codeMirror = CodeMirror(document.getElementById('firepad'), { lineWrapping: true });
+
+        //// Create Firepad (with rich text toolbar and shortcuts enabled).
+        firepad = Firepad.fromCodeMirror(firepadRef, codeMirror,
+            { richTextToolbar: true, richTextShortcuts: true });
+
+        //// Initialize contents.
+        firepad.on('ready', function() {
+            firepad.setHtml(
+                "<?php echo $model->text ?>");
+            $("#firepad").show();
+            firepad.codeMirror_.on('change', function() {
+                // $("#input").text(firepad.getHtml());
+                $("#input").text(firepad.getText());
+            });
         });
 
-        $('#editor-invite-form').ajaxForm({url:'invite', type:'post', resetForm:true, success:function() {alert('Invited!');},
-            error:function(data) {if(data.responseText == "duplicate") alert('This user has already been invited'); else alert('Sorry, could not post the invite...');}});
-    });
-
-</script>
-
-  <div id="firepad" style="display:none"></div>
-
-  <script>
-    //// Initialize Firebase.
-    var firepadRef = new Firebase('https://sweltering-fire-9736.firebaseio.com/firepads/' + CONSTANTS.FILE_ID);
-    // TODO: Replace above line with:
-    // var firepadRef = new Firebase('<YOUR FIREBASE URL>');
-
-    //// Create CodeMirror (with lineWrapping on).
-    var codeMirror = CodeMirror(document.getElementById('firepad'), { lineWrapping: true });
-
-    //// Create Firepad (with rich text toolbar and shortcuts enabled).
-    var firepad = Firepad.fromCodeMirror(firepadRef, codeMirror,
-        { richTextToolbar: true, richTextShortcuts: true });
-
-    //// Initialize contents.
-    firepad.on('ready', function() {
-        $("#firepad").show();
-        if (firepad.isHistoryEmpty()) {
-            firepad.setHtml(
-                "Your document should be here"
-            );
-      }
     });
   </script>
-
-<script>
-var typingTimer;
-
-function autosave() {
-	window.docEditor.updateElement();
-	$("#savetime").html("'.addslashes(Yii::t('app','Saving...')).'");
-	$.post("'.$autosaveUrl.'", $("form").serializeArray(), function(response) {
-		$("#savetime").html(response);
-	});
-}
-
-function setupAutosave() {
-	if($.browser.msie)
-		return;
-	// save after 1.5 seconds when the user is done typing
-
-	window.docEditor.document.on("keyup",function(e) {
-		clearTimeout(typingTimer);
-		typingTimer = setTimeout(autosave, 1500);
-	});
-	window.docEditor.on("saveSnapshot",function(e) {
-		clearTimeout(typingTimer);
-		typingTimer = setTimeout(autosave, 1500);
-	});
-	window.docEditor.document.on("keydown",function(){ clearTimeout(typingTimer); });
-};
-</script>
-
-<!-- Yii::app()&#45;>clientScript&#45;>registerScript('doc&#45;editor',$js,CClientScript::POS_READY); -->
 
 <?php
     $form = $this->beginWidget('CActiveForm', array(
@@ -139,11 +98,16 @@ function setupAutosave() {
 			echo $form->error($model,'editPermissions');
 		}
 		echo $form->error($model,'text');
-		echo $form->textArea($model,'text',array('id'=>'input'));
+		echo $form->textArea($model,'text',array('id'=>'input', 'style'=>'display:none'));
 		?>
 	</div>
-
+        <div id="firepad" style="display:none"></div>
 </div>
 <?php echo $form->error($model,'text'); ?>
 
 <?php $this->endWidget(); ?>
+<form style="display:none" id="doc-rev-form" action="saveRevision" method="post">
+    <input name="id" type="text" id="doc-rev-form-id" value="<?php echo $model->id ?>"></input>
+    <input name="doc-text" type="text" id="doc-rev-form-text"></input>
+    <input type="submit" ></input>
+</form>

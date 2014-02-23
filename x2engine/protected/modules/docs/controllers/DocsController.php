@@ -130,6 +130,28 @@ class DocsController extends x2base {
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
 	 */
+	public function actionFullViewRevision($id,$json=0) {
+        $rev = Yii::app()->db->createCommand()
+            ->select('id, doc_id, text')
+            ->where('id=:id', array(':id' => $id))
+            ->from('docs_revisions')
+            ->queryAll();
+        $rev = $rev[0];
+
+        //TODO: Add check for model view
+		// $model = $this->loadModel($id);
+
+        // if (!$this->checkViewPermissions($model)) {
+		// 	$this->redirect(array('docs/index'));
+        // }
+
+		echo $json ? CJSON::encode(array('body'=>$rev['text'],'subject'=>$model->subject)) : $rev['text'];
+	}
+
+	/**
+	 * Displays a particular model.
+	 * @param integer $id the ID of the model to be displayed
+	 */
 	public function actionFullView($id,$json=0) {
 		$model = $this->loadModel($id);
 
@@ -171,8 +193,10 @@ class DocsController extends x2base {
 
 			$arr = $model->editPermissions;
 			if(isset($arr))
-				if(is_array($arr))
+				if(is_array($arr)) {
+                    // TODO: Send notification to users
 					$model->editPermissions = Accounts::parseUsers($arr);
+                }
 
 			$model->createdBy = Yii::app()->user->getName();
 			$model->createDate = time();
@@ -393,6 +417,67 @@ class DocsController extends x2base {
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
 		}
+	}
+
+	public function actionDiff() {
+        // TODO: Major rework, replace with models
+        // TODO: Add permission check
+        $id = $_GET['id'];
+
+        $dbRevList = Yii::app()->db->createCommand()
+            ->select('id, doc_id, user_id, createDate')
+            ->where('doc_id=:id', array(':id' => $id))
+            ->order('id DESC')
+            ->from('docs_revisions')
+            ->queryAll();
+
+        $revIdArray = array();
+
+        foreach ($dbRevList as $dbRev) {
+            $rev = array();
+            $user_id_array = Yii::app()->db->createCommand()
+                    ->select('fullName')
+                    ->from('x2_profile')
+                    ->where('id=:id', array(':id'=>$dbRev['user_id']))
+                    ->queryRow();
+            if (count($user_id_array) != 1 || !isset($user_id_array['fullName'])) {
+                Yii::log('Could not get user id', 'error');
+                throw new CHttpException(400);
+            }
+            $rev['fullName'] = $user_id_array['fullName'];
+            $rev['id'] = $dbRev['id'];
+            $rev['date'] = date('d/m/Y h:i:s', $dbRev['createDate']);
+            $revIdArray[] = $rev['id'];
+            $revList[] = $rev;
+        };
+        $revIdArray = array_reverse($revIdArray);
+        Yii::log(json_encode($revIdArray), 'error');
+		$this->render('diff', array(
+            'revList' => $revList,
+            'revIdArray' => json_encode($revIdArray)
+		));
+
+		// if(isset($_POST['Docs'])) {
+		// 	$model->attributes = $_POST['Docs'];
+		// 	// $model = $this->updateChangeLog($model,'Edited');
+		// 	if($model->save()) {
+		// 		echo Yii::t('docs', 'Saved at') . ' ' . Yii::app()->dateFormatter->format(Yii::app()->locale->getTimeFormat('medium'), time());
+		// 	};
+		// }
+	}
+
+	public function actionSaveRevision() {
+        // TODO: Major rework, replace with models
+        $text = $_POST['doc-text'];
+        $id = $_POST['id'];
+
+        $users = Yii::app()->db->createCommand()
+            ->insert('docs_revisions', array(
+                'doc_id' => $id,
+                'user_id' => Yii::app()->params->profile->id,
+                'text' => $text,
+                'createDate' => time()
+            ));
 	}
 
 	public function actionAutosave($id) {

@@ -58,4 +58,9 @@ $this->actionMenu[] = array('label'=>Yii::t('docs','Export Doc'),'url'=>array('e
 ?>
 <div class="page-title icon docs"><h2><span class="no-bold"><?php echo $title; ?></span> <?php echo CHtml::encode($model->name); ?></h2></div>
 
-<?php echo $this->renderPartial('_form', array('model'=>$model)); ?>
+<?php
+if($model->type==='email' || $model->type ==='quote')
+    echo $this->renderPartial('_form_email', array('model'=>$model));
+else
+    echo $this->renderPartial('_form', array('model'=>$model));
+?>
