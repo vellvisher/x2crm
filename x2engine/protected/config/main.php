@@ -311,6 +311,9 @@ $config = array(
             'tableName' => 'x2_auth_cache',
         // 'autoCreateCacheTable'=>false,
         ),
+        'request' => array(
+            'enableCsrfValidation' => true,
+        ),
     ),
     // application-level parameters that can be accessed
     // using Yii::app()->params['paramName']
