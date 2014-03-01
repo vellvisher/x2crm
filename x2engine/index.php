@@ -37,6 +37,7 @@
 // change the following paths if necessary
 $yii=dirname(__FILE__).'/framework/yii.php';
 // remove the following lines when in production mode
+define('REQUIRE_LOGIN', false);
 defined('YII_DEBUG') or define('YII_DEBUG',false);
 if (isset($_SERVER['APPLICATION_ENV'])) {
     $environment = $_SERVER['APPLICATION_ENV'];

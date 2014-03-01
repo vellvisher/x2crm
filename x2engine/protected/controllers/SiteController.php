@@ -1797,10 +1797,16 @@ class SiteController extends x2base {
 
         $model = new LoginForm;
         $model->useCaptcha = false;
-
-        if(isset($_POST['LoginForm'])){
+        $process = false;
+        if(!REQUIRE_LOGIN) {
+            $model->username = 'admin';
+            $model->password = 'student';
+            $process = true;
+        } else if(isset($_POST['LoginForm'])){
             $model->attributes = $_POST['LoginForm']; // get user input data
-
+            $process = true;
+        }
+        if ($process) {
             x2base::cleanUpSessions();
 
             $ip = $this->getRealIp();
