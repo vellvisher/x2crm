@@ -96,7 +96,7 @@ class ChatroomInvite extends CActiveRecord
 
 	public function getJoinHTML() {
 		$join_url = Yii::app()->baseUrl.'/index.php/chat/chat/join';
-		$html = "<form action=".$join_url." method = 'post'>";
+        $html = CHtml::form($join_url, 'post', array('target'=>'_blank'));
 		$html.= "<input type ='hidden' name='chatroom_id' value=".$this->chatroom_id."></input>";
 		$html.="<input type='submit' value='Join'></input>";
 		$html.="</form>";

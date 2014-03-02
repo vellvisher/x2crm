@@ -40,7 +40,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
     Invite users to the chat from the box below:
     </p></span>
 
-    <form id="chat-invite-form">
+    <?php echo CHtml::form('', 'post', array('id'=>'chat-invite-form')); ?>
         <input id="chat-invite-box" name="username" type="text"/>
         <input type="hidden" id="chat-room-id" name="chatroom_id" value=""/>
         <input type="submit" value="Invite" id="chat-room-invite" disabled="disabled"/>
