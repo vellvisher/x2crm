@@ -22,9 +22,14 @@ Module Installation
 For the different modules,
 
 * Run modules/chat/data/install.sql
-* Run modules/editor/data/install.sql
 * Run modules/newsletters/data/install.sql
 * Run modules/advertise/data/install.sql
+* Run modules/docs/data/install_docs_revisions.sql
+
+Chat Module PeerJS Server
+-------------------------
+
+Follow the instructions to setup PeerJS [here](https://github.com/peers/peerjs-server) and then run `peerjs --port 9001 --key peerjs`
 
 Development Mode
 ----------------
