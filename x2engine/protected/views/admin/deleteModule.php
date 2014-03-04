@@ -39,7 +39,7 @@
 
     <?php echo Yii::t('admin', 'Please select a model to delete.  WARNING: This operation cannot be undone, be very careful.'); ?>
 
-    <form name="deleteModule" action="deleteModule" method="POST">
+    <?php echo CHtml::form('deleteModule', 'post', array('name'=>'deleteModule')); ?>
         <br />
         <select name="name">
             <?php foreach($modules as $name => $module)

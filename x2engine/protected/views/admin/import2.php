@@ -39,7 +39,8 @@
 <div class="page-title"><h2><?php echo Yii::t('admin', 'Import via {i2}',array('{i2}'=>'Import2')); ?></h2></div>
 
 <div class="form">
-	<form action="">
+
+    <?php echo CHtml::form('', 'post', array('id'=>'import2-form')); ?>
 		<script src="https://www.import2.com/assets/v1/import2.js"
 				data-api-token="<not given yet>"
 				data-destination-instance-url="<?php echo Yii::app()->baseUrl; ?>"

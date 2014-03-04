@@ -51,7 +51,7 @@
             </ul>
         </div><br>
     <?php } ?>
-    <form id="newModule" method="POST" action="createModule">
+    <?php echo CHtml::form('createModule', 'post', array('id'=>'newModule')); ?>
         <div class="row">
             <div class="cell" style="width:200px;"><label for="title"><?php echo Yii::t('module', 'Module Title'); ?> <span class="required">*</span></label><?php echo Yii::t('module', 'The name for your new module'); ?><br><input type="text" size="30" onFocus="toggleText(this);" onBlur="toggleText(this);" style="color:#aaa;" name="title" id="title" /></div>
             <div class="cell"><label for="recordName"><?php echo Yii::t('module', 'Item Name'); ?></label><?php echo Yii::t('module', '(Optional) What to call individual records, e.g. "Create new X"'); ?><br><input type="text" size="30" onFocus="toggleText(this);" onBlur="toggleText(this);" style="color:#aaa;" name="recordName" id="recordName" /></div>

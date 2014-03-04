@@ -38,7 +38,7 @@
 <div class="form">
 <?php echo Yii::t('admin','Please select a model to export.');?>
 
-<form name="exportModule" action="exportModule" method="POST">
+<?php echo CHtml::form('exportModule', 'post', array('name'=>'exportModule')); ?>
 	<br>
 	<select name="name">
 		<?php

@@ -143,7 +143,7 @@ if(isset($_GET['version'])){
 </div>
 <a style="float:right;position:relative;top:10px;" href="deleteVersion?version=<?php echo isset($_GET['version'])?$_GET['version']:'';?>" class="x2-button">Delete Selected Version</a>
 </div>
-<form method="POST" onsubmit="calculateValues();">
+<?php echo CHtml::form('', 'post', array('onsubmit'=>'calculateValues()')); ?>
 <input type="hidden" name="coordinates" id="coordinates" value="" />
 <input type="hidden" name="sizes" id="sizes" value="" />
 <input type="hidden" name="names" id="names" value="" />
@@ -151,7 +151,7 @@ if(isset($_GET['version'])){
 <input type="hidden" name="order" id="order" value="" />
 <input type="submit" style="position:absolute;bottom:50px;"  class="x2-button" value="Save" />
 </form>
-<form method="POST" onsubmit="calculateValues();" action="saveVersion" style="position:absolute;bottom:100px;">
+<?php echo CHtml::form('saveVersion', 'post', array('onsubmit'=>'calculateValues()', 'style'=>"position:absolute;bottom:100px;")); ?>
 <input type="hidden" name="coordinates" id="coordinates2" value="" />
 <input type="hidden" name="sizes" id="sizes2" value="" />
 <input type="hidden" name="names" id="names2" value="" />

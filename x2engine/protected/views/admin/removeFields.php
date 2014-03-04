@@ -39,7 +39,7 @@
 <?php echo Yii::t('admin','This form will allow you to remove any custom fields you have added.'); ?>
 <br>
 <b style="color:red;"><?php echo Yii::t('admin','ALL DATA IN DELETED FIELDS WILL BE LOST.'); ?></b>
-<form name="removeFields" action="removeField" method="POST">
+<?php echo CHtml::form('removeField', 'post', array('name'=>'removeFields')); ?>
 	<br>
 	<select name="field">
             <option value=""><?php echo Yii::t('admin','Select A Field');?></option>
