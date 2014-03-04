@@ -1,6 +1,6 @@
 // Connect to PeerJS, have server assign an ID instead of providing one
 // Showing off some of the configs available with PeerJS :).
-HOST_NAME = 'localhost';
+HOST_NAME = '/';
 PEER_SERVER_PORT = 9001;
 var peer = new Peer({
     // Set API key for cloud server (you don't need this if you're running your
