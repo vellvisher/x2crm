@@ -14,7 +14,7 @@ $this->beginWidget('zii.widgets.jui.CJuiDialog', array(
 	'htmlOptions'=>array('class'=>'form no-border')
 ));
 ?>
-<form>
+<?php echo CHtml::form('', 'post', array('id'=>'workflow_form')); ?>
 <div class="row"><?php echo Yii::t('workflow','Please summarize how this stage was completed.'); ?></div>
 <div class="row">
 	<?php

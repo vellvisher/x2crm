@@ -64,7 +64,7 @@ $docContainerOuterHeight .= 'px';
 		<div id="docview-box-outer" style="height: <?php echo $docBoxOuterHeight; ?>; margin-bottom: 5px;">
 			<div id="docview-box" style="height: <?php echo $docBoxHeight; ?>"></div>
 		</div>
-		<form id="docview-input">
+        <?php echo CHtml::form('', 'post', array('id'=>'docview-input')); ?>
 			<label><?php echo Yii::t("app", "Enter Title"); ?></label>
 			<input id="docview-title" type="text">
 		</form>

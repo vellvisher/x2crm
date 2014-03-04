@@ -86,7 +86,7 @@ if(isset($associationModel) && $model->associationType=='contacts') {
 </div>
 
 <div class="form" id="action-form">
-	<form id="complete-action" name="complete-action" action="complete/<?php echo $model->id; ?>" method="POST">
+    <?php echo CHtml::form('complete/'.$model->id, 'post', array('id'=>'complete-action', 'name' => 'complete-action')); ?>
 		<b><?php echo Yii::t('actions','Completion Notes'); ?></b>
 		<textarea name="note" rows="4" ></textarea>
 <?php
