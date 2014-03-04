@@ -155,7 +155,7 @@ $(function() {
 	'users'=>User::getNames(),
 )); ?>
 </div><!-- search-form -->
-<form>
+<?php echo CHtml::form('', 'post'); ?>
 <?php
 $listActions = '<div class="list-actions">'.CHtml::link(Yii::t('app','New List From Selection'),'#',array('id'=>'createList','class'=>'list-action'));
 
