@@ -25,7 +25,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
 </div>
 
 <div id="actions" style="padding:5px;">
-    <form id="send" action="">
+    <?php echo CHtml::form('', 'post', array('id'=>'send')); ?>
         <table><tr>
                 <td>
                     <input type="text" id="text" size="100" placeholder="Enter message">
@@ -45,7 +45,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
 
 <!-- Make calls to others -->
   <div id="videoCallButton">
-    <form id="video-call" action="">
+    <?php echo CHtml::form('', 'post', array('id'=>'video-call')); ?>
       <input type="button" value="Start Video Call" id="make-call" disabled="disabled">
     </form>
     </div>
@@ -73,7 +73,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
 
   <!-- Call in progress -->
   <div id="endCallButton">
-    <form action="">
+    <?php echo CHtml::form('', 'post', array('id'=>'end-call-form')); ?>
       <input type="button" value="End Call" id="end-call">
     </form>
   </div>
