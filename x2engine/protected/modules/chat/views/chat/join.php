@@ -25,15 +25,15 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
 </div>
 
 <div id="actions" style="padding:5px;">
-  <table><tr>
-    <form id="send">
-        <td>
-            <input type="text" id="text" size="100" placeholder="Enter message">
-        </td></tr><tr><td>
-            <input class="button" type="submit" value="Send" id="send-button" disabled="disabled">
-        </td>
+    <form id="send" action="">
+        <table><tr>
+                <td>
+                    <input type="text" id="text" size="100" placeholder="Enter message">
+                </td></tr><tr><td>
+                    <input class="button" type="submit" value="Send" id="send-button" disabled="disabled">
+                </td></tr>
+        </table>
     </form>
-  </table>
 
   <div id="wrap"><div id="connections"><span class="filler">You have not yet
         made any connections.</span><div id="chatbox"><div class="messages" id="message-box"></div></div></div>
@@ -45,8 +45,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
 
 <!-- Make calls to others -->
   <div id="videoCallButton">
-    <form id="video-call">
+    <form id="video-call" action="">
       <input type="button" value="Start Video Call" id="make-call" disabled="disabled">
+    </form>
     </div>
 
     <!-- video call -->
@@ -72,7 +73,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/video-chat
 
   <!-- Call in progress -->
   <div id="endCallButton">
-    <form>
+    <form action="">
       <input type="button" value="End Call" id="end-call">
     </form>
   </div>
