@@ -156,7 +156,7 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
     echo '<div class="flash-' . $key . '">' . $message . "</div>\n";
 } ?>
 
-<form name="<?php echo $type; ?>" action="<?php echo $this->createUrl($type); ?>" method="POST" onsubmit="return validate();">
+<?php echo CHtml::form($this->createUrl($type), 'post', array('name'=>$type, 'onsubmit'=>"return validate()")); ?>
 	<?php if ($type == 'weblead') { ?>
 	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('firstName'); ?>: *</b><br /> <input style="width:170px;" type="text" id="firstName" name="Contacts[firstName]" /><br /></div>
 	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('lastName'); ?>: *</b><br /> <input style="width:170px;" type="text" id="lastName" name="Contacts[lastName]" /><br /></div>

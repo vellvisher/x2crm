@@ -14,7 +14,7 @@ $this->actionMenu = $this->formatMenu(array(
 ?>
 <div class="page-title icon users"><h2><?php echo Yii::t('users','Invite Users to X2CRM'); ?></h2></div>
 
-<form method="POST">
+<?php echo CHtml::form('', 'post', array('id'=>'invi-form')); ?>
 <div class="form">
 <h2><?php echo Yii::t('users','Instructions'); ?></h2>
 <?php echo Yii::t('users','Please enter a list of e-mails separated by commas.'); ?>

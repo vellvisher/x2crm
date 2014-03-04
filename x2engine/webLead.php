@@ -38,7 +38,7 @@ thefield.value = ""
 <body>
 <h3 id="contact-header">Contact Us:</h3>
 
-<form name="leadCapture" action="leadCapture.php" method="POST">
+<?php echo CHtml::form('leadCapture.php', 'post', array('name'=>'leadCapture')); ?>
     <div class="row"><b>First Name: *</b><br /> <input style="width:170px;" type="text" name="firstName" /><br /></div>
     <div class="row"><b>Last Name: *</b><br /> <input style="width:170px;" type="text" name="lastName" /><br /></div>
     <div class="row"><b>E-Mail Address: *</b><br /> <input style="width:170px;" type="text" name="email" /><br /></div>

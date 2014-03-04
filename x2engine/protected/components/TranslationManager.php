@@ -56,8 +56,6 @@ function encodeQuotes($str) {
 	// return preg_replace('/"/','&quot;',$str);
 }
 
-// echo '<form method="POST" action="translationManager.php"><input size="180" name="test" type="text" value="'.encodeQuotes($test).'"></form>';
-
 // die();
 
 if(!isset($messagePath))
@@ -374,7 +372,7 @@ function removeLine(object) {
 <!-- Main window - view, edit and translations -->
 <div class="content-container">
 <div class="content">
-<form method="POST" action="<?php echo Yii::app()->request->scriptUrl.'/admin/translationManager?file='.$targetFile; ?>" id="translationForm">
+<?php echo CHtml::form(Yii::app()->request->scriptUrl.'/admin/translationManager?file='.$targetFile, 'post', array('id'=>'translationForm')); ?>
 <input type="hidden" name="file" value="<?php echo $_GET['file']; ?>">
 <table class="rounded" style="table-layout:fixed;">
 	<tr>

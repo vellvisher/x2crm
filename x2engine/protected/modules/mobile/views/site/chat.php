@@ -96,7 +96,7 @@ $.ajax({'type':'POST','url':'<?php echo $this->createUrl('site/newMessage'); ?>'
 <div data-role="collapsible" data-collapsed="true">
     <h3><?php echo Yii::t('mobile', 'Create Message'); ?></h3>
     <p>
-    <form id="x2chatform">
+    <?php echo CHtml::form('', 'post', array('id'=>'x2chatform')); ?>
         <div data-role="fieldcontain">
             <?php echo CHtml::textArea('message'); ?>
         </div>

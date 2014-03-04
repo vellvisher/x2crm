@@ -74,7 +74,9 @@
 			<?php } ?>
 		</tbody>
 	</table>
-	<p><form action="<?php echo Yii::app()->controller->createUrl("/profile/plugins?action=upload"); ?>" method="post" enctype="multipart/form-data">
+    <p>
+
+<?php echo CHtml::form(Yii::app()->controller->createUrl("/profile/plugins?action=upload"), 'post', array('enctype'=>'multipart/form-data')); ?>
 		<label for="file">Upload Plugin:</label>
 		<input type="file" name="file" id="file"><br>
 		<input type="submit" name="submit" value="Submit">

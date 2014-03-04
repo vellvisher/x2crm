@@ -151,7 +151,7 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
     echo '<div class="flash-' . $key . '">' . $message . "</div>\n";
 } ?>
 
-<form name="<?php echo $type; ?>" action="<?php echo $this->createUrl($type); ?>" method="POST">
+<?php echo CHtml::form($this->createUrl($type), 'post', array('name'=>$type)); ?>
 	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('firstName'); ?>: *</b><br /> <input style="width:170px;" type="text" name="Services[firstName]" /><br /></div>
 	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('lastName'); ?>: *</b><br /> <input style="width:170px;" type="text" name="Services[lastName]" /><br /></div>
 	<div class="row"><b><?php echo Contacts::model()->getAttributeLabel('email'); ?>: *</b><br /> <input style="width:170px;" type="text" name="Services[email]" /><br /></div>

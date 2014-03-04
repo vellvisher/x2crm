@@ -112,7 +112,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->baseUrl.'/css/firepad.css'
 <a id="revision-history" class="x2-button float" href="<?php echo $this->createUrl('/docs/diff/'.$model->id) ?>">Revision History</a>
 
 <?php $this->endWidget(); ?>
-<form style="display:none" id="doc-rev-form" action="saveRevision" method="post">
+<?php echo CHtml::form('saveRevision', 'post', array('id'=>'doc-rev-form', 'style'=>'display:none')); ?>
     <input name="id" type="text" id="doc-rev-form-id" value="<?php echo $model->id ?>"></input>
     <input name="doc-text" type="text" id="doc-rev-form-text"></input>
     <input type="submit" ></input>

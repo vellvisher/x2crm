@@ -35,7 +35,7 @@
  *****************************************************************************************/
 $totalITEMS = $widget->dataProvider->getTotalItemCount();
 $position = $index+1;
-$menu = '<form name="form1">\n<select name="menu'.$data->name.'" id="menu">';
+$menu = CHtml::form('', 'post', array('name'=>'form1')).'\n<select name="menu'.$data->name.'" id="menu">';
 for($i = 1; $i <= $totalITEMS; $i+=1){
     $indexPLUS = $index+1;
     $selected = '';

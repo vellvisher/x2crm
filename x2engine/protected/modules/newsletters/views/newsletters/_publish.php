@@ -1,5 +1,5 @@
 <div id="publish-dialog" title="Basic dialog" style="display:none;">
-    <form action='<?php echo $action;?>' method="post">
+    <?php echo CHtml::form($action, 'post', array()); ?>
         <table>
             <tr>
                 <td><label>Start Date</label></td>
