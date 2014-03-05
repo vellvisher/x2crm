@@ -694,7 +694,7 @@ class CalendarController extends x2base {
     public function actionJsonFeedGoogle($calendarId){
         $calendar = X2Calendar::model()->findByPk($calendarId);
         $events = array();
-        if($calendar->googleCalendarId){
+        if($calendar && $calendar->googleCalendarId){
             $googleCalendar = $calendar->getGoogleCalendar();
             $googleEvents = $googleCalendar->events->listEvents($calendar->googleCalendarId);
             foreach($googleEvents['items'] as $googleEvent){
