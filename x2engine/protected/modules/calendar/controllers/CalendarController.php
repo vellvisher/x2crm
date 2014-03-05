@@ -412,6 +412,28 @@ class CalendarController extends x2base {
         return $clause;
     }
 
+  /**
+     * Retrieve calendar events for a given user happening between two specified
+     * dates.
+     * @param string|integer $calendarUser Username or group ID whose calendar
+     *  events are to be loaded and returned
+     * @param type $start Beginning time range
+     * @param type $end End time range
+     * @return array An array of action records
+     */
+    public function calendarActions($calendarUser,$start,$end) {
+        $loggedInUser = User::model()->findByPk(Yii::app()->user->id); // get logged in user profile
+        $filter = explode(',',$loggedInUser->calendarFilter); // action types user doesn't want filtered
+        $action = new Actions;
+        $criteria = $action->getAccessCriteria();
+        $criteria->compare('assignedTo', $calendarUser);
+        $criteria->addCondition(self::constructFilterClause($filter));
+        $criteria->addCondition("`type` IS NULL OR `type`='' OR `type`!='quotes'");
+        $criteria->addCondition('(`dueDate` >= :start1 AND `dueDate` <= :end1) OR (`completeDate` >= :start2 AND `completeDate` <= :end2)');
+        $criteria->params = array_merge($criteria->params,array(':start1'=>$start,':start2'=>$start,':end1'=>$end,':end2'=>$end));
+        return Actions::model()->with('actionText')->findAll($criteria);
+    }
+
     /**
      * $user - string - username
      * $start, $end - unix timestamp - fetch actions between these dates
@@ -419,25 +441,9 @@ class CalendarController extends x2base {
      * return a json string of actions associated with the specified user
      */
     public function actionJsonFeed($user, $start, $end){
-        $loggedInUser = User::model()->findByPk(Yii::app()->user->id); // get logged in user profile
-        $filter = explode(',', $loggedInUser->calendarFilter); // action types user doesn't want filtered
-        $possibleFilters = X2Calendar::getCalendarFilterNames(); // action types that can be filtered
-        // SQL where clause
-        $where = "(assignedTo=\"$user\") "; // must be assigned to $user
-        $where .= "AND ".self::constructFilterClause($filter);
-        $where .= " AND (type IS NULL OR type != \"quotes\") ";
-        $where .= "AND (";
-        $where .= "(dueDate >= $start AND dueDate <= $end) OR (completeDate >= $start AND completeDate <= $end)"; // actions that happen between $start and $end
-        $where .= ")";
-
-        // get actions assigned to user
-        $actions = Yii::app()->db->createCommand()
-                ->select('id, visibility, assignedTo, complete, type, (SELECT text FROM x2_action_text a WHERE a.actionId = id) AS actionDescription, dueDate, completeDate, associationType, associationName, associationId, allDay, color')
-                ->from('x2_actions')
-                ->where($where)
-                ->queryAll();
-
+        $actions = $this->calendarActions($user, $start, $end);
         $events = array();
+
         foreach($actions as $action){
             if($action['visibility'] >= 1 || // don't show private actions,
                     $action['assignedTo'] == Yii::app()->user->name || // unless they belong to current user
@@ -521,27 +527,9 @@ class CalendarController extends x2base {
     }
 
     public function actionJsonFeedGroup($groupId, $start, $end){
-
-        $user = User::model()->findByPk(Yii::app()->user->id); // get user profile
-        $filter = explode(',', $user->calendarFilter); // action types user doesn't want filtered
-        $possibleFilters = X2Calendar::getCalendarFilterNames(); // action types that can be filtered
-        // SQL where clause
-        $where = "(assignedTo=\"$groupId\") "; // must be assigned to $user
-        $where .= "AND ".self::constructFilterClause($filter);
-        $where .= " AND (type IS NULL OR type != \"quotes\") ";
-        $where .= "AND (";
-        $where .= "(dueDate >= $start AND dueDate <= $end) OR (completeDate >= $start AND completeDate <= $end)"; // actions that happen between $start and $end
-        $where .= ")";
-
-        // get actions assigned to user
-        $actions = Yii::app()->db->createCommand()
-                ->select('a.id, a.visibility, a.assignedTo, a.complete, a.type, a.dueDate, a.completeDate, a.associationType, a.associationName, a.associationId, a.allDay, a.color,t.text')
-                ->from('x2_actions AS a')
-                ->join('x2_action_text AS t', 't.actionId=a.id')
-                ->where($where)
-                ->queryAll();
-
+        $actions = $this->calendarActions($groupId,$start,$end);
         $events = array();
+
         foreach($actions as $action){
             if($action['visibility'] >= 1 || // don't show private actions,
                     $action['assignedTo'] == Yii::app()->user->name || // unless they belong to current user
