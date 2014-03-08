@@ -48,25 +48,10 @@ class OnlineUsers extends X2Widget {
 
 	public function run() {
 		x2base::cleanUpSessions();
-
-		// $criteria = new CDbCriteria(array('condition'=>'','distinct'=>true)
-
-
-		// $sessions = Session::model()->findAll($criteria);
-		// $str = "";
-		// foreach($sessions as $session) {
-			// if(time()-$session->lastUpdated<(15*60)) {
-				// $str.=$session->user.", ";
-			// }
-		// }
-		// if($str!="") {
-			// $str=substr($str,0,-2);
-		// }
-
 		$onlineUsers = User::getUserLinks(Session::getOnlineUsers());
 
 		$this->render('onlineUsers',array(
 			'users'=>$onlineUsers,
-		)); //array(
+		));
 	}
 }
