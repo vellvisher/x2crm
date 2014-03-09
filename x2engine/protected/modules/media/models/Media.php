@@ -90,7 +90,8 @@ class Media extends X2Model {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('fileName', 'unique', 'on' => 'themeCreate')
+            array('fileName', 'unique', 'on' => 'themeCreate'),
+            array('description','filter','filter'=>array($obj=new CHtmlPurifier(),'purify'))
         );
     }
 
