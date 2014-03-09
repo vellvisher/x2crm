@@ -63,44 +63,6 @@ $('.search-form form').submit(function(){
 )); ?>
 </div><!-- search-form -->
 <?php
-//	$this->widget('zii.widgets.grid.CGridView', array(
-//	'id'=>'docs-grid',
-//	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-//	'template'=> '<div class="page-title"><h2>'.Yii::t('docs','Documents').'</h2><div class="title-bar">'
-//		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-//		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1))
-//		.'{summary}</div></div>{items}{pager}',
-//	'dataProvider'=>$model->search(),
-//	'filter'=>$model,
-//	'columns'=>array(
-//		array(
-//			'name'=>'name',
-//			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
-//			'type'=>'raw',
-//			'htmlOptions'=>array('width'=>'30%'),
-//		),
-//		array(
-//			'name'=>'createdBy',
-//			'value'=>'User::getUserLinks($data->createdBy)',
-//			'type'=>'raw',
-//		),
-//		array(
-//			'name'=>'updatedBy',
-//			'value'=>'User::getUserLinks($data->updatedBy)',
-//			'type'=>'raw',
-//		),
-//		array(
-//			'name'=>'createDate',
-//			'type'=>'raw',
-//			'value'=>'Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data->createDate)',
-//		),
-//		array(
-//			'name'=>'lastUpdated',
-//			'type'=>'raw',
-//			'value'=>'Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data->lastUpdated)',
-//		),
-//	),
-//));
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').unbind('click').click(function(){
