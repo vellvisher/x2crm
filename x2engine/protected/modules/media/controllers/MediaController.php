@@ -278,57 +278,6 @@ class MediaController extends x2base {
         ));
     }
 
-//    public function actionTestDrive(){
-//        $admin = Yii::app()->params->admin;
-//        if(isset($_REQUEST['logout'])){
-//            unset($_SESSION['access_token']);
-//        }
-//        require_once('protected/components/GoogleAuthenticator.php');
-//        $auth = new GoogleAuthenticator();
-//        if($auth->getAccessToken()){
-//            $service = $auth->getDriveService();
-//        }
-//        $createdFile = null;
-//        if(isset($service, $_SESSION['access_token'], $_FILES['upload'])){
-//            $file = new Google_DriveFile();
-//            $file->setTitle($_FILES['upload']['name']);
-//            $file->setDescription('Uploaded by X2CRM');
-//            $file->setMimeType($_FILES['upload']['type']);
-//
-//            $data = file_get_contents($_FILES['upload']['tmp_name']);
-//            try{
-//                $createdFile = $service->files->insert($file, array(
-//                    'data' => $data,
-//                    'mimeType' => $_FILES['upload']['type'],
-//                        ));
-//                if(is_array($createdFile)){
-//                    $media = new Media;
-//                    $media->fileName = $createdFile['id'];
-//                    $media->title = $createdFile['title'];
-//                    $media->associationType = 'Contacts';
-//                    $media->associationId = 955;
-//                    $media->uploadedBy = Yii::app()->user->getName();
-//                    $media->mimetype = $createdFile['mimeType'];
-//                    $media->filesize = $createdFile['fileSize'];
-//                    $media->drive = 1;
-//                    $media->save();
-//                }
-//            }catch(Google_AuthException $e){
-//                unset($_SESSION['access_token']);
-//                $auth->setErrors($e->getMessage());
-//                $service = null;
-//                $createdFile = null;
-//            }
-//        }
-//
-//        $this->render('testDrive', array(
-//            'auth' => $auth,
-//            'createdFile' => $createdFile,
-//            'service' => isset($service) ? $service : null,
-//            'baseFolder' => isset($service) ? $this->printFolder('root', $auth) : null
-//        ));
-//    }
-
     public function actionRecursiveDriveFiles($folderId){
         $ret = $this->printFolder($folderId);
         echo $ret;
