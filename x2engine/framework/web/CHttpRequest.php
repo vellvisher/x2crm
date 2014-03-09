@@ -478,19 +478,24 @@ class CHttpRequest extends CApplicationComponent
 	 * The implementation of this method referenced Zend_Controller_Request_Http in Zend Framework.
 	 * @return string the request URI portion for the currently requested URL.
 	 * @throws CException if the request URI cannot be determined due to improper server configuration
-	 */
+   */
+
+  private function stripSingleQuotes($str) {
+    return str_replace("'", "", $str);
+  }
+
 	public function getRequestUri()
 	{
 		if($this->_requestUri===null)
-		{
+    {
 			if(isset($_SERVER['HTTP_X_REWRITE_URL'])) // IIS
-				$this->_requestUri=$_SERVER['HTTP_X_REWRITE_URL'];
+				$this->_requestUri = $this->stripSingleQuotes($_SERVER['HTTP_X_REWRITE_URL']);
 			elseif(isset($_SERVER['REQUEST_URI']))
 			{
-				$this->_requestUri=$_SERVER['REQUEST_URI'];
+				$this->_requestUri = $this->stripSingleQuotes($_SERVER['REQUEST_URI']);
 				if(!empty($_SERVER['HTTP_HOST']))
 				{
-					if(strpos($this->_requestUri,$_SERVER['HTTP_HOST'])!==false)
+          if(strpos($this->_requestUri,$_SERVER['HTTP_HOST'])!==false)
 						$this->_requestUri=preg_replace('/^\w+:\/\/[^\/]+/','',$this->_requestUri);
 				}
 				else
@@ -498,9 +503,9 @@ class CHttpRequest extends CApplicationComponent
 			}
 			elseif(isset($_SERVER['ORIG_PATH_INFO']))  // IIS 5.0 CGI
 			{
-				$this->_requestUri=$_SERVER['ORIG_PATH_INFO'];
+				$this->_requestUri=$this->stripSingleQuotes($_SERVER['ORIG_PATH_INFO']);
 				if(!empty($_SERVER['QUERY_STRING']))
-					$this->_requestUri.='?'.$_SERVER['QUERY_STRING'];
+					$this->_requestUri.='?'.$this->stripSingleQuotes($_SERVER['QUERY_STRING']);
 			}
 			else
 				throw new CException(Yii::t('yii','CHttpRequest is unable to determine the request URI.'));
