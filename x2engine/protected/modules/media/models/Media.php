@@ -91,7 +91,9 @@ class Media extends X2Model {
         // will receive user inputs.
         return array(
             array('fileName', 'unique', 'on' => 'themeCreate'),
-            array('description','filter','filter'=>array($obj=new CHtmlPurifier(),'purify'))
+            array('description','filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('associationId','filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('associationType','filter','filter'=>array($obj=new CHtmlPurifier(),'purify'))
         );
     }
 
