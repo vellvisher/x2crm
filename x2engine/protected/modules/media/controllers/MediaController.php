@@ -61,11 +61,10 @@ class MediaController extends x2base {
      * Forces download of specified media file
      */
     public function actionDownload($id){
-        $model = $this->loadModel($id);
+        $model = $this->loadModel(intval($id));
         $file = Yii::app()->file->set($model->getPath());
         if($file->exists)
             $file->send();
-        //Yii::app()->getRequest()->sendFile($model->fileName,@file_get_contents($fileName));
         $this->redirect(array('view', 'id' => $id));
     }
 
