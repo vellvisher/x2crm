@@ -183,25 +183,6 @@ class DashboardController extends x2base {
 			'users'=>$users,
 		));
     }
-	/*
-	public function actionSaveChanges($id) {
-		$account=$this->loadModel($id);
-		if(isset($_POST['Accounts'])) {
-			$temp=$account->attributes;
-			foreach($account->attributes as $field=>$value){
-                            if(isset($_POST['Accounts'][$field])){
-                                $account->$field=$_POST['Accounts'][$field];
-                            }
-                        }
-
-			// process currency into an INT
-			$account->annualRevenue = Formatter::parseCurrency($account->annualRevenue,false);
-			$changes=$this->calculateChanges($temp,$account->attributes, $account);
-			$account=$this->updateChangelog($account,$changes);
-			$account->update();
-			$this->redirect(array('view','id'=>$account->id));
-		}
-    }*/
 
 	public function actionRemoveUser($id) {
 
@@ -239,8 +220,7 @@ class DashboardController extends x2base {
 		));
 	}
         
-        public function delete($id){
-            
+    public function delete($id){
             $model=$this->loadModel($id);
             $dataProvider=new CActiveDataProvider('Actions', array(
                 'criteria'=>array(

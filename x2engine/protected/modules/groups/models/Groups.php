@@ -70,6 +70,7 @@ class Groups extends X2Model {
 		return array(
 			array('name', 'required'),
 			array('name', 'length', 'max'=>259),
+            array('name','filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, name', 'safe', 'on'=>'search'),

@@ -209,8 +209,8 @@ class GroupsController extends x2base {
 				'dataProvider'=>$dataProvider,
 		));
 	}
-        
-	public function actionGetGroups() {	
+
+	public function actionGetGroups() {
 		$checked = false;
 		if(isset($_POST['checked'])) // coming from a group checkbox?
 			$checked = json_decode($_POST['checked']);
@@ -218,9 +218,7 @@ class GroupsController extends x2base {
 			$checked = true;
 
 		$id = null;
-		if(isset($_POST['field']))
-			$id = $_POST['field'];
-		
+
 		$options = array();
 		if($checked) { // group checkbox checked, return list of groups
 			echo CHtml::listOptions($id,Groups::getNames(),$options);

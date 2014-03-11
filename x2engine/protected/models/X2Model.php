@@ -1067,66 +1067,6 @@ abstract class X2Model extends CActiveRecord {
                                     'id' => $field->modelName.'_'.$fieldName.'_assignedToDropdown',
                                     'multiple' => ($field->linkType == 'multiple' ? 'multiple' : null),
                                         ), $htmlOptions));
-            /*
-              $group = is_numeric($this->$fieldName);
-              // if(is_numeric($this->assignedTo)){
-              // $group=true;
-              // $groups=Groups::getNames();
-              // }else{
-              // $group=false;
-              // }
-              if (is_array($this[$fieldName]))
-              $this[$fieldName] = implode(', ', $this[$fieldName]);
-
-              if (empty($this->$fieldName))
-              $this->$fieldName = Yii::app()->user->getName();
-              return CHtml::activeDropDownList($this, $fieldName, $group ? Groups::getNames() : User::getNames(), array_merge(array(
-              // 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-              // 'disabled'=>$item['readOnly']? 'disabled' : null,
-              'title' => $field->attributeLabel,
-              'id' => $field->modelName . '_' . $fieldName . '_assignedToDropdown',
-              'multiple' => ($field->linkType == 'multiple' ? 'multiple' : null),
-              ), $htmlOptions))
-              /* x2temp
-              . '<div class="checkboxWrapper">'
-              . CHtml::checkBox('group', $group, array_merge(array(
-              // array(
-              // 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-              // 'disabled'=>$item['readOnly']? 'disabled' : null,
-              'title' => $field->attributeLabel,
-              'id' => $field->modelName . '_' . $fieldName . '_groupCheckbox',
-              'ajax' => array(
-              'type' => 'POST', //request type
-              'url' => Yii::app()->controller->createUrl('/groups/getGroups'), //url to call.
-              'update' => '#' . $field->modelName . '_' . $fieldName . '_assignedToDropdown', //selector to update
-              'data' => 'js:{checked: $(this).attr("checked")=="checked", field:"' . $this->$fieldName . '"}',
-              'complete' => 'function(){
-              if($("#' . $field->modelName . '_' . $fieldName . '_groupCheckbox").attr("checked")!="checked"){
-              $("#' . $field->modelName . '_' . $fieldName . '_groupCheckbox").attr("checked","checked");
-              $("#' . $field->modelName . '_' . $fieldName . '_visibility option[value=\'2\']").remove();
-              }else{
-              $("#' . $field->modelName . '_' . $fieldName . '_groupCheckbox").removeAttr("checked");
-              $("#' . $field->modelName . '_' . $fieldName . '_visibility").append(
-              $("<option></option>").val("2").html("User\'s Groups")
-              );
-              }
-              }')
-              ), array_merge($htmlOptions, array('style' => 'margin-left:10px;'))))
-              . '<label for="group" class="groupLabel">' . Yii::t('app', 'Group?') . '</label></div>';
-              /* end x2temp
-
-              // case 'association':
-              // if($field->linkType!='multiple') {
-              // return CHtml::activeDropDownList($this, $fieldName, $contacts,array_merge(array(
-              // 'title'=>$field->attributeLabel,
-              // ),$htmlOptions));
-              // } else {
-              // return CHtml::activeListBox($this, $fieldName, $contacts,array_merge(array(
-              // 'title'=>$field->attributeLabel,
-              // 'multiple'=>'multiple',
-              // ),$htmlOptions));
-              // }
-             */
             case 'optionalAssignment': // optional assignment for users (can be left blank)
 
                 $users = User::getNames();
