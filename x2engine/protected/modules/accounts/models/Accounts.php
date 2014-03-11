@@ -254,7 +254,28 @@ class Accounts extends X2Model {
 		$criteria = new CDbCriteria;
 		return $this->searchBase($criteria);
 	}
-
+	
+	/**
+     * @return array validation rules for model attributes.
+     */
+    public function rules(){
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return array(
+            array('name', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('country', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('zipcode', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('state', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('city', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('address', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('parentAccount', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('website', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('type', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('phone', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('description', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify'))
+        );
+    }
+	
     public function searchList($id, $pageSize=null) {
 		$list = X2List::model()->findByPk($id);
 

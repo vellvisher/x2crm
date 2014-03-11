@@ -75,6 +75,27 @@ class BugReports extends X2Model {
 		$criteria=new CDbCriteria;
 		return $this->searchBase($criteria);
 	}
+	
+	/**
+     * @return array validation rules for model attributes.
+     */
+    public function rules(){
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return array(
+            array('status', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('phpVersion', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('file', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('x2Version', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('type', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('errorCode', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('line', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('subject', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('description', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('duplicate', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('blocks', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify'))
+        );
+    }
 
     public function afterFind(){
         if($this->id!=$this->name){
