@@ -62,7 +62,7 @@ class ActionText extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-
+			array('text', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify'))
         );
 	}
 
