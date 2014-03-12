@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->pageTitle = $model->name;
+$this->pageTitle = CHtml::encode($model->name);
 
 $authParams['assignedTo'] = $model->createdBy;
 $this->actionMenu = $this->formatMenu(array(

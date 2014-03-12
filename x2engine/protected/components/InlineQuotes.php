@@ -180,7 +180,7 @@ function toggleUpdateQuote(id, locked, strict) {
 
 			$this->contact = Contacts::model()->findByPk($this->contactId);
 			$qqConfig = array(
-				'contact'=>($this->contact instanceof Contacts) ? $this->contact->name :'',
+				'contact'=>($this->contact instanceof Contacts) ? CHtml::encode($this->contact->name) :'',
 				'account'=> $this->account,
 				'failMessage'=>Yii::t('quotes', 'Could not save quote.'),
 				'reloadAction'=>CHtml::normalizeUrl(array('quotes/viewInline'))."?contactId={$this->contactId}",

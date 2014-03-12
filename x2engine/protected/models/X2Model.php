@@ -715,7 +715,7 @@ abstract class X2Model extends CActiveRecord {
                     return '';
                 }else{
                     $mailtoLabel = (isset($this->name) && !is_numeric($this->name)) ? '"'.$this->name.'" <'.$this->$fieldName.'>' : $this->$fieldName;
-                    return $makeLinks ? CHtml::mailto($this->$fieldName, $mailtoLabel) : $this->$fieldName;
+                    return $makeLinks ? CHtml::mailto(CHtml::encode($this->$fieldName), $mailtoLabel) : $this->$fieldName;
                 }
 
             case 'phone':
@@ -732,7 +732,7 @@ abstract class X2Model extends CActiveRecord {
 
             case 'url':
                 if(!$makeLinks)
-                    return $this->$fieldName;
+                    return  CHtml::encode($this->$fieldName);
 
                 if(empty($this->$fieldName)){
                     $text = '';

@@ -922,7 +922,7 @@ class SiteController extends x2base {
                 ));
         $res = "";
         foreach($content as $item){
-            $res .= $this->convertUrls($item->data)." ".CHtml::link('[x]', array('site/deleteMessage', 'id' => $item->id, 'url' => $url)).'<br /><br />';
+            $res .= $this->convertUrls(CHtml::encode($item->data))." ".CHtml::link('[x]', array('site/deleteMessage', 'id' => $item->id, 'url' => $url)).'<br /><br />';
         }
         if($res == ""){
             $res = Yii::t('app', "Feel free to enter some notes!");

@@ -116,7 +116,7 @@ if(!IS_ANDROID && !IS_IPAD){
 }
 ?>
 <div class="page-title icon contacts">
-    <h2><?php echo $model->name; ?></h2>
+    <h2><?php echo CHtml::encode($model->name); ?></h2>
     <?php $this->renderPartial('_vcrControls', array('model' => $model)); ?>
     <?php
     echo CHtml::link('<span></span>', '#', array('class' => 'x2-button icon email right', 'onclick' => 'toggleEmailForm(); return false;'));
