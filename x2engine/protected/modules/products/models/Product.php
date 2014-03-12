@@ -79,6 +79,17 @@ class Product extends X2Model {
 		));
 	}
 
+	public function rules() {
+		return array(
+ 			array('name', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+ 			array('type', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+ 			array('price', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+ 			array('currency', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+ 			array('status', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+ 			array('description', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify'))
+          );
+	}
+
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
