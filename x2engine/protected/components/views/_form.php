@@ -72,21 +72,6 @@ if(isset($layout)) {
 
 echo '<div class="x2-layout form-view">';
 
-// $temp=RoleToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId(),'type'=>'user'));
-// $roles=array();
-// foreach($temp as $link){
-    // $roles[]=$link->roleId;
-// }
-// /* x2temp */
-// $groups=GroupToUser::model()->findAllByAttributes(array('userId'=>Yii::app()->user->getId()));
-// foreach($groups as $link){
-    // $tempRole=RoleToUser::model()->findByAttributes(array('userId'=>$link->groupId, 'type'=>'group'));
-    // if(isset($tempRole))
-        // $roles[]=$tempRole->roleId;
-// }
-/* end x2temp */
-
-
 $fields = array();
 $fieldModels = Fields::model()->findAllByAttributes(array('modelName'=>ucfirst($modelName)));
 foreach($fieldModels as &$fieldModel)
