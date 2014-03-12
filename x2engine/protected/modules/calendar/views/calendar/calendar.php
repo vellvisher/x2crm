@@ -57,11 +57,6 @@ Yii::app()->clientScript->registerCss ('calendarCss', "
 
 ");
 
-// register jquery timepicker css and js
-// (used inside js dialog because CJuiDateTimePicker is a php library that won't work inside a js dialog)
-//Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl() .'/protected/extensions/CJuiDateTimePicker/assets/jquery-ui-timepicker-addon.css');
-//Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/protected/extensions/CJuiDateTimePicker/assets/jquery-ui-timepicker-addon.js');
-
 if(Yii::app()->params->admin->googleIntegration) { // menu if google integration is enables has additional options
 	if(Yii::app()->params->isAdmin) {
 		$menuItems = array(

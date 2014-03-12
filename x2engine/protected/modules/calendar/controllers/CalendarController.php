@@ -165,35 +165,6 @@ class CalendarController extends x2base {
         }
 
         $this->render('myCalendarPermissions');
-        /*
-          $model = User::model()->findByPk(Yii::app()->user->id);
-          $users = User::getNames();
-          unset($users['Anyone']);
-          unset($users['admin']);
-          unset($users[Yii::app()->user->name]);
-
-          if(isset($_POST['save-button'])) {
-          if(isset($_POST['User']['calendarViewPermission'])) {
-          $model->calendarViewPermission = $_POST['User']['calendarViewPermission'];
-          $model->calendarViewPermission = Accounts::parseUsers($model->calendarViewPermission);
-          } else {
-          $model->calendarViewPermission = '';
-          }
-
-          if(isset($_POST['User']['calendarEditPermission'])) {
-          $model->calendarEditPermission = $_POST['User']['calendarEditPermission'];
-          $model->calendarEditPermission = Accounts::parseUsers($model->calendarEditPermission);
-          } else {
-          $model->calendarEditPermission = '';
-          }
-
-          $model->setCalendarPermissions = true; // user has now set up calendar permissions
-
-          $model->update();
-          $this->redirect(array('index'));
-          }
-
-          $this->render('myCalendarPermissions', array('model'=>$model, 'users'=>$users)); */
     }
 
     /**
@@ -201,7 +172,7 @@ class CalendarController extends x2base {
      */
     public function actionUserCalendarPermissions(){
         if(isset($_POST['user-id'])){
-            $id = $_POST['user-id'];
+            $id = intval($_POST['user-id']);
 
             // clear old permissions
             X2CalendarPermissions::model()->deleteAllByAttributes(array('user_id' => $id));
@@ -231,100 +202,10 @@ class CalendarController extends x2base {
             }
         }
         if(isset($_GET['id'])){
-            $this->render('userCalendarPermissions', array('id' => $_GET['id']));
+            $this->render('userCalendarPermissions', array('id' => intval($_GET['id'])));
         }else{
             $this->render('userCalendarPermissions');
         }
-    }
-
-    /**
-     * Create shared calendar
-     */
-    public function actionCreate(){
-
-        $model = new X2Calendar;
-
-        if(isset($_POST['X2Calendar'])){
-            // copy $_POST data into Calendar model
-//            $this->render('test', array('model'=>$_POST));
-            foreach(array_keys($model->attributes) as $field){
-                if(isset($_POST['X2Calendar'][$field])){
-                    $model->$field = $_POST['X2Calendar'][$field];
-                    $fieldData = Fields::model()->findByAttributes(array('modelName' => 'Calendar', 'fieldName' => $field));
-                    if(isset($fieldData) && $fieldData->type == 'assignment' && $fieldData->linkType == 'multiple'){
-                        $model->$field = Accounts::parseUsers($model->$field);
-                    }elseif(isset($fieldData) && $fieldData->type == 'date'){
-                        $model->$field = strtotime($model->$field);
-                    }
-                }
-            }
-
-            if($model->googleCalendar && isset($_SESSION['token'])){
-                $token = json_decode($_SESSION['token'], true);
-                $model->googleRefreshToken = $token['refresh_token']; // used for accessing this google calendar at a later time
-                $model->googleAccessToken = $_SESSION['token'];
-            }
-
-            $model->createdBy = Yii::app()->user->name;
-            $model->updatedBy = Yii::app()->user->name;
-            $model->createDate = time();
-            $model->lastUpdated = time();
-
-            $model->save();
-            $this->redirect(array('index'));
-        }
-
-        $admin = Yii::app()->params->admin;
-        $googleIntegration = $admin->googleIntegration;
-
-        // if google integration is activated let user choose if they want to link this calendar to a google calendar
-        if($googleIntegration){
-            require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
-            require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
-
-            $client = new Google_Client();
-            $client->setApplicationName("Google Calendar Integration");
-
-            // Visit https://code.google.com/apis/console?api=calendar to generate your
-            // client id, client secret, and to register your redirect uri.
-            $client->setClientId($admin->googleClientId);
-            $client->setClientSecret($admin->googleClientSecret);
-            $client->setRedirectUri((@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].$this->createUrl(''));
-            //$client->setDeveloperKey($admin->googleAPIKey);
-            $client->setAccessType('offline');
-            $googleCalendar = new Google_CalendarService($client);
-
-            if(isset($_GET['unlinkGoogleCalendar'])){ // user changed thier mind about linking their google calendar
-                unset($_SESSION['token']);
-            }
-
-
-            if(isset($_GET['code'])){ // returning from google with access token
-                $client->authenticate();
-                $_SESSION['token'] = $client->getAccessToken();
-                header('Location: '.(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']);
-            }
-
-            if(isset($_SESSION['token'])){
-                $client->setAccessToken($_SESSION['token']);
-                $calList = $googleCalendar->calendarList->listCalendarList();
-                $googleCalendarList = array();
-                foreach($calList['items'] as $cal)
-                    $googleCalendarList[$cal['id']] = $cal['summary'];
-            }else{
-                $googleCalendarList = null;
-            }
-        }else{
-            $client = null;
-            $googleCalendarList = null;
-        }
-
-        $this->render('create', array('model' => $model,
-            'googleIntegration' => $googleIntegration,
-            'client' => $client,
-            'googleCalendarList' => $googleCalendarList,
-                )
-        );
     }
 
     /**
@@ -842,9 +723,9 @@ class CalendarController extends x2base {
     // if the action has a complete date (or end date) it is also moved
     public function actionMoveAction(){
         if(isset($_POST['id'])){
-            $id = $_POST['id'];
-            $dayDelta = $_POST['dayChange']; // +/-
-            $minuteDelta = $_POST['minuteChange']; // +/-
+            $id = intval($_POST['id']);
+            $dayDelta = intval($_POST['dayChange']); // +/-
+            $minuteDelta = intval($_POST['minuteChange']); // +/-
             $allDay = $_POST['isAllDay'];
 
             $action = Actions::model()->findByPk($id);
@@ -870,10 +751,10 @@ class CalendarController extends x2base {
     // move the time for a Google Calendar event
     public function actionMoveGoogleEvent($calendarId){
         if(isset($_POST['EventId'])){
-            $eventId = $_POST['EventId'];
-            $dayDelta = $_POST['dayChange']; // +/-
-            $minuteDelta = $_POST['minuteChange']; // +/-
-            $allDay = json_decode($_POST['isAllDay']);
+            $eventId = intval($_POST['EventId']);
+            $dayDelta = intval($_POST['dayChange']); // +/-
+            $minuteDelta = intval($_POST['minuteChange']); // +/-
+            $allDay = intval(json_decode($_POST['isAllDay']));
             $calendar = X2Calendar::model()->findByPk($calendarId);
             $googleCalendar = $calendar->getGoogleCalendar();
             $googleEvent = $googleCalendar->events->get($calendar->googleCalendarId, $eventId);
@@ -929,9 +810,9 @@ class CalendarController extends x2base {
     // if the action doesn't have a
     public function actionResizeAction(){
         if(isset($_POST['id'])){
-            $id = $_POST['id'];
-            $dayDelta = $_POST['dayChange']; // +/-
-            $minuteDelta = $_POST['minuteChange']; // +/-
+            $id = intval($_POST['id']);
+            $dayDelta = intval($_POST['dayChange']); // +/-
+            $minuteDelta = intval($_POST['minuteChange']); // +/-
 
             $action = Actions::model()->findByPk($id);
             if($action->completeDate) // actions without complete date aren't updated
@@ -950,9 +831,9 @@ class CalendarController extends x2base {
     // move the end time of a Google Calendar event
     public function actionResizeGoogleEvent($calendarId){
         if(isset($_POST['EventId'])){
-            $eventId = $_POST['EventId'];
-            $dayDelta = $_POST['dayChange']; // +/-
-            $minuteDelta = $_POST['minuteChange']; // +/-
+            $eventId = intval($_POST['EventId']);
+            $dayDelta = intval($_POST['dayChange']); // +/-
+            $minuteDelta = intval($_POST['minuteChange']); // +/-
             $calendar = X2Calendar::model()->findByPk($calendarId);
             $googleCalendar = $calendar->getGoogleCalendar();
             $googleEvent = $googleCalendar->events->get($calendar->googleCalendarId, $eventId);
@@ -975,7 +856,7 @@ class CalendarController extends x2base {
     // save a actionDescription
     public function actionSaveGoogleEvent($calendarId){
         if(isset($_POST['EventId'])){
-            $eventId = $_POST['EventId'];
+            $eventId = intval($_POST['EventId']);
             $calendar = X2Calendar::model()->findByPk($calendarId);
             $googleCalendar = $calendar->getGoogleCalendar();
             $googleEvent = $googleCalendar->events->get($calendar->googleCalendarId, $eventId);
@@ -1019,16 +900,13 @@ class CalendarController extends x2base {
             $googleEvent = new Event($googleEvent); // we send back a proper Event object to google
             $googleEvent->setSummary($_POST['Actions']['actionDescription']);
             $googleCalendar->events->update($calendar->googleCalendarId, $eventId, $googleEvent);
-//            $googleCalendar->events->delete($calendar->googleCalendarId, $eventId);
         }
-
-//        $this->render('test', array('model'=>$_POST));
     }
 
     // save a actionDescription
     public function actionDeleteGoogleEvent($calendarId){
         if(isset($_POST['EventId'])){
-            $eventId = $_POST['EventId'];
+            $eventId = intval($_POST['EventId']);
             $calendar = X2Calendar::model()->findByPk($calendarId);
             $googleCalendar = $calendar->getGoogleCalendar();
             $googleCalendar->events->delete($calendar->googleCalendarId, $eventId);
@@ -1038,7 +916,7 @@ class CalendarController extends x2base {
     // make an action complete
     public function actionCompleteAction(){
         if(isset($_POST['id'])){
-            $id = $_POST['id'];
+            $id = intval($_POST['id']);
 
             $action = Actions::model()->findByPk($id);
             $action->complete = "Yes";
@@ -1051,7 +929,7 @@ class CalendarController extends x2base {
     // make an action uncomplete
     public function actionUncompleteAction(){
         if(isset($_POST['id'])){
-            $id = $_POST['id'];
+            $id = intval($_POST['id']);
 
             $action = Actions::model()->findByPk($id);
             $action->complete = "No";
@@ -1064,7 +942,7 @@ class CalendarController extends x2base {
     // delete an action from the database
     public function actionDeleteAction(){
         if(isset($_POST['id'])){
-            $id = $_POST['id'];
+            $id = intval($_POST['id']);
 
             $action = Actions::model()->findByPk($id);
 
@@ -1112,7 +990,6 @@ class CalendarController extends x2base {
                 if(($key = array_search($calendar, $showCalendars[$calendarType])) !== false) // find calendar in list of shown calendars
                     unset($showCalendars[$calendarType][$key]);
 
-            print_r($showCalendars);
             $user->showCalendars = CJSON::encode($showCalendars);
             $user->update();
         }
@@ -1167,11 +1044,6 @@ class CalendarController extends x2base {
 
         // if google integration is activated let user choose if they want to link this calendar to a google calendar
         if($googleIntegration){
-//            $timezone = date_default_timezone_get();
-//            require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
-//            require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php"; // for google calendar sync
-//            require_once 'protected/extensions/google-api-php-client/src/contrib/Google_Oauth2Service.php'; // for google oauth login
-//            date_default_timezone_set($timezone);
 
             $auth = new GoogleAuthenticator();
             $syncGoogleCalendarName = null; // name of the Google Calendar that current user's actions are being synced to if it has been set
@@ -1179,7 +1051,6 @@ class CalendarController extends x2base {
                 if(isset($_GET['unlinkGoogleCalendar'])){ // user changed thier mind about linking their google calendar
                     unset($_SESSION['token']);
                     $model->syncGoogleCalendarId = null;
-                    //$model->syncGoogleCalendarRefreshToken = null; // used for accessing this google calendar at a later time
                     $model->syncGoogleCalendarAccessToken = null;
                     $model->update();
                     $googleCalendarList = null;
