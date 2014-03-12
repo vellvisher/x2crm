@@ -207,8 +207,6 @@ class DashboardController extends x2base {
 			$temp=Accounts::parseUsersTwo($pieces);
 
 			$model->assignedTo=$temp;
-			// $changes=$this->calculateChanges($temp,$model->attributes);
-			// $model=$this->updateChangelog($model,$changes);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}

@@ -96,7 +96,6 @@ class SortWidg extends CJuiWidget{
             if(!$visible)
 				$hideWidgetJs .= "$('#widget_" . $class . " .portlet-content').hide();\n";
 			$minimizeLink = CHtml::link(($visible==1)? '[&ndash;]' : '[+]','#',array('onclick'=>"toggleWidgetState('$class',".(($visible == 0) ? 0 : 1)."); return false;"));
-            // $t0 = microtime(true);
 			$this->beginWidget('zii.widgets.CPortlet',array(
 				'title'=>Yii::t('app',$row['dispNAME']) . '<div class="portlet-minimize">'.$minimizeLink.'</div>',
                 'id'=>'widget_'.$class,
@@ -104,8 +103,6 @@ class SortWidg extends CJuiWidget{
 			));
 			$this->widget($class);
 			$this->endWidget();
-            // echo (round(microtime(true)-$t0,3)*1000).'ms';
-            // 
             $index++;
         }
         Yii::app()->clientScript->registerScript('setWidgetState', "
