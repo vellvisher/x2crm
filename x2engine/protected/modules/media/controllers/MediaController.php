@@ -157,7 +157,7 @@ class MediaController extends x2base {
             if(Yii::app()->user->isGuest)
                 throw new Exception('You are not logged in.');
 
-            if(!isset($_FILES['upload'], $_GET['CKEditorFuncNum'])) //,$_GET['Media']
+            if(!isset($_FILES['upload'], $_GET['CKEditorFuncNum']))
                 throw new Exception('Invalid request.');
 
             $upload = CUploadedFile::getInstanceByName('upload');
@@ -204,11 +204,7 @@ class MediaController extends x2base {
             $model->lastUpdated = time();
             $model->uploadedBy = Yii::app()->user->name;
             $model->associationType = 'none';
-            // $model->associationType = $_GET['Media']['associationType'];
-            // $model->associationId = $_GET['Media']['associationId'];
-            $model->private = true; //$_GET['Media']['private'];
-            // if($_POST['GET']['description'])
-            // $model->description = $_POST['Media']['description'];
+            $model->private = true;
 
             if(!$model->save()){
                 throw new Exception('Error saving Media entry');
