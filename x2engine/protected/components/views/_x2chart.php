@@ -161,7 +161,7 @@ if (!$suppressChartSettings) {
 	foreach ($chartSettingsDataProvider->data as $chartSetting) {
 		$passVarsToClientScript .= 
 			"x2.".$chartType.".params.".
-			"chartSettings['" . $chartSetting->name . "'] = " .
+			"chartSettings['" . addslashes($chartSetting->name) . "'] = " .
 			CJSON::encode ($chartSetting) . ";\n";
 	}
 }
@@ -347,7 +347,7 @@ Yii::app()->clientScript->registerScript(
 			</option>
 			<?php foreach ($chartSettingsDataProvider->data as $chartSetting) { ?>
 			<option value="<?php echo $chartSetting->name; ?>">
-				<?php echo $chartSetting->name; ?>
+				<?php echo  CHtml::encode ($chartSetting->name); ?>
 			</option>
 			<?php } ?>
 		</select>

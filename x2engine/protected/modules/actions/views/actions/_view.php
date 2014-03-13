@@ -178,10 +178,10 @@ else if($type == 'workflow'){
             echo ' <b>'.Yii::t('workflow', 'Started').'</b> '.Formatter::formatLongDateTime($data->createDate);
     }
     if(isset($data->actionDescription))
-        echo '<br>'.$data->actionDescription;
+        echo '<br>'.CHtml::encode($data->actionDescription);
 } elseif($type == 'webactivity'){
     if(!empty($data->actionDescription))
-        echo $data->actionDescription, '<br>';
+        echo CHtml::encode($data->actionDescription), '<br>';
     echo date('Y-m-d H:i:s', $data->completeDate);
 } elseif(in_array($data->type, array('email', 'emailFrom', 'email_quote', 'email_invoice', 'emailOpened', 'emailOpened_quote', 'emailOpened_invoice'))){
 

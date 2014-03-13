@@ -115,9 +115,9 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 
 		$url = $this->url;
 	        if($this->owner instanceof Contacts){
-        	    return CHtml::link('<span>'.$name.'</span>',$url,array('class'=>'contact-name'));
+        	    return CHtml::link('<span>'.CHtml::encode($name).'</span>',$url,array('class'=>'contact-name'));
 	        }else{
-        	    return CHtml::link('<span>'.$name.'</span>',$url);
+        	    return CHtml::link('<span>'.CHtml::encode($name).'</span>',$url);
 	        }
 	}
 

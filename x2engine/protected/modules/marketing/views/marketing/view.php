@@ -66,7 +66,7 @@ $("#docIframe").parent().resizable({
 });
 ', CClientScript::POS_READY);
 
-$this->pageTitle = $model->name;
+$this->pageTitle = CHtml::encode($model->name);
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $authParams['assignedTo'] = $model->createdBy;
 $this->actionMenu = $this->formatMenu(array(

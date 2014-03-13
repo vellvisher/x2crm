@@ -518,13 +518,37 @@ class WorkflowController extends x2base {
 			echo Workflow::renderWorkflow($workflowStatus);
 		}
 	}
+	/**
+      * Helper function for actionGetStageMembers 
+      */
+     private function getStageMemberCondition (
+         $workflowId, $stage, $dateRange, $userString, $modelClass, $suppressContactsCond=true) {
+         $params = array ();
+         $condition = "x2_actions.workflowId=:workflowId AND x2_actions.stageNumber=:stage AND 
+             x2_actions.associationType=:modelClass AND complete!='Yes' AND 
+             (completeDate IS NULL OR completeDate=0) AND 
+             x2_actions.createDate BETWEEN :start AND :end". 
+             " $userString".
+                 (!$suppressContactsCond ? 
+             " AND (x2_contacts.visibility=1 OR x2_contacts.assignedTo=:username)" : '');
+         $params[':workflowId'] = $workflowId;
+         $params[':stage'] = $stage;
+         $params[':start'] = $dateRange['start'];
+         $params[':end'] = $dateRange['end'];
+         if (!$suppressContactsCond)
+             $params[':username'] = Yii::app()->user->getName();
+         $params[':modelClass'] = $modelClass;
+ 
+         return array ($condition, $params);
+     }
 
 	public function actionGetStageMembers($workflowId,$stage,$start,$end,$range,$user) {
             
-        
+        $params = array ();
         $dateRange=$this->getDateRange();
         if(!empty($user)){
-            $userString=" AND x2_actions.assignedTo='$user' ";
+            $userString=" AND x2_actions.assignedTo=:user ";
+            $params[':user'] = $user;
         }else{
             $userString="";
         }
@@ -538,14 +562,21 @@ class WorkflowController extends x2base {
 		
 		$actionDescription = $workflowId.':'.$stage;
 		
+		list ($condition, $params) = 
+             $this->getStageMemberCondition ($workflowId, $stage, $dateRange, $userString, 'contacts', true);
+
+		$contactsCount = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_actions')
+             ->where($condition, $params)->queryScalar();
+
+         list ($condition, $params) = 
+             $this->getStageMemberCondition ($workflowId, $stage, $dateRange, $userString, 'contacts', false);
+
 		$contactsSql = Yii::app()->db->createCommand()
 			->select('x2_contacts.*')
 			->from('x2_contacts')
 			->join('x2_actions','x2_contacts.id = x2_actions.associationId')
-			->where("x2_actions.workflowId=$workflowId AND x2_actions.stageNumber=$stage AND x2_actions.associationType='contacts' AND complete!='Yes' AND (completeDate IS NULL OR completeDate=0) AND x2_actions.createDate BETWEEN ".$dateRange['start']." AND ".$dateRange['end']." $userString AND (x2_contacts.visibility=1 OR x2_contacts.assignedTo='".Yii::app()->user->getName()."')")
+			->where($condition)
 			->getText();
-		
-		$contactsCount = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_actions')->where("x2_actions.workflowId=$workflowId AND x2_actions.stageNumber=$stage AND x2_actions.associationType='contacts' AND complete!='Yes' AND (completeDate IS NULL OR completeDate=0) AND x2_actions.createDate BETWEEN ".$dateRange['start']." AND ".$dateRange['end']." $userString")->queryScalar();
 
 		$contactsDataProvider = new CSqlDataProvider($contactsSql,array(
 			// 'criteria'=>$criteria,
@@ -559,16 +590,21 @@ class WorkflowController extends x2base {
 			'pagination'=>array(
 				'pageSize'=>ProfileChild::getResultsPerPage(),
 			),
+			'params' => $params,
 		));
+
+		list ($condition, $params) = $this->getStageMemberCondition (
+             $workflowId, $stage, $dateRange, $userString, 'opportunities');
 		
 		$opportunitiesSql = Yii::app()->db->createCommand()
 			->select('x2_opportunities.*')
 			->from('x2_opportunities')
 			->join('x2_actions','x2_opportunities.id = x2_actions.associationId')
-			->where("x2_actions.workflowId=$workflowId AND x2_actions.stageNumber=$stage AND x2_actions.associationType='opportunities' AND complete!='Yes' AND (completeDate IS NULL OR completeDate=0) AND x2_actions.createDate BETWEEN ".$dateRange['start']." AND ".$dateRange['end']." $userString")
+			->where($condition)
 			->getText();
 		
-		$opportunitiesCount = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_actions')->where("x2_actions.workflowId=$workflowId AND x2_actions.stageNumber=$stage AND x2_actions.associationType='opportunities' AND complete!='Yes' AND (completeDate IS NULL OR completeDate=0) AND x2_actions.createDate BETWEEN ".$dateRange['start']." AND ".$dateRange['end']." $userString")->queryScalar();
+		$opportunitiesCount = Yii::app()->db->createCommand()->select('COUNT(*)')->from('x2_actions')
+             ->where($condition, $params)->queryScalar();
 
 		$opportunitiesDataProvider = new CSqlDataProvider($opportunitiesSql,array(
 			// 'criteria'=>$criteria,
@@ -582,6 +618,7 @@ class WorkflowController extends x2base {
 			'pagination'=>array(
 				'pageSize'=>ProfileChild::getResultsPerPage(),
 			),
+			'params' => $params,
 		));
 		
 		if(!empty($contactsDataProvider)) {
@@ -701,22 +738,24 @@ class WorkflowController extends x2base {
 		$currentAmount=0;
 		$count=0;
 		foreach($models as $model){
+			$attributeParams = array ();
 			$dateRange=$this->getDateRange();
 			if(!empty($user)){
-				$userString=" AND x2_actions.assignedTo='$user' ";
+				$userString=" AND x2_actions.assignedTo=:user ";
+                $attributeParams[':user'] = $user;
 			}else{
 				$userString="";
 			}
 			$attributeConditions='x2_actions.createDate BETWEEN :date1 AND :date2
-				AND x2_actions.type="workflow" AND x2_actions.workflowId="'.$workflowId.'"
+				AND x2_actions.type="workflow" AND x2_actions.workflowId=:workflowId
 				AND x2_actions.associationType=:associationType
-				AND x2_actions.stageNumber="'.$stageId.'" '.$userString.'
+				AND x2_actions.stageNumber=:stageId '.$userString.'
 				AND x2_actions.complete!="Yes" AND (x2_actions.completeDate IS NULL OR x2_actions.completeDate=0)';
-			$attributeParams=array(
+			$attributeParams=array_merge ($attributeParams, array(
 				':date1'=>$dateRange['start'],
 				':date2'=>$dateRange['end'],
 				':associationType'=>get_class($model)=="Contacts"?"Contacts":"Opportunities",
-			);
+			));
 			if($model->hasAttribute('dealvalue')){
 				$valueField="dealvalue";
 			}elseif($model->hasAttribute('quoteAmount')){

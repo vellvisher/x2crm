@@ -35,7 +35,7 @@
 
 
 function sanitizeInput(value) {
-	return encodeURIComponent(value.trim().replace(/[^a-zA-Z0-9#,]/g, ''));
+	return encodeURIComponent(value.replace(/(^[ ]*)|([ ]*$)|([^a-zA-Z0-9#,])/g, ''));
 }
 
 function generateQuery(params) {

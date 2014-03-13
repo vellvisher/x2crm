@@ -53,7 +53,7 @@ class TopSites extends X2Widget {
         $data = array();
         if(count($content)>0){
             foreach($content as $entry){
-                $dt['title'] = $entry->title;
+                $dt['title'] = CHtml::encode($entry->title);
                 if(strpos($entry->url,'http://')===false){
                     $entry->url="http://".$entry->url;
                 }
