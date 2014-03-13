@@ -92,6 +92,17 @@ class User extends CActiveRecord {
             array('backgroundInfo', 'safe'),
             array('username', 'unique', 'allowEmpty' => false),
             array('username', 'match', 'pattern' => '/^\d+$/', 'not' => true), // No numeric usernames. That will break association with groups.
+            array('firstName','filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array( 'lastName', 'filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('username', 'filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('title', 'filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('department', 'filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('officePhone', 'filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('cellPhone', 'filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('homePhone', 'filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('address', 'filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('backgroundInfo', 'filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('emailAddress', 'filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array('id, firstName, lastName, username, password, title, department, officePhone, cellPhone, homePhone, address, backgroundInfo, emailAddress, status, lastUpdated, updatedBy, recentItems, topContacts, lastLogin, login', 'safe', 'on' => 'search'),

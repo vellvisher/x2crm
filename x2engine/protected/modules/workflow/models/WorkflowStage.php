@@ -78,6 +78,8 @@ class WorkflowStage extends CActiveRecord {
 			array('conversionRate, value', 'type', 'type'=>'float'),
 			array('conversionRate', 'numerical', 'max'=>100, 'min'=>0),
 			array('name', 'length', 'max'=>40),
+			array('name', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+			array('description', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),			
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, workflowId, name, description, conversionRate, value', 'safe', 'on'=>'search'),
