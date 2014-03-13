@@ -166,6 +166,20 @@ class MediaController extends x2base {
                 throw new Exception('Invalid file.');
 
             $fileName = $upload->getName();
+            $filename_whitelist =
+                array("txt", "doc", "docx", "xls", "xlsx", "ppt", "pptx");
+
+            $allowedFile = false;
+            foreach ($filename_whitelist as $extension) {
+                $ext = '.'.$extension;
+                if (substr($fileName, -strlen($ext)) == $ext) {
+                    $allowedFile = true;
+                }
+            }
+
+            if (!$allowedFile) {
+                throw new Exception('Invalid request.');
+            }
             $fileName = str_replace(' ', '_', $fileName);
 
             $userFolder = Yii::app()->user->name; // place uploaded files in a folder named with the username of the user that uploaded the file
@@ -246,7 +260,7 @@ class MediaController extends x2base {
     public function actionDelete($id){
         if(Yii::app()->request->isPostRequest){
             // we only allow deletion via POST request
-            $model = $this->loadModel($id);
+            $model = $this->loadModel(intval($id));
             if(file_exists("uploads/{$model->uploadedBy}/{$model->fileName}"))
                 unlink("uploads/{$model->uploadedBy}/{$model->fileName}");
             else if(file_exists("uploads/{$model->fileName}"))
