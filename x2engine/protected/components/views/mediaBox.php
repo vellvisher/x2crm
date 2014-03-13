@@ -66,8 +66,6 @@ $fullname = Yii::app()->params->profile->fullName;
                 ->from('x2_media')
                 ->queryAll();
         ?>
-        <?php //$myMediaItems = Media::model()->findAllByAttributes(array('uploadedBy'=>$username)); // get current user's media  ?>
-
 
         <div id="<?php echo $username; ?>-media" class="user-media-list">
             <?php
@@ -85,7 +83,7 @@ $fullname = Yii::app()->params->profile->fullName;
                 echo CHtml::link($filename, array('/media', 'view' => $item['id']), array(
                     'class' => 'x2-link media'.(Media::isImageExt($item['fileName']) ? ' image-file' : ''),
                     'id' => $baseId,
-                    'style' => 'curosr:pointer;',
+                    'style' => 'cursor:pointer;',
                     'data-url' => Media::getFullFileUrl($path),
                 ));
                 echo '</span>';
@@ -121,7 +119,6 @@ $fullname = Yii::app()->params->profile->fullName;
         ?>
 
         <?php foreach($users as $user){ ?>
-            <?php //$userMediaItems = X2Model::model('Media')->findAllByAttributes(array('uploadedBy'=>$user->username)); ?>
             <?php
             $userMediaItems = Yii::app()->db->createCommand()
                     ->select('id, uploadedBy, fileName, description, private, drive, title')
