@@ -218,12 +218,12 @@ class MediaController extends x2base {
             $fileUrl = $model->getFullUrl();
         }catch(Exception $e){
             echo '<html><body><script type="text/javascript">',
-            'window.parent.CKEDITOR.tools.callFunction(', $_GET['CKEditorFuncNum'], ',"","', $e->getMessage(), '");',
+            'window.parent.CKEDITOR.tools.callFunction(', json_encode($_GET['CKEditorFuncNum']), ',"","', $e->getMessage(), '");',
             '</script></body></html>';
             return;
         }
         echo '<html><body><script type="text/javascript">',
-        'window.parent.CKEDITOR.tools.callFunction(', $_GET['CKEditorFuncNum'], ',"', $fileUrl, '","");',
+        'window.parent.CKEDITOR.tools.callFunction(', json_encode($_GET['CKEditorFuncNum']), ',"', $fileUrl, '","");',
         '</script></body></html>';
     }
 
