@@ -73,6 +73,23 @@ class Docs extends X2Model {
 				));
 	}
 
+    /**
+     * @return array validation rules for model attributes.
+     */
+    public function rules(){
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return array(
+            array('name','filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('subject','filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('type','filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('createdBy','filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('editPermissions','filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('updatedBy','filter','filter'=>array($obj=new CHtmlPurifier(),'purify'))
+        );
+    }
+
+
 	/**
 	 * @return array relational rules.
 	 */
