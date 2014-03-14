@@ -1982,7 +1982,7 @@ class SiteController extends x2base {
                     $temp = explode(" ", $user->name);
                     $new_user->firstName = $temp[0];
                     $new_user->status = 1;
-                    $new_user->password = md5("sdf"); //TODO fix
+                    $new_user->password = md5(bin2hex(openssl_random_pseudo_bytes(6))); 
                     $new_user->title = NULL;
                     $new_user->department = NULL;
                     $new_user->officePhone = NULL;
