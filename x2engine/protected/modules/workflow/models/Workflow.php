@@ -72,6 +72,7 @@ class Workflow extends CActiveRecord {
 			array('lastUpdated', 'numerical', 'integerOnly'=>true),
 			array('name', 'length', 'max'=>250),
 			array('isDefault', 'boolean'),
+			array('name', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, name, lastUpdated', 'safe', 'on'=>'search'),

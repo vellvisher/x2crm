@@ -141,6 +141,25 @@ class Services extends X2Model {
 		return $this->searchBase($criteria);
 	}
 
+	public function rules() {
+		return array(
+			array('updatedBy', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+			array('description', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+			array('contactId', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+			array('assignedTo', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+			array('name', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+			array('impact', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+			array('status', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+			array('subject', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+			array('mainIssue', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+			array('email', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+			array('nextAction', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+			array('resolution', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+			array('subIssue', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+			array('origin', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+			array('lastActivity', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify'))
+			);
+	}
 
 
 }
