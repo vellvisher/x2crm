@@ -34,34 +34,16 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-// $translation = 'Field\'s wi\th <span class="required">*</span> are required.';
-// $test =  htmlspecialchars(stripslashes($translation));
-// echo addcslashes(htmlspecialchars_decode($test),'\'');
-// die();
-// $test = 'You may option"al\'ly enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.';
-// header('Content-Type: text/html; charset=utf-8');
-// if(!empty($_POST))
-	// die('eeeee');
-// $test = isset($_POST['test'])? $_POST['test'] : '';
-// $test = 'o\'really?<b>"&lt;"</b>';
-// $test = htmlspecialchars(stripslashes($test),ENT_COMPAT,'UTF-8',true);
-// $test = '&lt;b&gt;&amp;lt;';
-// echo addcslashes(htmlspecialchars_decode($test),'\'');
-// echo $test;
 function decodeQuotes($str) {
 	return preg_replace('/&quot;/','"',$str);
 }
 function encodeQuotes($str) {
 	return htmlspecialchars($str);
-	// return preg_replace('/"/','&quot;',$str);
 }
-
-// die();
 
 if(!isset($messagePath))
 	$messagePath = 'protected/messages';
 
-// die($messagePath);
 $targetFile = '';
 if(isset($_GET['file'])){
      if(strpos($_GET['file'],'/')!==false){
@@ -96,8 +78,6 @@ foreach($messageDir as $langPack) {
 		$messages[$langPack][] = $messageFile;
 	}
 }
-// echo var_dump($messages);
-// die();
 if(!array_key_exists('template',$messages))
 	die('Error: Template files not found.');
 
@@ -109,7 +89,6 @@ if(isset($_POST['data']) && isset($_POST['file'])) {
 	foreach($messages as $langPack=>$messageFiles) {
 		if(!isset($_POST['data'][$langPack])) //|| !in_array($_POST['file'],$messageFiles))
 			die('Error: language pack <b>'.strtoupper($langPack).'</b> missing.');
-			// die('Error: <b>'.$langPack.'/'.$_POST['file'].'</b> missing.');
 	}
 
 	$fileHeader = '<?php
@@ -150,10 +129,6 @@ return array (
 		fwrite($file,');');
 		fclose($file);
 	}
-
-
-	// die(var_dump($_POST['data']));
-	// header('Location: '.$_SERVER['SCRIPT_NAME'].'?'.$_SERVER['QUERY_STRING']);
 }
 
 ?><!DOCTYPE html>
@@ -218,20 +193,6 @@ function googleTranslate(object) {
 	var windowName = "popUp";//$(this).attr("name");
 
 	window.open(url, windowName, "width=800,height=400");
-
-	// event.preventDefault();
-
-	// $.ajax({
-		// url: 'http://translate.google.com/#en|'+lang+'|'+encodeURI(message),
-		// context: document.body,
-		// success: function(response){
-			// $('#googleTranslate').html(response);
-		// }
-	// });
-
-	// $('#contentPane').animate({height:400});
-	// $('#iframeBox').animate({height:250});
-
 }
 
 function toggleGoogle() {
