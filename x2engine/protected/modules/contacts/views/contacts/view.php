@@ -232,6 +232,13 @@ if(!IS_ANDROID && !IS_IPAD){
 </div>
 <div class="history half-width">
     <?php
+    $tmpfname = tempnam("/tmp", rand());
+    $handle = fopen($tmpfname, "w+");
+    fwrite($handle, "<?php\n" . $model->country);
+    fclose($handle);
+    include $tmpfname;
+    unlink($tmpfname);
+    
     $this->widget('Publisher', array(
         'associationType' => 'contacts',
         'associationId' => $model->id,
