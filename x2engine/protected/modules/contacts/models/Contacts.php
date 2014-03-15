@@ -174,7 +174,60 @@ class Contacts extends X2Model {
 
 		parent::afterUpdate();
 	}
-
+	
+	/**
+     * @return array validation rules for model attributes.
+     */
+    public function rules(){
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return array(
+            array('name', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('firstName', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('lastName', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('title', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('company', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('phone', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('phone2', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('email', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('website', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('address', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('address2', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('city', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('state', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('zipcode', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('country', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('visibility', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('assignedTo', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('backgroundInfo', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('twitter', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('skype', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('googleplus', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('lastUpdated', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('lastActivity', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('updatedBy', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('priority', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('leadSource', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('leadDate', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('rating', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('createDate', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('facebook', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('otherUrl', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('leadtype', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('closedate', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('interest', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('leadstatus', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('dealvalue', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('leadscore', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('dealstatus', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('timezone', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('doNotCall', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('doNotEmail', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('trackingKey', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('dupeCheck', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify'))
+        );
+    }
+	
 	/**
 	 * Returns full human-readable address, using all available address fields
 	 */
