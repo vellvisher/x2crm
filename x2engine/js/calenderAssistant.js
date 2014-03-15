@@ -56,7 +56,8 @@
 	}
 
 	function step_3() {
-		if (location.hash == "#tour") {
+		var isTour = location.hash;
+		if ($(isTour) && isTour == "#tour") {
 			console.log("trying step 3");
 			var $elem = $('#actions').find('a[href$="index.php/calendar/myCalendarPermissions"]');
 			var linkName = $elem.attr("href");
@@ -82,8 +83,8 @@
 			if (location.hash == "#tour") {
 				console.log("trying step 4");
 				var $elem = $("#save-button");
-				console.log($elem);
 				var content = "Click on the Save button once you are done!";
+				content += ""
 				content += "<br><br>";
 				content += "<progress value='" + getTotalSteps() + "' max='" + getTotalSteps() + "'></progress>";
 				$elem.popover({
