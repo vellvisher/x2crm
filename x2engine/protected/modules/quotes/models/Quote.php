@@ -606,6 +606,29 @@ class Quote extends X2Model {
 		}
 		return $temp;
 	}
+	
+	/**
+     * @return array validation rules for model attributes.
+     */
+    public function rules(){
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return array(
+            array('name', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('accountName', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('salesStage', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('leadSource', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('description', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('assignedTo', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('createdBy', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('associatedContacts', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('updatedBy', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('status', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('currency', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('type', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('invoiceStatus', 'filter', 'filter'=>array($obj=new CHtmlPurifier(),'purify'))
+        );
+    }
 
 	public function search() {
 		$criteria = new CDbCriteria;
