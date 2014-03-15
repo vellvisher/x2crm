@@ -48,7 +48,7 @@ class YiiDebugToolbarPanelRequest extends YiiDebugToolbarPanel
     {
         $this->render('request', array(
             'server' => $_SERVER,
-            'cookies' => $_COOKIE,
+            'cookies' => Yii::app()->request->cookies,
             'session' => isset($_SESSION) ? $_SESSION : null,
             'post' => $_POST,
             'get' => $_GET,

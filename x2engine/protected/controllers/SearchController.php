@@ -378,7 +378,8 @@ class SearchController extends x2base {
             ));
         }else{
             Yii::app()->user->setState('vcr-list', $term);
-            $_COOKIE['vcr-list'] = $term;
+            $cookie=new CHttpCookie('vcr-list', $term);
+            Yii::app()->request->cookies['vcr-list']=$cookie;
             $results = new CActiveDataProvider('Tags', array(
                         'criteria' => array('condition' => 'tag="'.$term.'"'),
                         'pagination' => array(

@@ -141,8 +141,8 @@ class ContactsController extends x2base {
 
 		if($this->checkPermissions($contact,'view')) {
 
-			if(isset($_COOKIE['vcr-list'])){
-				Yii::app()->user->setState('vcr-list',$_COOKIE['vcr-list']);
+			if(Yii::app()->request->cookies->contains('vcr-list')){
+				Yii::app()->user->setState('vcr-list',Yii::app()->request->cookies['vcr-list']->value);
             }
 
 			if($contact->dupeCheck != '1' && !empty($contact->firstName) && !empty($contact->lastName)) {
@@ -204,8 +204,9 @@ class ContactsController extends x2base {
 
 		if($this->checkPermissions($contact,'view')) {
 
-			if(isset($_COOKIE['vcr-list']))
-				Yii::app()->user->setState('vcr-list',$_COOKIE['vcr-list']);
+			if(Yii::app()->request->cookies->contains('vcr-list')){
+				Yii::app()->user->setState('vcr-list',Yii::app()->request->cookies['vcr-list']->value);
+            }
 
 			User::addRecentItem('c', $id, Yii::app()->user->getId()); ////add contact to user's recent item list
 			parent::view($contact, 'contacts');
