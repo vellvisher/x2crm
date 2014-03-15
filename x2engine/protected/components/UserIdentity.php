@@ -47,8 +47,6 @@ class UserIdentity extends CUserIdentity {
 	private $_name;
 
 	public function authenticate($google=false) {
-		if(!REQUIRE_LOGIN)
-			{$this->_id = 1;$this->errorCode = self::ERROR_NONE; return true;}
 		$user = X2Model::model('User')->findByAttributes(array('username' => $this->username));
 
 		if(isset($user))
