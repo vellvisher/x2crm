@@ -1995,13 +1995,12 @@ class SiteController extends x2base {
                     if($new_user->save()) {
                         $profile->id = $new_user->id;
                         $profile->save();
-                        $this->redirect('googleLogin');
                     } else {
-                        $this->render('googleLogin', array(
-                            'failure' => 'email',
-                            'email' => $email,
-                            ));
+                        $update=User::model()->findByAttributes(array('username'=>$new_user->username));
+                        $update->emailAddress=$email;
+                        $update->save();
                     }
+                    $this->redirect('googleLogin');
                 }
             }catch(Google_AuthException $e){
                 $auth->flushCredentials();
