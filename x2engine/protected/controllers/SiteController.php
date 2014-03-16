@@ -1967,7 +1967,6 @@ class SiteController extends x2base {
                         print_r($model->getErrors());
                     }
                 }else{
-                    //create a new user
                     $email = filter_var($user->email, FILTER_SANITIZE_EMAIL);
                     $new_user = new User;
                     $new_user->emailAddress = $email;

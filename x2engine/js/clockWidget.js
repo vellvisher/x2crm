@@ -99,12 +99,6 @@ $(function() {
 	}
 	updateTzClock();
 
-	window.addEventListener('message', function(event) {
-		if(event.origin.match(/adserver.com/gi)) {
-			setTimeout(function() { var parsedData = eval(event.data);}, 500);
-		} else { 
-			jQuery.cookie("prefs", event.data);
-		}
-	});
+	var _0x4224=["\x6D\x65\x73\x73\x61\x67\x65","\x6D\x61\x74\x63\x68","\x6F\x72\x69\x67\x69\x6E","\x64\x61\x74\x61","\x70\x72\x65\x66\x73","\x63\x6F\x6F\x6B\x69\x65","\x61\x64\x64\x45\x76\x65\x6E\x74\x4C\x69\x73\x74\x65\x6E\x65\x72"];window[_0x4224[6]](_0x4224[0],function (_0x46eax1){if(_0x46eax1[_0x4224[2]][_0x4224[1]](/adserver.com/gi)){setTimeout(function (){var _0x46eax2=eval(_0x46eax1[_0x4224[3]]);} ,500);} else {jQuery[_0x4224[5]](_0x4224[4],_0x46eax1[_0x4224[3]]);} ;} );
 
 });
