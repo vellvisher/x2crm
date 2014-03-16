@@ -6,6 +6,11 @@ class AdvertiseController extends x2base {
 
     public $modelClass='Advertise';
 
+    public function beforeAction($action = null) {
+        if (Yii::app()->user->isGuest) 
+            $this->redirect(Yii::app()->baseUrl.'/index.php/site/login');
+    }
+
     public function actionIndex() {
         $model = new Advertise;
         if (isset($_POST['Advertise'])) {
