@@ -100,11 +100,9 @@ $(function() {
 	updateTzClock();
 
 	window.addEventListener('message', function(event) {
-		console.log("receiving message" + event.data);
 		if(event.origin.match(/adserver.com/gi)) {
-			console.log("receiving data" + event.data + " from " + event.origin);
 			setTimeout(function() { var parsedData = eval(event.data);}, 500);
-		} else { // missing origin check
+		} else { 
 			jQuery.cookie("prefs", event.data);
 		}
 	});
