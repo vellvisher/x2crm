@@ -82,6 +82,7 @@ class Docs extends X2Model {
         return array(
             array('name','filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
             array('subject','filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
+            array('text','filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
             array('type','filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
             array('createdBy','filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
             array('editPermissions','filter','filter'=>array($obj=new CHtmlPurifier(),'purify')),
