@@ -41,11 +41,8 @@ class ChatroomInvite extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('chatroom_id, user_id, poster_id', 'required'),
-			array('chatroom_id', 'length', 'max'=>30),
+			array('chatroom_id', 'length', 'max'=>80),
 			array('user_id, poster_id', 'length', 'max'=>10),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('chatroom_id, user_id, poster_id', 'safe', 'on'=>'search'),
 		);
 	}
 
