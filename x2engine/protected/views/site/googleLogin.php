@@ -119,15 +119,10 @@ function signInCallback(authResult) {
     $('#signinButton').attr('style', 'display: none');
     $('#result').html('<div><div class="loading-icon" style="vertical-align:middle;"></div> <span><b>Logging you in...</b></span></div>');
     // Send the code to the server
-    $.ajax({
-      type: 'POST',
-      url: 'storeToken',
-      contentType: 'application/octet-stream; charset=utf-8',
-      success: function(result) {
-        window.location=window.location;
-      },
-      processData: false,
-      data: authResult['code']
+    var postData = authResult['code'];
+    var csrfToken = '<?php echo Yii::app()->request->csrfToken; ?>';
+    $.post("storeToken",{YII_CSRF_TOKEN:csrfToken, code: authResult['code']}).done(function(result) {
+      window.location = window.location;
     });
   } else if (authResult['error']) {
     // There was an error.
