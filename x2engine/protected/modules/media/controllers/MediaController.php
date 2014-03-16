@@ -166,20 +166,16 @@ class MediaController extends x2base {
                 throw new Exception('Invalid file.');
 
             $fileName = $upload->getName();
-            $filename_whitelist =
-                array("txt", "doc", "docx", "xls", "xlsx", "ppt", "pptx");
+            $filename_blacklist =
+                array("exe", "bat", "dmg", "js", "jar", "swf", "php", "pl", "cgi", "htaccess", "py");
 
-            $allowedFile = false;
-            foreach ($filename_whitelist as $extension) {
+            foreach ($filename_blacklist as $extension) {
                 $ext = '.'.$extension;
                 if (substr($fileName, -strlen($ext)) == $ext) {
-                    $allowedFile = true;
+                    throw new Exception('Invalid filetype.');
                 }
             }
 
-            if (!$allowedFile) {
-                throw new Exception('Invalid request.');
-            }
             $fileName = str_replace(' ', '_', $fileName);
 
             $userFolder = Yii::app()->user->name; // place uploaded files in a folder named with the username of the user that uploaded the file
