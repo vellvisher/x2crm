@@ -156,7 +156,8 @@ class DocsController extends x2base {
 		$model = $this->loadModel($id);
 
         if (!$this->checkViewPermissions($model)) {
-			$this->redirect(array('docs/index'));
+			header("Location: /index.php/docs/index");
+            http_response_code(300);
         }
 
 		echo $json ? CJSON::encode(array('body'=>$model->text,'subject'=>$model->subject)) : $model->text;

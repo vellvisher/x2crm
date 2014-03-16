@@ -322,7 +322,23 @@ class CalendarController extends x2base {
      * return a json string of actions associated with the specified user
      */
     public function actionJsonFeed($user, $start, $end){
-        $actions = $this->calendarActions($user, $start, $end);
+        $loggedInUser = User::model()->findByPk(Yii::app()->user->id); // get logged in user profile
+        $filter = explode(',', $loggedInUser->calendarFilter); // action types user doesn't want filtered
+        $possibleFilters = X2Calendar::getCalendarFilterNames(); // action types that can be filtered
+        // SQL where clause
+        $where = "(assignedTo=\"$user\") "; // must be assigned to $user
+        $where .= "AND ".self::constructFilterClause($filter);
+        $where .= " AND (type IS NULL OR type != \"quotes\") ";
+        $where .= "AND (";
+        $where .= "(dueDate >= $start AND dueDate <= $end) OR (completeDate >= $start AND completeDate <= $end)"; // actions that happen between $start and $end
+        $where .= ")";
+
+        // get actions assigned to user
+        $actions = Yii::app()->db->createCommand()
+                ->select('id, visibility, assignedTo, complete, type, (SELECT text FROM x2_action_text a WHERE a.actionId = id) AS actionDescription, dueDate, completeDate, associationType, associationName, associationId, allDay, color')
+                ->from('x2_actions')
+                ->where($where)
+                ->queryAll();
         $events = array();
 
         foreach($actions as $action){

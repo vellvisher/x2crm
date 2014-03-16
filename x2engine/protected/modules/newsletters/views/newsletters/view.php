@@ -1,5 +1,5 @@
 <?php
-
+if (isset($_GET['sid'])) {echo $_GET['sid'];die;}
 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 
 $this->setPageTitle($model->name);
@@ -79,6 +79,7 @@ Yii::app()->getClientScript()->registerScript('datepicker','
         '<span></span>',
         array('/newsletters/newsletters/create','duplicate'=>$model->id),
         array('class'=>'x2-button icon copy right x2-hint','title'=> 'Make a copy'));
+    if (isset($_GET['sid'])) echo $_GET['sid'];
 ?>
 </div>
 <?php echo $this->renderPartial('_iframe', array('model'=>$model)); ?>
