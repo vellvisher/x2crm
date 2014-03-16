@@ -37,7 +37,7 @@ class NewslettersController extends x2base {
      */
     public function authorize() {
         if (Yii::app()->user->isGuest)
-            $this->redirect('site/whatsNew');
+            $this->redirect(Yii::app()->baseUrl.'/index.php/site/login');
         if (!Yii::app()->params->isAdmin)
             if (!in_array('1', Roles::model()->getUserRoles(Yii::app()->user->id)))
                 throw new CHttpException(403, 'You do not have access to view this page!');
