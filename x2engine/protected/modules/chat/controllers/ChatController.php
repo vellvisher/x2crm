@@ -42,15 +42,8 @@ class ChatController extends x2base
 
 	public function actionInvite() {
         $poster_user_id = Yii::app()->params->profile->id;
-        // if (!Yii::app()->user->checkAccess('create chatroom_invite')) {
-        //     // not allowed... .
-        //     throw new CHttpException(401);
-        // }
-        // TODO:Check output of below line
-        #$user = User::model()->findByPk(Yii::app()->user->getId());
         $invite = new ChatroomInvite('insert');
         if (isset($_POST['chatroom_id']) && isset($_POST['username'])) {
-            // TODO: Need to sanitize input
             $chatroom_id = $_POST['chatroom_id'];
             $username = $_POST['username'];
 

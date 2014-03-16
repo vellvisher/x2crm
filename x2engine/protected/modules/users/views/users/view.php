@@ -41,7 +41,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('users','Invite Users'), 'url'=>array('inviteUsers')),
 	array('label'=>Yii::t('users','View User')),
 	array('label'=>Yii::t('users','Update User'), 'url'=>array('update', 'id'=>$model->id)),
-    array('label'=>Yii::t('users','Delete User'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id, 'YII_CSRF_TOKEN' => '<?php echo Yii::app()->request->csrfToken ?>'),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
+	array('label'=>Yii::t('users','Delete User'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'), 'csrf'=>true)),
 ));
 ?>
 <div class="page-title icon users">
