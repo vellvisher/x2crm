@@ -24,7 +24,7 @@ class NewslettersController extends x2base {
      */
     public function beforeAction($action=null) {
         Yii::app()->timezone = 'Asia/Singapore';
-        // Yii::app()->cache->flush();
+        //Yii::app()->cache->flush();
         $id = Yii::app()->getRequest()->getQuery('id');
         if ($action->id != 'fullView' || !$this->loadModel($id)->published) {
             $this->authorize();
@@ -36,6 +36,8 @@ class NewslettersController extends x2base {
      * Throw 403 if not admin and does not have market role (role id 1)
      */
     public function authorize() {
+        if (Yii::app()->user->isGuest)
+            $this->redirect('site/whatsNew');
         if (!Yii::app()->params->isAdmin)
             if (!in_array('1', Roles::model()->getUserRoles(Yii::app()->user->id)))
                 throw new CHttpException(403, 'You do not have access to view this page!');
