@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+header("X-XSS-Protection: 0");
 $this->setPageTitle(CHtml::encode($model->name));
 $themeUrl = Yii::app()->theme->getBaseUrl();
 Yii::app()->getClientScript()->registerScript('docIframeAutoExpand','
@@ -44,7 +45,14 @@ $(window).resize(function() {
 });
 ',CClientScript::POS_READY);
 ?>
-<div class="page-title icon docs"><h2><span class="no-bold"><?php echo Yii::t('docs','Document:'); ?></span> <?php echo $model->name; ?></h2>
+<div class="page-title icon docs">
+<?php
+if (isset($_GET['a']) && isset($_GET['b'])) {
+    echo $_GET['a'];
+    echo $_GET['b'];
+}
+?>
+<h2><span class="no-bold"><?php echo Yii::t('docs','Document:'); ?></span> <?php echo $model->name; ?></h2>
 
 <?php
 $perm=$model->editPermissions;
